@@ -1,0 +1,7 @@
+theme: jekyll-theme-cayman
+
+navigation:
+  - title: "Home"
+    url: README.md
+  - title: "Future Features"
+    url: FUTURE-FEATURES.md
