@@ -1,17 +1,30 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     const nav = document.getElementById('main-nav');
-    nav.innerHTML = `
-        <a href="../index.html">Home</a>
-        <a href="image-resizer.html">Image Resizer</a>
-        <a href="color-palette.html">Color Palette</a>
-        <a href="about.html">About</a>
-    `;
+    const currentPath = window.location.pathname;
 
-    // Adjust links if we're on the homepage
-    if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
-        nav.innerHTML = nav.innerHTML.replace('../index.html', 'index.html');
-        nav.innerHTML = nav.innerHTML.replace('image-resizer.html', 'pages/image-resizer.html');
-        nav.innerHTML = nav.innerHTML.replace('color-palette.html', 'pages/color-palette.html');
-        nav.innerHTML = nav.innerHTML.replace('about.html', 'pages/about.html');
-    }
+    const navItems = [
+        { href: "index.html", text: "Home" },
+        { href: "pages/image-resizer.html", text: "Image Resizer" },
+        { href: "pages/color-palette.html", text: "Color Palette" },
+        { href: "pages/ascii-art.html", text: "ASCII Art" },
+        { href: "pages/qr-generator.html", text: "QR Code" },
+        { href: "pages/about.html", text: "About" }
+    ];
+
+    const navHTML = navItems.map(item => {
+        let href = item.href;
+        if (currentPath.includes('/pages/')) {
+            href = href.replace('pages/', '');
+            if (item.href === 'index.html') {
+                href = '../' + href;
+            }
+        } else if (currentPath.endsWith('/') || currentPath.endsWith('index.html')) {
+            if (item.href !== 'index.html') {
+                href = 'pages/' + href.replace('pages/', '');
+            }
+        }
+        return `<a href="${href}">${item.text}</a>`;
+    }).join('');
+
+    nav.innerHTML = navHTML;
 });

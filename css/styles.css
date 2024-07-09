@@ -62,7 +62,7 @@ label {
     color: #00fff2;
 }
 
-input[type="file"], input[type="number"] {
+input[type="file"], input[type="number"], input[type="text"], textarea {
     background-color: #1f2937;
     border: 1px solid #374151;
     color: #fff;
