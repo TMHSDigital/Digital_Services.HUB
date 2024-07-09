@@ -17,7 +17,10 @@ ___
 - **Image Resizer:** Easily resize images by specifying width and height.
 - **Color Palette Generator:** Create and explore various color palettes for design projects.
 
-## Usage
+------
+
+<details>
+<summary><strong>Usage</strong></summary>
 
 1. Click on the button below to visit the GitHub Pages site:
 
@@ -26,6 +29,8 @@ ___
     <img src="https://img.shields.io/badge/Visit-Site-brightgreen?style=for-the-badge" alt="Visit Site">
   </a>
 </p>
+
+</details>
 
 <details>
 <summary><strong>Connect</strong></summary>
