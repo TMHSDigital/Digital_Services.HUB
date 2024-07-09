@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #image-container { max-width: 100%; margin-bottom: 20px; }
+        img { max-width: 100%; }
+        button { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Image Resizer</h1>
+    <input type="file" id="file-input" accept="image/*">
+    <div id="image-container"></div>
+    <div>
+        <label for="width">Width:</label>
+        <input type="number" id="width" min="1" max="2000" value="300">
+        <label for="height">Height:</label>
+        <input type="number" id="height" min="1" max="2000" value="200">
+    </div>
+    <button id="resize-button">Resize</button>
+    <a id="download-link" style="display: none;">Download Resized Image</a>
+
+    <script>
+        let cropper;
+        const fileInput = document.getElementById('file-input');
+        const imageContainer = document.getElementById('image-container');
+        const resizeButton = document.getElementById('resize-button');
+        const downloadLink = document.getElementById('download-link');
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imageContainer.innerHTML = `<img src="${e.target.result}" id="image">`;
+                    const image = document.getElementById('image');
+                    cropper = new Cropper(image, {
+                        aspectRatio: NaN,
+                        viewMode: 1,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        resizeButton.addEventListener('click', () => {
+            if (cropper) {
+                const width = parseInt(widthInput.value);
+                const height = parseInt(heightInput.value);
+                const canvas = cropper.getCroppedCanvas({
+                    width: width,
+                    height: height
+                });
+                
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    downloadLink.href = url;
+                    downloadLink.download = 'resized-image.png';
+                    downloadLink.style.display = 'inline';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
