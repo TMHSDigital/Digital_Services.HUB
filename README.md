@@ -39,7 +39,7 @@ ___
 
 ## 🚀 Upcoming Features
 
-We're constantly innovating! Check out our [Future Features Roadmap](FUTURE_FEATURES.md) for exciting upcoming additions.
+We're constantly innovating! Check out our [Future Features Roadmap](FUTURE-FEATURES.md) for exciting upcoming additions.
 
 ## Usage
 
@@ -68,10 +68,6 @@ We're constantly innovating! Check out our [Future Features Roadmap](FUTURE_FEAT
     <img src="https://img.shields.io/badge/GitHub-Profile-lightgrey?style=for-the-badge" alt="GitHub Profile">
   </a>
 </p>
-
-We welcome contributions and feedback! Feel free to open an issue or submit a pull request.
-
-</details>
 
 ## License
 
