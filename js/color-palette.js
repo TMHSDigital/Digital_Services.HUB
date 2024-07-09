@@ -8,14 +8,14 @@ fileInput.addEventListener('change', (e) => {
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            imageContainer.innerHTML = `<img src="${e.target.result}" id="image" class="max-w-full">`;
+            imageContainer.innerHTML = `<img src="${e.target.result}" id="uploaded-image">`;
         };
         reader.readAsDataURL(file);
     }
 });
 
 generateButton.addEventListener('click', () => {
-    const image = document.getElementById('image');
+    const image = document.getElementById('uploaded-image');
     if (image) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
