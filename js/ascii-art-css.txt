@@ -1,0 +1,26 @@
+.ascii-output {
+    background-color: #1a1a1a;
+    border: 1px solid #00fff2;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-family: monospace;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+#ascii-output {
+    color: #00fff2;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+#text-input {
+    width: 100%;
+    background-color: #1f2937;
+    border: 1px solid #374151;
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 5px;
+    resize: vertical;
+}

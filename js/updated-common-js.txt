@@ -1,0 +1,14 @@
+document.addEventListener('DOMContentLoaded', (event) => {
+    const nav = document.getElementById('main-nav');
+    const currentPath = window.location.pathname;
+
+    const navItems = [
+        { href: "index.html", text: "Home" },
+        { href: "pages/image-resizer.html", text: "Image Resizer" },
+        { href: "pages/color-palette.html", text: "Color Palette" },
+        { href: "pages/ascii-art.html", text: "ASCII Art" },
+        { href: "pages/about.html", text: "About" }
+    ];
+
+    // ... rest of the code remains the same
+});

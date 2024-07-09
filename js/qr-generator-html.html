@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Digital Services Hub</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/qr-generator.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="neon-text">QR Code Generator</h1>
+        
+        <nav id="main-nav"></nav>
+
+        <div class="content">
+            <div class="input-group">
+                <label for="qr-input">Enter text or URL:</label>
+                <input type="text" id="qr-input" placeholder="Enter text or URL here">
+            </div>
+            
+            <button id="generate-button" class="tech-button">Generate QR Code</button>
+
+            <div id="qr-output"></div>
+
+            <a id="download-link" class="tech-button" style="display: none;">Download QR Code</a>
+
+            <p class="instructions">Enter text or a URL and click 'Generate QR Code' to create your QR code.</p>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/qr-generator.js"></script>
+</body>
+</html>

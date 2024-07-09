@@ -1,0 +1,19 @@
+const textInput = document.getElementById('text-input');
+const convertButton = document.getElementById('convert-button');
+const asciiOutput = document.getElementById('ascii-output');
+
+const asciiChars = ['@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.'];
+
+function textToAscii(text) {
+    return text.split('\n').map(line => 
+        line.split('').map(char => 
+            asciiChars[Math.floor(Math.random() * asciiChars.length)]
+        ).join('')
+    ).join('\n');
+}
+
+convertButton.addEventListener('click', () => {
+    const inputText = textInput.value;
+    const asciiArt = textToAscii(inputText);
+    asciiOutput.textContent = asciiArt;
+});
