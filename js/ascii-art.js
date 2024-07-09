@@ -5,15 +5,14 @@ const asciiOutput = document.getElementById('ascii-output');
 const asciiChars = ['@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.'];
 
 function textToAscii(text) {
-    return text.split('\n').map(line => 
-        line.split('').map(char => 
-            asciiChars[Math.floor(Math.random() * asciiChars.length)]
-        ).join('')
-    ).join('\n');
+    return text.split('').map(char => {
+        const index = Math.floor(Math.random() * asciiChars.length);
+        return asciiChars[index];
+    }).join('');
 }
 
 convertButton.addEventListener('click', () => {
     const inputText = textInput.value;
-    const asciiArt = textToAscii(inputText);
+    const asciiArt = inputText.split('\n').map(line => textToAscii(line)).join('\n');
     asciiOutput.textContent = asciiArt;
 });
