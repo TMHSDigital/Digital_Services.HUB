@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Generator - Digital Services Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        h1, h2 {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .neon-border {
+            box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #0ff, 0 0 35px #0ff, 0 0 40px #0ff, 0 0 50px #0ff, 0 0 75px #0ff;
+        }
+        .neon-text {
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #0ff, 0 0 35px #0ff, 0 0 40px #0ff;
+        }
+        .tech-button {
+            background: linear-gradient(45deg, #00a3ff, #00fff2);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .tech-button:hover {
+            background: linear-gradient(45deg, #00fff2, #00a3ff);
+            box-shadow: 0 0 10px #00fff2;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-gray-900 p-8 rounded-lg neon-border max-w-4xl w-full">
+        <h1 class="text-4xl font-bold mb-8 text-center neon-text">Color Palette Generator</h1>
+        
+        <nav class="mb-8">
+            <ul class="flex justify-center space-x-4">
+                <li><a href="index.html" class="text-blue-400 hover:text-blue-300">Home</a></li>
+                <li><a href="color-palette.html" class="text-blue-400 hover:text-blue-300">Color Palette</a></li>
+                <li><a href="about.html" class="text-blue-400 hover:text-blue-300">About</a></li>
+            </ul>
+        </nav>
+
+        <div class="mb-8">
+            <label for="file-input" class="block mb-2 text-xl font-medium text-blue-300">Upload an image:</label>
+            <input type="file" id="file-input" accept="image/*" class="block w-full text-lg text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-lg file:font-semibold file:bg-blue-900 file:text-blue-300 hover:file:bg-blue-800 transition duration-300 ease-in-out cursor-pointer">
+        </div>
+
+        <div id="image-container" class="mb-8 max-h-96 overflow-hidden rounded-lg"></div>
+        
+        <div id="palette-container" class="grid grid-cols-5 gap-4 mb-8"></div>
+
+        <button id="generate-button" class="tech-button w-full">Generate Palette</button>
+
+        <p class="text-lg text-gray-300 mt-6 text-center">Upload an image and click 'Generate Palette' to extract colors.</p>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const imageContainer = document.getElementById('image-container');
+        const paletteContainer = document.getElementById('palette-container');
+        const generateButton = document.getElementById('generate-button');
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imageContainer.innerHTML = `<img src="${e.target.result}" id="image" class="max-w-full">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        generateButton.addEventListener('click', () => {
+            const image = document.getElementById('image');
+            if (image) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = image.width;
+                canvas.height = image.height;
+                ctx.drawImage(image, 0, 0, image.width, image.height);
+                
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                const colorMap = {};
+
+                for (let i = 0; i < imageData.length; i += 4) {
+                    const r = imageData[i];
+                    const g = imageData[i + 1];
+                    const b = imageData[i + 2];
+                    const rgb = `rgb(${r},${g},${b})`;
+                    colorMap[rgb] = (colorMap[rgb] || 0) + 1;
+                }
+
+                const sortedColors = Object.entries(colorMap).sort((a, b) => b[1] - a[1]);
+                const topColors = sortedColors.slice(0, 5);
+
+                paletteContainer.innerHTML = topColors.map(([color, count]) => `
+                    <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 rounded-full" style="background-color: ${color};"></div>
+                        <span class="mt-2 text-sm">${color}</span>
+                    </div>
+                `).join('');
+            }
+        });
+    </script>
+</body>
+</html>
