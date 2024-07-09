@@ -1,11 +1,25 @@
-#image-container {
+#image-preview-container {
     max-height: 300px;
     overflow: hidden;
-    margin-bottom: 1rem;
-    border-radius: 5px;
+    margin-bottom: 20px;
 }
 
-#image-container img {
+#image-preview {
     max-width: 100%;
     height: auto;
+}
+
+.cyber-button {
+    background: linear-gradient(90deg, #00f, #0ff);
+    border: none;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.cyber-button:hover {
+    background: linear-gradient(90deg, #0ff, #00f);
+    transform: scale(1.05);
 }

@@ -3,43 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futuristic Image Resizer - Digital Services Hub</title>
+    <title>Image Resizer</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/image-resizer.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="neon-text">Futuristic Image Resizer</h1>
-        
-        <nav id="main-nav"></nav>
-
-        <div class="content">
-            <div class="input-group">
-                <label for="file-input">Choose an image:</label>
-                <input type="file" id="file-input" accept="image/*">
-            </div>
-            
-            <div id="image-container"></div>
-            
-            <div class="input-group">
-                <label for="width">Width:</label>
-                <input type="number" id="width" min="1" max="2000" value="300">
-            </div>
-            
-            <div class="input-group">
-                <label for="height">Height:</label>
-                <input type="number" id="height" min="1" max="2000" value="200">
-            </div>
-            
-            <button id="resize-button" class="tech-button">Resize Image</button>
-            <a id="download-link" class="tech-button" style="display: none;">Download</a>
-
-            <p class="instructions">Click 'Resize Image' to process, then 'Download' to save your image.</p>
+    <nav id="main-nav"></nav>
+    <header>
+        <h1>Image Resizer</h1>
+    </header>
+    <main>
+        <input type="file" id="image-input" accept="image/*">
+        <div id="image-preview-container" class="mt-4">
+            <img id="image-preview" alt="Preview">
         </div>
-    </div>
-
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <div>
+                <label for="width" class="block mb-2 text-lg font-medium text-blue-400">Width:</label>
+                <input type="number" id="width" min="1" max="2000" value="300" class="mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out">
+            </div>
+            <div>
+                <label for="height" class="block mb-2 text-lg font-medium text-blue-400">Height:</label>
+                <input type="number" id="height" min="1" max="2000" value="200" class="mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out">
+            </div>
+        </div>
+        <div class="flex justify-between items-center">
+            <button id="resize-button" class="cyber-button flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                Resize Image
+            </button>
+            <a id="download-link" class="hidden cyber-button bg-green-700 hover:bg-green-600 flex items-center transition-all duration-300 ease-in-out transform hover:scale-105">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download Resized Image
+            </a>
+        </div>
+        <p class="text-sm text-gray-400 mt-4 text-center">Click 'Resize Image' to process, then 'Download' to save your image.</p>
+    </main>
     <script src="../js/common.js"></script>
     <script src="../js/image-resizer.js"></script>
 </body>

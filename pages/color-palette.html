@@ -3,32 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Palette Generator - Digital Services Hub</title>
+    <title>Color Palette Generator</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/color-palette.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="neon-text">Color Palette Generator</h1>
-        
-        <nav id="main-nav"></nav>
-
-        <div class="content">
-            <div class="input-group">
-                <label for="file-input">Upload an image:</label>
-                <input type="file" id="file-input" accept="image/*">
-            </div>
-
-            <div id="image-container"></div>
-            
-            <div id="palette-container"></div>
-
-            <button id="generate-button" class="tech-button">Generate Palette</button>
-
-            <p class="instructions">Upload an image and click 'Generate Palette' to extract colors.</p>
+    <nav id="main-nav"></nav>
+    <header>
+        <h1>Color Palette Generator</h1>
+    </header>
+    <main>
+        <input type="file" id="image-input" accept="image/*">
+        <div id="color-palette-container" class="mt-4">
+            <!-- Generated color palette will be displayed here -->
         </div>
-    </div>
-
+    </main>
     <script src="../js/common.js"></script>
     <script src="../js/color-palette.js"></script>
 </body>

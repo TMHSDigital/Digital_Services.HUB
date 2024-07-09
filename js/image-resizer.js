@@ -1,46 +1,28 @@
-let cropper;
-const fileInput = document.getElementById('file-input');
-const imageContainer = document.getElementById('image-container');
-const resizeButton = document.getElementById('resize-button');
-const downloadLink = document.getElementById('download-link');
-const widthInput = document.getElementById('width');
-const heightInput = document.getElementById('height');
+document.getElementById('resize-button').addEventListener('click', () => {
+    const imageInput = document.getElementById('image-input');
+    const widthInput = document.getElementById('width');
+    const heightInput = document.getElementById('height');
+    const imagePreview = document.getElementById('image-preview');
+    const downloadLink = document.getElementById('download-link');
 
-fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
+    if (imageInput.files && imageInput.files[0]) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            imageContainer.innerHTML = `<img src="${e.target.result}" id="image">`;
-            const image = document.getElementById('image');
-            cropper = new Cropper(image, {
-                aspectRatio: NaN,
-                viewMode: 1,
-            });
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = widthInput.value;
+                canvas.height = heightInput.value;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const resizedImageUrl = canvas.toDataURL('image/png');
+                imagePreview.src = resizedImageUrl;
+                downloadLink.href = resizedImageUrl;
+                downloadLink.download = 'resized-image.png';
+                downloadLink.classList.remove('hidden');
+            };
         };
-        reader.readAsDataURL(file);
-    }
-});
-
-resizeButton.addEventListener('click', () => {
-    if (cropper) {
-        resizeButton.disabled = true;
-        resizeButton.textContent = 'Processing...';
-        
-        const width = parseInt(widthInput.value);
-        const height = parseInt(heightInput.value);
-        const canvas = cropper.getCroppedCanvas({
-            width: width,
-            height: height
-        });
-        
-        canvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            downloadLink.href = url;
-            downloadLink.download = 'resized-image.png';
-            downloadLink.style.display = 'inline-block';
-            resizeButton.disabled = false;
-            resizeButton.textContent = 'Resize Image';
-        });
+        reader.readAsDataURL(imageInput.files[0]);
     }
 });

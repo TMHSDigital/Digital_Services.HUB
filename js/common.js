@@ -1,17 +1,26 @@
-document.addEventListener('DOMContentLoaded', (event) => {
-    const nav = document.getElementById('main-nav');
-    nav.innerHTML = `
-        <a href="../index.html">Home</a>
-        <a href="image-resizer.html">Image Resizer</a>
-        <a href="color-palette.html">Color Palette</a>
-        <a href="about.html">About</a>
-    `;
+document.addEventListener('DOMContentLoaded', () => {
+    const navItems = [
+        { name: 'Home', url: 'index.html' },
+        { name: 'Image Resizer', url: 'pages/image-resizer.html' },
+        { name: 'Color Palette', url: 'pages/color-palette.html' },
+        { name: 'About', url: 'pages/about.html' }
+    ];
 
-    // Adjust links if we're on the homepage
-    if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
-        nav.innerHTML = nav.innerHTML.replace('../index.html', 'index.html');
-        nav.innerHTML = nav.innerHTML.replace('image-resizer.html', 'pages/image-resizer.html');
-        nav.innerHTML = nav.innerHTML.replace('color-palette.html', 'pages/color-palette.html');
-        nav.innerHTML = nav.innerHTML.replace('about.html', 'pages/about.html');
+    const nav = document.getElementById('main-nav');
+    if (nav) {
+        const ul = document.createElement('ul');
+        ul.classList.add('flex', 'justify-center', 'space-x-4');
+
+        navItems.forEach(item => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = item.url;
+            a.classList.add('text-blue-400', 'hover:text-blue-300');
+            a.textContent = item.name;
+            li.appendChild(a);
+            ul.appendChild(li);
+        });
+
+        nav.appendChild(ul);
     }
 });
