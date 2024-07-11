@@ -1,11 +1,70 @@
-# Digital Services Hub
+# FutureTech AI Services Website
 
-Welcome to the Digital Services Hub repository! This project contains a set of web tools designed to enhance digital experiences. Below you'll find details about the different themes available, features, and usage instructions.
+Welcome to the FutureTech AI Services website repository! This project showcases a modern, animated website for a fictional AI services company. The site is designed to be hosted on GitHub Pages, providing an easy-to-deploy solution for showcasing AI-related services.
 
-## Documentation
+## Features
 
-- [README](docs/README.md)
-- [Future Features](docs/FUTURE-FEATURES.md)
+- Responsive design that works on desktop and mobile devices
+- Interactive 3D background animation using Three.js
+- Smooth scrolling animations and hover effects
+- Showcase of AI services with animated reveal on scroll
+- Modern, dark-themed UI with futuristic aesthetics
+
+## Technologies Used
+
+- HTML5
+- CSS3 (with animations and flexbox/grid layouts)
+- JavaScript (ES6+)
+- Three.js for 3D animations
+
+## Setup and Deployment
+
+To set up and deploy this website using GitHub Pages:
+
+1. Fork this repository to your GitHub account.
+2. Rename the forked repository to `yourusername.github.io`, replacing `yourusername` with your actual GitHub username.
+3. Clone the repository to your local machine:
+   ```
+   git clone https://github.com/yourusername/yourusername.github.io.git
+   ```
+4. Make any desired changes to the `index.html` file.
+5. Commit and push your changes to GitHub:
+   ```
+   git add .
+   git commit -m "Customize website content"
+   git push origin main
+   ```
+6. Go to your repository settings on GitHub, navigate to the "Pages" section, and ensure that GitHub Pages is enabled and set to deploy from the main branch.
+7. Your website should now be live at `https://yourusername.github.io`
+
+## Customization
+
+To customize the website for your needs:
+
+1. Update the content in the `index.html` file, including the hero text, services, and any additional sections you want to add.
+2. Modify the styles in the `<style>` section of `index.html` to change colors, fonts, or layouts.
+3. Adjust the Three.js animation in the `<script>` section to change the background animation.
+4. Add or remove services in the "Our Free AI Services" section.
+
+## Contributing
+
+Contributions to improve the website are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## Contact
+
+If you have any questions or suggestions, please open an issue in this repository.
+
+Happy coding!
 
 ## Repository Stats
 
@@ -24,16 +83,6 @@ Welcome to the Digital Services Hub repository! This project contains a set of w
 ![Repository Size](https://img.shields.io/github/repo-size/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
 ![Language Count](https://img.shields.io/github/languages/count/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
 ![Top Language](https://img.shields.io/github/languages/top/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-
-## Themes
-
-> ### [![Cutting-Edge-Theme](https://img.shields.io/badge/Cutting--Edge-Theme-blue?style=for-the-badge)](https://github.com/TMHSDigital/Digital_Services.HUB/tree/Cutting-Edge-Theme)
-> ___A futuristic and vibrant theme with glowing elements and modern design aesthetics.___
-
-___
-
-> ### [![Minimalistic-Theme](https://img.shields.io/badge/Minimalistic-Theme-green?style=for-the-badge)](https://github.com/TMHSDigital/Digital_Services.HUB/tree/Minimalistic-Theme)
-> ___A clean and simple theme focused on usability and minimalist design principles.___
 
 ## Features
 
