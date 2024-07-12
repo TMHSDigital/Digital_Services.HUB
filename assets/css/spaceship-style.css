@@ -1,17 +1,64 @@
+@keyframes move-twink-back {
+    from {background-position:0 0;}
+    to {background-position:-10000px 5000px;}
+}
+
+@keyframes move-clouds-back {
+    from {background-position:0 0;}
+    to {background-position:10000px 0;}
+}
+
+@keyframes glow {
+    0% { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; }
+    50% { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+    100% { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; }
+}
+
+@keyframes hyperspeed {
+    0% { box-shadow: 0 0 5px #00ffff; }
+    50% { box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff; }
+    100% { box-shadow: 0 0 5px #00ffff; }
+}
+
 body, html {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    background-color: #0a0e17;
+    background-color: #000;
     color: #e0e0e0;
+    overflow-x: hidden;
+}
+
+.stars, .twinkling {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.stars {
+    background: #000 url('http://www.script-tutorials.com/demos/360/images/stars.png') repeat top center;
+    z-index: -2;
+}
+
+.twinkling {
+    background: transparent url('http://www.script-tutorials.com/demos/360/images/twinkling.png') repeat top center;
+    z-index: -1;
+    animation: move-twink-back 200s linear infinite;
 }
 
 .spaceship-interior {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background: linear-gradient(45deg, #1a2a3a, #0a1a2a);
+    background: rgba(10, 20, 30, 0.8);
     box-shadow: 0 0 50px rgba(0, 255, 255, 0.1);
+    position: relative;
+    z-index: 1;
 }
 
 header {
@@ -24,6 +71,12 @@ h1 {
     font-size: 2.5em;
     text-transform: uppercase;
     letter-spacing: 3px;
+    animation: glow 2s ease-in-out infinite;
+}
+
+.subtitle {
+    color: #00cccc;
+    font-size: 1.2em;
 }
 
 h2 {
@@ -38,6 +91,11 @@ h2 {
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 30px;
+    transition: box-shadow 0.3s ease;
+}
+
+.control-panel:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
 }
 
 .input-group {
@@ -51,6 +109,12 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.upload-label:hover {
+    background-color: #00ffff;
+    transform: scale(1.05);
 }
 
 .hidden-input {
@@ -64,6 +128,13 @@ textarea {
     color: #e0e0e0;
     padding: 10px;
     border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+textarea:focus {
+    border-color: #00ffff;
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 .button-group {
@@ -79,15 +150,35 @@ textarea {
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .ai-button:hover {
     background-color: #00cccc;
+    transform: scale(1.05);
 }
 
 .ai-button:active {
     transform: scale(0.98);
+}
+
+.ai-button.hyperspeed::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+.ai-button.hyperspeed:hover::before {
+    left: 100%;
+    transition: all 0.7s ease;
 }
 
 .preview-screen, .result-display {
@@ -97,9 +188,57 @@ textarea {
     padding: 15px;
     margin-top: 15px;
     min-height: 100px;
+    transition: all 0.3s ease;
+}
+
+.preview-screen:hover, .result-display:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
 }
 
 .preview-screen img, .result-display img {
     max-width: 100%;
     height: auto;
+    border-radius: 5px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #00ffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.prediction {
+    background: rgba(0, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.prediction:hover {
+    background: rgba(0, 255, 255, 0.2);
 }

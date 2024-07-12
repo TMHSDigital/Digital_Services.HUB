@@ -9,7 +9,15 @@ Promise.all([
 ]).then(models => {
     [objectDetectionModel, faceDetectionModel, sentenceEncoderModel, audioModel] = models;
     console.log('All AI modules initialized');
+    document.querySelectorAll('.ai-button').forEach(btn => btn.classList.add('ready'));
 });
+
+// Helper function for animations
+function animateResult(element) {
+    element.classList.remove('fade-in');
+    void element.offsetWidth; // Trigger reflow
+    element.classList.add('fade-in');
+}
 
 // Image Analysis
 const imageUpload = document.getElementById('imageUpload');
@@ -25,6 +33,7 @@ imageUpload.addEventListener('change', (event) => {
         img.onload = () => {
             imagePreview.innerHTML = '';
             imagePreview.appendChild(img);
+            animateResult(imagePreview);
         }
         img.src = e.target.result;
     }
@@ -35,55 +44,26 @@ document.getElementById('detectObjects').addEventListener('click', async () => {
     const img = imagePreview.querySelector('img');
     if (!img) return;
 
-    imageAnalysisResult.innerHTML = 'Analyzing...';
+    imageAnalysisResult.innerHTML = '<div class="loading">Analyzing... <div class="spinner"></div></div>';
+    animateResult(imageAnalysisResult);
+
     const predictions = await objectDetectionModel.detect(img);
     imageAnalysisResult.innerHTML = predictions.map(pred => 
-        `<div>${pred.class} (${(pred.score * 100).toFixed(2)}%)</div>`
+        `<div class="prediction">${pred.class} (${(pred.score * 100).toFixed(2)}%)</div>`
     ).join('');
+    animateResult(imageAnalysisResult);
 });
 
 document.getElementById('detectFaces').addEventListener('click', async () => {
     const img = imagePreview.querySelector('img');
     if (!img) return;
 
-    imageAnalysisResult.innerHTML = 'Analyzing...';
+    imageAnalysisResult.innerHTML = '<div class="loading">Analyzing... <div class="spinner"></div></div>';
+    animateResult(imageAnalysisResult);
+
     const faces = await faceDetectionModel.estimateFaces(img, false);
-    imageAnalysisResult.innerHTML = `Detected ${faces.length} face(s)`;
-});
-
-document.getElementById('removeBackground').addEventListener('click', async () => {
-    const img = imagePreview.querySelector('img');
-    if (!img) return;
-
-    imageAnalysisResult.innerHTML = 'Processing...';
-
-    const formData = new FormData();
-    formData.append('image_file', await fetch(img.src).then(r => r.blob()), 'image.jpg');
-    formData.append('size', 'auto');
-
-    try {
-        const response = await fetch('https://api.remove.bg/v1.0/removebg', {
-            method: 'POST',
-            headers: {
-                'X-Api-Key': '{{ site.env.REMOVE_BG_API_KEY }}'
-            },
-            body: formData
-        });
-
-        if (response.ok) {
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            const resultImage = new Image();
-            resultImage.src = url;
-            imageAnalysisResult.innerHTML = '';
-            imageAnalysisResult.appendChild(resultImage);
-        } else {
-            const error = await response.json();
-            imageAnalysisResult.innerHTML = `Error: ${error.errors[0].title}`;
-        }
-    } catch (error) {
-        imageAnalysisResult.innerHTML = `Error: ${error.message}`;
-    }
+    imageAnalysisResult.innerHTML = `<div class="prediction">Detected ${faces.length} face(s)</div>`;
+    animateResult(imageAnalysisResult);
 });
 
 // NLP
@@ -94,56 +74,29 @@ document.getElementById('entityRecognition').addEventListener('click', async () 
     const text = textInput.value;
     if (!text) return;
 
-    nlpResult.innerHTML = 'Analyzing...';
+    nlpResult.innerHTML = '<div class="loading">Analyzing... <div class="spinner"></div></div>';
+    animateResult(nlpResult);
+
     const embeddings = await sentenceEncoderModel.embed(text);
-    nlpResult.innerHTML = 'Embeddings generated. Entity recognition would use these for classification.';
+    nlpResult.innerHTML = '<div class="prediction">Embeddings generated. Entity recognition simulation complete.</div>';
+    animateResult(nlpResult);
 });
 
 document.getElementById('textSummarize').addEventListener('click', () => {
     const text = textInput.value;
     if (!text) return;
 
-    nlpResult.innerHTML = 'Summarizing...';
+    nlpResult.innerHTML = '<div class="loading">Summarizing... <div class="spinner"></div></div>';
+    animateResult(nlpResult);
+
     // This is a placeholder. Real summarization would require a more complex model.
-    const summary = text.split('.').slice(0, 3).join('.') + '.';
-    nlpResult.innerHTML = `Summary: ${summary}`;
-});
-
-document.getElementById('translateText').addEventListener('click', () => {
-    const text = textInput.value;
-    if (!text) return;
-
-    nlpResult.innerHTML = 'Translating...';
-    // Placeholder for translation. Would require integration with a translation API or model.
-    nlpResult.innerHTML = 'Translation feature coming soon!';
+    setTimeout(() => {
+        const summary = text.split('.').slice(0, 3).join('.') + '.';
+        nlpResult.innerHTML = `<div class="prediction">Summary: ${summary}</div>`;
+        animateResult(nlpResult);
+    }, 1500);
 });
 
 // Audio Processing
 const audioUpload = document.getElementById('audioUpload');
-const audioResult = document.getElementById('audioResult');
-
-document.getElementById('transcribeAudio').addEventListener('click', () => {
-    const file = audioUpload.files[0];
-    if (!file) return;
-
-    audioResult.innerHTML = 'Transcribing...';
-    // Placeholder for audio transcription. Would require a more complex speech-to-text model.
-    audioResult.innerHTML = 'Audio transcription feature coming soon!';
-});
-
-document.getElementById('classifyGenre').addEventListener('click', async () => {
-    const file = audioUpload.files[0];
-    if (!file) return;
-
-    audioResult.innerHTML = 'Analyzing...';
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-        const audioBuffer = await audioContext.decodeAudioData(event.target.result);
-        const tensorBuffer = tf.tensor(audioBuffer.getChannelData(0));
-        const prediction = audioModel.predict(tensorBuffer);
-        const genre = prediction.argMax().dataSync()[0];
-        audioResult.innerHTML = `Predicted genre: ${genre}`;
-    };
-    reader.readAsArrayBuffer(file);
-});
+const audioResult = document.getElementById('audioResult
