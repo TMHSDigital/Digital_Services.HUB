@@ -1,22 +1,65 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital_Services.HUB - AI Spaceship</title>
+    <link rel="stylesheet" href="assets/css/spaceship-style.css">
+</head>
+<body>
+    <div class="spaceship-interior">
+        <header>
+            <h1>Digital_Services.HUB</h1>
+            <p>Advanced AI Control Panel</p>
+        </header>
+        
+        <main>
+            <section class="control-panel" id="image-analysis">
+                <h2>Image Analysis Module</h2>
+                <div class="input-group">
+                    <label for="imageUpload" class="upload-label">Upload Image</label>
+                    <input type="file" id="imageUpload" accept="image/*" class="hidden-input">
+                </div>
+                <div id="imagePreview" class="preview-screen"></div>
+                <div class="button-group">
+                    <button id="detectObjects" class="ai-button">Detect Objects</button>
+                    <button id="detectFaces" class="ai-button">Detect Faces</button>
+                    <button id="removeBackground" class="ai-button">Remove Background</button>
+                </div>
+                <div id="imageAnalysisResult" class="result-display"></div>
+            </section>
 
-<h2>Image Classification</h2>
-<div id="image-classification">
-    <input type="file" id="imageUpload" accept="image/*">
-    <div id="imagePreview"></div>
-    <div id="classificationResult"></div>
-</div>
+            <section class="control-panel" id="nlp-analysis">
+                <h2>NLP Analysis Module</h2>
+                <textarea id="textInput" rows="4" placeholder="Enter text for analysis..."></textarea>
+                <div class="button-group">
+                    <button id="entityRecognition" class="ai-button">Recognize Entities</button>
+                    <button id="textSummarize" class="ai-button">Summarize Text</button>
+                    <button id="translateText" class="ai-button">Translate Text</button>
+                </div>
+                <div id="nlpResult" class="result-display"></div>
+            </section>
 
-<h2>Text Sentiment Analysis</h2>
-<div id="sentiment-analysis">
-    <textarea id="textInput" rows="4" cols="50"></textarea>
-    <button id="analyzeButton">Analyze Sentiment</button>
-    <div id="sentimentResult"></div>
-</div>
+            <section class="control-panel" id="audio-processing">
+                <h2>Audio Processing Module</h2>
+                <div class="input-group">
+                    <label for="audioUpload" class="upload-label">Upload Audio</label>
+                    <input type="file" id="audioUpload" accept="audio/*" class="hidden-input">
+                </div>
+                <div class="button-group">
+                    <button id="transcribeAudio" class="ai-button">Transcribe Audio</button>
+                    <button id="classifyGenre" class="ai-button">Classify Music Genre</button>
+                </div>
+                <div id="audioResult" class="result-display"></div>
+            </section>
+        </main>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/sentiment"></script>
-<script src="assets/js/ai-services.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-detection"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/universal-sentence-encoder"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands"></script>
+    <script src="assets/js/spaceship-ai-services.js"></script>
+</body>
+</html>
