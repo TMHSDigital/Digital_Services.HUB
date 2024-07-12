@@ -1,0 +1,42 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+// Add your custom styles here
+.main-content {
+  max-width: 64rem;
+  padding: 2rem 6rem;
+  margin: 0 auto;
+  font-size: 1.1rem;
+}
+
+#image-classification, #sentiment-analysis {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+}
+
+#imagePreview img {
+  max-width: 100%;
+  height: auto;
+}
+
+#textInput {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+#analyzeButton {
+  background-color: #159957;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+#classificationResult, #sentimentResult {
+  margin-top: 1rem;
+  font-weight: bold;
+}
