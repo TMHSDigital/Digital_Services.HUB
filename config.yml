@@ -1,7 +1,11 @@
 theme: jekyll-theme-cayman
+title: Tech.Hub AI Services
+description: Explore our cutting-edge AI services
+github:
+  is_project_page: true
+  repository_url: https://github.com/TMHSDigital/Tech.Hub
 
-navigation:
-  - title: "Home"
-    url: README.md
-  - title: "Future Features"
-    url: FUTURE-FEATURES.md
+# Navigation
+header_pages:
+  - README.md
+  - FUTURE-FEATURES.md
