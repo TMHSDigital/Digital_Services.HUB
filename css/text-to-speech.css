@@ -1,0 +1,14 @@
+/* Text-to-Speech specific styles */
+#text-input {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+}
+
+#voice-select {
+    margin-bottom: 1rem;
+}
+
+#speak-button {
+    width: 100%;
+}
