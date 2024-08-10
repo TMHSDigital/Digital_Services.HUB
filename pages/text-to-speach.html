@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech Converter - Digital Services Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Text-to-Speech Converter</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="image-resizer.html">Image Resizer</a>
+            <a href="color-palette.html">Color Palette</a>
+            <a href="ascii-art.html">ASCII Art</a>
+            <a href="qr-code.html">QR Code</a>
+            <a href="text-to-speech.html">Text-to-Speech</a>
+        </nav>
+        <textarea id="text-input" rows="5" placeholder="Enter text to convert to speech"></textarea>
+        <div>
+            <label for="voice-select">Select Voice:</label>
+            <select id="voice-select"></select>
+        </div>
+        <button id="speak-button">Speak</button>
+    </div>
+    <script src="js/text-to-speech.js"></script>
+</body>
+</html>
