@@ -4,43 +4,96 @@
 
 ### Core Components
 
-1. **Base Tool Class**
+1. **Configuration and Tools Management**
+   ```javascript
+   // tools.js
+   export const TOOLS = [
+       {
+           id: 'text-to-speech',
+           name: 'Text to Speech',
+           description: '...',
+           icon: 'fa-volume-up',
+           features: ['Multiple voices', 'Download audio'],
+           path: 'text-to-speech.html',
+           category: 'audio',
+           order: 1
+       },
+       // ... other tools
+   ];
+
+   export const CATEGORIES = {
+       audio: { name: 'Audio Tools', icon: 'fa-music' },
+       image: { name: 'Image Tools', icon: 'fa-image' },
+       // ... other categories
+   };
+   ```
+
+2. **Base Tool Class**
    ```javascript
    class BaseTool {
        constructor() {
-           this.initializeElements();
-           this.initializeState();
+           // Initialize theme
+           initializeTheme();
+           
+           // Initialize tool
+           this.elements = this.initializeElements();
+           this.state = this.initializeState();
            this.bindEvents();
+           this.initialize();
+           
+           // Set up error boundary
+           this.setupErrorBoundary();
        }
 
-       initializeElements() { /* ... */ }
-       initializeState() { /* ... */ }
-       bindEvents() { /* ... */ }
-       toggleTheme() { /* ... */ }
-       showNotification() { /* ... */ }
-       handleError() { /* ... */ }
+       // Abstract methods
+       initializeElements() { /* Must be implemented */ }
+       initializeState() { /* Must be implemented */ }
+       bindEvents() { /* Must be implemented */ }
+       initialize() { /* Must be implemented */ }
+
+       // Error handling
+       setupErrorBoundary() { /* Error boundary setup */ }
+       handleError(error) { /* Error handling */ }
+
+       // File handling
+       validateFile(file, options) { /* File validation */ }
+       downloadFile(blob, filename) { /* File download */ }
+
+       // Event handling
+       addKeyboardShortcut(key, callback, options) { /* Keyboard shortcuts */ }
    }
    ```
 
-2. **Utility Modules**
+3. **Utility Modules**
    ```javascript
-   // constants.js
-   export const APP_CONFIG = { /* ... */ };
-   export const STORAGE_KEYS = { /* ... */ };
-   export const THEMES = { /* ... */ };
+   // constants.js - Centralized configuration
+   export const APP_CONFIG = { /* App settings */ };
+   export const STORAGE_KEYS = { /* Storage keys */ };
+   export const THEMES = { /* Theme settings */ };
+   export const FILE_LIMITS = { /* File restrictions */ };
+   export const UI_CONSTANTS = { /* UI settings */ };
+   export const ERROR_MESSAGES = { /* Error messages */ };
+   export const KEYBOARD_SHORTCUTS = { /* Keyboard shortcuts */ };
+   export const ACCESSIBILITY = { /* ARIA labels & roles */ };
 
-   // helpers.js
-   export const sanitizeHTML = (html) => { /* ... */ };
-   export const isValidEmail = (email) => { /* ... */ };
-   export const generateUID = () => { /* ... */ };
+   // helpers.js - Utility functions
+   const utils = {
+       sanitizeHTML(html) { /* XSS prevention */ },
+       isValidEmail(email) { /* Email validation */ },
+       generateUID() { /* Unique ID generation */ },
+       formatDate(date) { /* Date formatting */ },
+       formatRelativeTime(date) { /* Relative time */ },
+       copyToClipboard(text) { /* Clipboard operations */ },
+       // ... other utilities
+   };
 
-   // validation.js
-   export class ValidationError extends Error { /* ... */ }
-   export const validateInput = (input) => { /* ... */ };
+   // theme.js - Theme management
+   export function initializeTheme() { /* Theme initialization */ }
 
-   // ui.js
-   export const notifications = { /* ... */ };
-   export const themeManager = { /* ... */ };
+   // ui.js - UI components
+   export const notifications = { /* Notification system */ };
+   export const modal = { /* Modal dialogs */ };
+   export const loader = { /* Loading indicators */ };
    ```
 
 ### Directory Structure
@@ -48,201 +101,244 @@
 ```
 digital-services-hub/
 ├── css/
-│   ├── components/
+│   ├── components/          # Tool-specific styles
 │   │   ├── ascii-art.css
 │   │   ├── color-palette.css
-│   │   ├── image-resizer.css
-│   │   ├── password-generator.css
-│   │   ├── qr-code.css
-│   │   └── text-to-speech.css
-│   ├── themes/
-│   │   ├── dark.css
-│   │   └── light.css
-│   └── utils/
+│   │   └── ...
+│   ├── themes/             # Theme definitions
+│   │   └── theme-variables.css
+│   └── utils/              # Shared styles
 │       ├── animations.css
 │       └── layout.css
 ├── js/
-│   ├── features/
+│   ├── config/            # Configuration
+│   │   └── tools.js      # Tool definitions
+│   ├── features/         # Tool implementations
 │   │   ├── ascii-art.js
-│   │   ├── color-palette.js
-│   │   ├── image-resizer.js
-│   │   ├── password-generator.js
-│   │   ├── qr-code.js
-│   │   └── text-to-speech.js
-│   └── utils/
+│   │   ├── base-tool.js
+│   │   └── ...
+│   └── utils/           # Utility modules
 │       ├── constants.js
 │       ├── helpers.js
-│       ├── validation.js
-│       └── ui.js
-├── pages/
+│       ├── theme.js
+│       ├── ui.js
+│       └── template-generator.js
+├── pages/              # Tool pages
 │   ├── ascii-art.html
 │   ├── color-palette.html
-│   ├── image-resizer.html
-│   ├── password-generator.html
-│   ├── qr-code.html
-│   └── text-to-speech.html
+│   └── ...
+├── scripts/           # Build scripts
+│   ├── build.js      # Page generation
+│   └── validate.js   # Code validation
 └── index.html
 ```
 
 ## Implementation Details
 
+### Automated Build System
+
+1. **Page Generation**
+   ```javascript
+   // template-generator.js
+   export function generateToolPage(toolId) {
+       // Generate tool page HTML
+   }
+
+   export function generateToolCard(tool) {
+       // Generate tool card HTML
+   }
+
+   // build.js
+   async function buildToolPages() {
+       // Generate all tool pages
+       for (const tool of TOOLS) {
+           const pageContent = generateToolPage(tool.id);
+           await fs.writeFile(path.join('pages', tool.path), pageContent);
+       }
+   }
+   ```
+
+2. **Code Validation**
+   ```javascript
+   // validate.js
+   async function validateProject() {
+       // Validate tool configuration
+       validateToolConfig();
+
+       // Validate file structure
+       await validateFileStructure();
+
+       // Validate HTML files
+       await validateHtmlFiles();
+
+       // Validate JavaScript files
+       await validateJavaScriptFiles();
+
+       // Validate CSS files
+       await validateCssFiles();
+   }
+   ```
+
 ### Feature Modules
 
-1. **Text to Speech**
+Each tool extends the BaseTool class and implements its specific functionality:
+
+```javascript
+class ToolName extends BaseTool {
+    initializeElements() {
+        // Initialize DOM elements
+        return {
+            input: document.getElementById('input'),
+            output: document.getElementById('output'),
+            // ... other elements
+        };
+    }
+
+    initializeState() {
+        // Initialize tool state
+        return {
+            settings: utils.getStorageItem(STORAGE_KEYS.SETTINGS),
+            history: utils.getStorageItem(STORAGE_KEYS.HISTORY),
+            // ... other state
+        };
+    }
+
+    bindEvents() {
+        // Set up event listeners
+        this.addKeyboardShortcut('s', this.save, { ctrl: true });
+        // ... other events
+    }
+
+    initialize() {
+        // Additional initialization
+        this.loadSettings();
+        this.setupUI();
+    }
+}
+```
+
+### Error Handling
+
+1. **Error Boundary**
    ```javascript
-   class TextToSpeech extends BaseTool {
-       speak() { /* ... */ }
-       updateProgress() { /* ... */ }
-       downloadAudio() { /* ... */ }
+   setupErrorBoundary() {
+       window.addEventListener('error', (event) => {
+           if (this.isEventFromTool(event)) {
+               this.handleError(event.error);
+               event.preventDefault();
+           }
+       });
+
+       window.addEventListener('unhandledrejection', (event) => {
+           if (this.isEventFromTool(event)) {
+               this.handleError(event.reason);
+               event.preventDefault();
+           }
+       });
    }
    ```
 
-2. **Image Resizer**
+2. **Notifications**
    ```javascript
-   class ImageResizer extends BaseTool {
-       resizeImage() { /* ... */ }
-       updateDimensions() { /* ... */ }
-       downloadImage() { /* ... */ }
+   showNotification(message, type = 'info', duration = 3000) {
+       notifications[type](message, duration);
    }
    ```
 
-3. **Color Palette**
-   ```javascript
-   class ColorPalette extends BaseTool {
-       generateHarmony() { /* ... */ }
-       savePalette() { /* ... */ }
-       exportColors() { /* ... */ }
-   }
-   ```
+### Theme System
 
-4. **ASCII Art**
-   ```javascript
-   class AsciiArt extends BaseTool {
-       generateArt() { /* ... */ }
-       updatePreview() { /* ... */ }
-       downloadResult() { /* ... */ }
-   }
-   ```
+```javascript
+function initializeTheme() {
+    const currentTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Set initial theme
+    if (currentTheme === 'dark' || (!currentTheme && prefersDark.matches)) {
+        document.body.classList.add('dark-theme');
+    }
 
-5. **QR Code**
-   ```javascript
-   class QRCode extends BaseTool {
-       generateCode() { /* ... */ }
-       updateOptions() { /* ... */ }
-       downloadQR() { /* ... */ }
-   }
-   ```
-
-6. **Password Generator**
-   ```javascript
-   class PasswordGenerator extends BaseTool {
-       generatePassword() { /* ... */ }
-       calculateStrength() { /* ... */ }
-       updateRequirements() { /* ... */ }
-       saveToHistory() { /* ... */ }
-   }
-   ```
-
-### Common Patterns
-
-1. **Event Handling**
-   ```javascript
-   bindEvents() {
-       this.element.addEventListener('click', this.handleClick);
-       this.input.addEventListener('change', this.handleChange);
-       document.addEventListener('keydown', this.handleKeyboard);
-   }
-   ```
-
-2. **State Management**
-   ```javascript
-   initializeState() {
-       this.state = {
-           theme: localStorage.getItem(STORAGE_KEYS.THEME),
-           history: JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY)),
-           settings: JSON.parse(localStorage.getItem(STORAGE_KEYS.SETTINGS))
-       };
-   }
-   ```
-
-3. **Error Handling**
-   ```javascript
-   try {
-       await this.processData();
-   } catch (error) {
-       this.handleError(error);
-       this.showNotification('error', error.message);
-   }
-   ```
+    // Handle theme changes
+    prefersDark.addEventListener('change', (e) => {
+        if (!localStorage.getItem(STORAGE_KEYS.THEME)) {
+            document.body.classList.toggle('dark-theme', e.matches);
+        }
+    });
+}
+```
 
 ## Technical Specifications
 
 ### Browser Support
-- Chrome 80+
-- Firefox 75+
-- Safari 13+
-- Edge 80+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
 ### Performance Targets
-- Initial load: < 2s
-- Tool initialization: < 500ms
-- Operation response: < 100ms
+- Initial load: < 1.5s
+- Tool initialization: < 300ms
+- Operation response: < 50ms
+- Build time: < 5s
 
 ### Security Measures
-- Input sanitization
-- Content Security Policy
+- Input sanitization using DOMPurify
+- Content Security Policy headers
 - CORS configuration
-- XSS prevention
-- CSRF protection
+- XSS prevention through sanitizeHTML
+- Error boundaries for crash prevention
 
-### Accessibility
-- ARIA labels
-- Keyboard navigation
+### Accessibility Features
+- ARIA labels and roles
+- Keyboard navigation with shortcuts
 - Screen reader support
-- High contrast mode
-- Focus management
+- High contrast theme support
+- Focus management in modals
+- Live regions for notifications
 
 ## Development Guidelines
 
 ### Code Style
 ```javascript
-// Use meaningful names
-const generateUniqueIdentifier = () => {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-};
-
-// Add JSDoc comments
+// Use TypeScript-style JSDoc comments
 /**
- * Validates user input and returns sanitized data
  * @param {string} input - Raw user input
- * @returns {string} Sanitized input
- * @throws {ValidationError} If input is invalid
+ * @returns {Promise<string>} Sanitized input
+ * @throws {Error} If input is invalid
  */
-const validateAndSanitize = (input) => {
+async function processInput(input) {
     // Implementation
-};
+}
+
+// Use early returns
+function validateInput(input) {
+    if (!input) return false;
+    if (typeof input !== 'string') return false;
+    return true;
+}
 
 // Use consistent error handling
 try {
     await processUserInput(input);
 } catch (error) {
-    logger.error('Failed to process user input:', error);
-    throw new ValidationError('Invalid input provided');
+    this.handleError(error);
+    this.showNotification('Failed to process input', 'error');
 }
 ```
 
 ### Testing Requirements
-- Unit tests for all utility functions
-- Integration tests for feature modules
+- Unit tests for utility functions
+- Integration tests for tool modules
 - E2E tests for critical paths
-- Accessibility testing
-- Performance testing
+- Accessibility testing (WCAG 2.1)
+- Performance testing (Lighthouse)
+- Build validation tests
 
 ### Documentation Standards
 - JSDoc for all functions
-- README for each module
+- README for each tool
 - API documentation
 - Usage examples
-- Change log
+- Changelog updates
+- Code comments for complex logic
 
-This technical overview provides a foundation for understanding the project's architecture and implementation details. For specific implementation details, refer to the individual module documentation.
+This technical overview provides a comprehensive guide to the project's architecture and implementation details. For specific tool documentation, refer to the individual tool directories.
