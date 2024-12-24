@@ -1,40 +1,78 @@
-document.addEventListener('DOMContentLoaded', (event) => {
-    const nav = document.getElementById('main-nav');
+// Theme Management
+const themeButton = document.getElementById('theme-button');
+const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+// Initialize theme
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+    } else {
+        const defaultTheme = prefersDarkScheme.matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', defaultTheme);
+        updateThemeIcon(defaultTheme);
+    }
+}
+
+// Update theme icon
+function updateThemeIcon(theme) {
+    const icon = themeButton.querySelector('i');
+    icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+// Toggle theme
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+}
+
+// Event Listeners
+if (themeButton) {
+    themeButton.addEventListener('click', toggleTheme);
+}
+
+// Initialize theme on load
+document.addEventListener('DOMContentLoaded', initializeTheme);
+
+// Handle system theme changes
+prefersDarkScheme.addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+        const newTheme = e.matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        updateThemeIcon(newTheme);
+    }
+});
+
+// Navigation active state
+function setActiveNavItem() {
     const currentPath = window.location.pathname;
-
-    const navItems = [
-        { href: "index.html", text: "Home" },
-        { href: "pages/image-resizer.html", text: "Image Resizer" },
-        { href: "pages/color-palette.html", text: "Color Palette" },
-        { href: "pages/ascii-art.html", text: "ASCII Art" },
-        { href: "pages/qr-code.html", text: "QR Code" },
-        { href: "pages/text-to-speech.html", text: "Text-to-Speech" },
-        { href: "pages/about.html", text: "About" }
-    ];
-
-    // Helper function to normalize paths
-    const normalizePath = (path) => path.replace(/\\/g, '/').toLowerCase();
-
-    // Get the current page name for active state
-    const currentPage = normalizePath(currentPath).split('/').pop();
-
-    const navHTML = navItems.map(item => {
-        let href = item.href;
-        const isCurrentPage = normalizePath(href).endsWith(currentPage);
-        
-        // Adjust paths based on current location
-        if (currentPath.includes('/pages/')) {
-            href = href.replace('pages/', '');
-            if (item.href === 'index.html') {
-                href = '../' + href;
-            }
+    const navLinks = document.querySelectorAll('nav a');
+    
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
         }
+    });
+}
 
-        // Add active class if current page
-        const activeClass = isCurrentPage ? ' class="active"' : '';
-        
-        return `<a href="${href}"${activeClass}>${item.text}</a>`;
-    }).join('');
+// Initialize navigation
+document.addEventListener('DOMContentLoaded', setActiveNavItem);
 
-    nav.innerHTML = navHTML;
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
 });
