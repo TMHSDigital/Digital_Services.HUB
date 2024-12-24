@@ -1,5 +1,6 @@
 import { initializeTheme } from '../utils/theme.js';
 import { notifications } from '../utils/ui.js';
+import utils from '../utils/helpers.js';
 
 export class BaseTool {
     constructor() {
@@ -129,40 +130,13 @@ export class BaseTool {
 
         if (file.size > maxSize) {
             this.showNotification(
-                `File too large. Maximum size is ${this.formatFileSize(maxSize)}`,
+                `File too large. Maximum size is ${utils.formatFileSize(maxSize)}`,
                 'error'
             );
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Format file size in human-readable format
-     * @param {number} bytes - Size in bytes
-     * @returns {string} Formatted size
-     */
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
-    }
-
-    /**
-     * Debounce function calls
-     * @param {Function} func - Function to debounce
-     * @param {number} wait - Wait time in milliseconds
-     * @returns {Function} Debounced function
-     */
-    debounce(func, wait) {
-        let timeout;
-        return (...args) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
     }
 
     /**
@@ -215,29 +189,9 @@ export class BaseTool {
     }
 
     /**
-     * Load a script dynamically
-     * @param {string} src - Script URL
-     * @returns {Promise} Promise that resolves when script is loaded
-     */
-    loadScript(src) {
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = resolve;
-            script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-            document.head.appendChild(script);
-        });
-    }
-
-    /**
      * Clean up resources
      */
     destroy() {
-        // Clear notification timeout
-        if (this._notificationTimeout) {
-            clearTimeout(this._notificationTimeout);
-        }
-
         // Remove event listeners
         if (this._boundEvents) {
             this._boundEvents.forEach(({ element, type, listener }) => {

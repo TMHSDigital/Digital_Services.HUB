@@ -380,9 +380,7 @@ export const responsiveHelper = {
      * Check if viewport is mobile
      * @returns {boolean} Whether viewport is mobile
      */
-    isMobile() {
-        return window.innerWidth < UI_CONSTANTS.MOBILE_BREAKPOINT;
-    },
+    isMobile: utils.isMobile,
 
     /**
      * Add resize listener
@@ -390,7 +388,7 @@ export const responsiveHelper = {
      * @returns {Function} Function to remove listener
      */
     onResize(callback) {
-        const handler = utils.debounce(callback, 250);
+        const handler = utils.debounce(callback, UI_CONSTANTS.DEBOUNCE_DELAY);
         window.addEventListener('resize', handler);
         return () => window.removeEventListener('resize', handler);
     }
