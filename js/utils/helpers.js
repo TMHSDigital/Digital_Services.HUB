@@ -77,6 +77,24 @@ const utils = {
     },
 
     /**
+     * Format relative time
+     * @param {Date|string|number} date - Date to format
+     * @returns {string} Relative time string
+     */
+    formatRelativeTime(date) {
+        const rtf = new Intl.RelativeTimeFormat(this.getBrowserLanguage(), { numeric: 'auto' });
+        const now = new Date();
+        const diff = new Date(date).getTime() - now.getTime();
+        const diffDays = Math.round(diff / (1000 * 60 * 60 * 24));
+        const diffHours = Math.round(diff / (1000 * 60 * 60));
+        const diffMinutes = Math.round(diff / (1000 * 60));
+
+        if (Math.abs(diffDays) >= 1) return rtf.format(diffDays, 'day');
+        if (Math.abs(diffHours) >= 1) return rtf.format(diffHours, 'hour');
+        return rtf.format(diffMinutes, 'minute');
+    },
+
+    /**
      * Check if storage is available
      * @param {string} type - Storage type ('localStorage' or 'sessionStorage')
      * @returns {boolean} Whether storage is available
@@ -161,7 +179,7 @@ const utils = {
     /**
      * Copy text to clipboard
      * @param {string} text - Text to copy
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>} Whether copy was successful
      */
     async copyToClipboard(text) {
         if (navigator.clipboard) {
@@ -208,8 +226,123 @@ const utils = {
             case 'ffd8ffe0':
             case 'ffd8ffe1':
             case 'ffd8ffe2': return 'image/jpeg';
+            case '52494646': return 'image/webp';
             default: return null;
         }
+    },
+
+    /**
+     * Debounce function
+     * @param {Function} func - Function to debounce
+     * @param {number} wait - Wait time in milliseconds
+     * @returns {Function} Debounced function
+     */
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+
+    /**
+     * Throttle function
+     * @param {Function} func - Function to throttle
+     * @param {number} limit - Limit in milliseconds
+     * @returns {Function} Throttled function
+     */
+    throttle(func, limit) {
+        let inThrottle;
+        return function executedFunction(...args) {
+            if (!inThrottle) {
+                func(...args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+
+    /**
+     * Format file size
+     * @param {number} bytes - Size in bytes
+     * @returns {string} Formatted size
+     */
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+    },
+
+    /**
+     * Get file extension
+     * @param {string} filename - File name
+     * @returns {string} File extension
+     */
+    getFileExtension(filename) {
+        return filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2);
+    },
+
+    /**
+     * Generate random string
+     * @param {number} length - String length
+     * @param {string} [chars] - Characters to use
+     * @returns {string} Random string
+     */
+    generateRandomString(length, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') {
+        let result = '';
+        const charactersLength = chars.length;
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    },
+
+    /**
+     * Check if color is light
+     * @param {string} color - Color in hex format
+     * @returns {boolean} Whether color is light
+     */
+    isLightColor(color) {
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        return brightness > 155;
+    },
+
+    /**
+     * Convert RGB to Hex
+     * @param {number} r - Red value
+     * @param {number} g - Green value
+     * @param {number} b - Blue value
+     * @returns {string} Hex color
+     */
+    rgbToHex(r, g, b) {
+        return '#' + [r, g, b].map(x => {
+            const hex = x.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
+    },
+
+    /**
+     * Convert Hex to RGB
+     * @param {string} hex - Hex color
+     * @returns {Object} RGB values
+     */
+    hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
     }
 };
 

@@ -1,12 +1,23 @@
-class BaseTool {
+import { initializeTheme } from '../utils/theme.js';
+import { notifications } from '../utils/ui.js';
+
+export class BaseTool {
     constructor() {
         if (new.target === BaseTool) {
             throw new Error('BaseTool is an abstract class and cannot be instantiated directly');
         }
+        
+        // Initialize theme first
+        initializeTheme();
+        
+        // Initialize tool
         this.elements = this.initializeElements();
         this.state = this.initializeState();
         this.bindEvents();
         this.initialize();
+        
+        // Set up error boundary
+        this.setupErrorBoundary();
     }
 
     /**
@@ -44,51 +55,54 @@ class BaseTool {
     }
 
     /**
+     * Set up error boundary for the tool
+     * @private
+     */
+    setupErrorBoundary() {
+        window.addEventListener('error', (event) => {
+            if (this.isEventFromTool(event)) {
+                this.handleError(event.error);
+                event.preventDefault();
+            }
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            if (this.isEventFromTool(event)) {
+                this.handleError(event.reason);
+                event.preventDefault();
+            }
+        });
+    }
+
+    /**
+     * Check if an error event originated from this tool
+     * @private
+     * @param {Event} event - The error event
+     * @returns {boolean} Whether the event is from this tool
+     */
+    isEventFromTool(event) {
+        const toolContainer = document.getElementById(`${this.constructor.name.toLowerCase()}-container`);
+        return toolContainer && (event.target === toolContainer || toolContainer.contains(event.target));
+    }
+
+    /**
+     * Handle tool errors
+     * @private
+     * @param {Error} error - The error to handle
+     */
+    handleError(error) {
+        console.error(`${this.constructor.name} Error:`, error);
+        notifications.error('An error occurred. Please try again or refresh the page.');
+    }
+
+    /**
      * Show a notification to the user
      * @param {string} message - Message to display
      * @param {'success' | 'error' | 'info'} [type='info'] - Type of notification
      * @param {number} [duration=3000] - Duration in milliseconds
      */
     showNotification(message, type = 'info', duration = 3000) {
-        if (!this.elements.notification) {
-            console.warn('Notification element not found');
-            return;
-        }
-
-        const notification = this.elements.notification;
-        notification.textContent = message;
-        notification.className = 'notification';
-        notification.classList.add(type, 'show');
-
-        // Ensure proper ARIA attributes
-        notification.setAttribute('role', 'alert');
-        notification.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
-
-        // Clear any existing timeout
-        if (this._notificationTimeout) {
-            clearTimeout(this._notificationTimeout);
-        }
-
-        // Set new timeout
-        this._notificationTimeout = setTimeout(() => {
-            notification.classList.remove('show');
-        }, duration);
-    }
-
-    /**
-     * Toggle theme between dark and light
-     * @param {string} storageKey - LocalStorage key for theme preference
-     */
-    toggleTheme(storageKey) {
-        try {
-            this.state.currentTheme = this.state.currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', this.state.currentTheme);
-            localStorage.setItem(storageKey, this.state.currentTheme);
-            this.showNotification(`${this.state.currentTheme.charAt(0).toUpperCase() + this.state.currentTheme.slice(1)} theme activated`, 'success');
-        } catch (error) {
-            console.error('Error toggling theme:', error);
-            this.showNotification('Failed to toggle theme', 'error');
-        }
+        notifications[type](message, duration);
     }
 
     /**
@@ -161,7 +175,7 @@ class BaseTool {
      * @param {boolean} options.shift - Whether Shift key is required
      */
     addKeyboardShortcut(key, callback, { ctrl = false, alt = false, shift = false } = {}) {
-        document.addEventListener('keydown', (e) => {
+        const listener = (e) => {
             if (
                 e.key.toLowerCase() === key.toLowerCase() &&
                 e.ctrlKey === ctrl &&
@@ -171,7 +185,11 @@ class BaseTool {
                 e.preventDefault();
                 callback.call(this);
             }
-        });
+        };
+        
+        document.addEventListener('keydown', listener);
+        this._boundEvents = this._boundEvents || [];
+        this._boundEvents.push({ element: document, type: 'keydown', listener });
     }
 
     /**

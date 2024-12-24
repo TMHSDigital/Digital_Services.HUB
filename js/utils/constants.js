@@ -5,16 +5,16 @@
 export const APP_CONFIG = {
     NAME: 'Digital Services Hub',
     VERSION: '1.0.0',
-    AUTHOR: 'Digital Services Team',
-    GITHUB_URL: 'https://github.com/yourusername/digital-services-hub'
+    AUTHOR: 'TMH Digital',
+    GITHUB_URL: 'https://github.com/TMHDigital/Digital_Services.HUB'
 };
 
 export const STORAGE_KEYS = {
-    THEME: 'ds_hub_theme',
-    LANGUAGE: 'ds_hub_language',
-    USER_PREFERENCES: 'ds_hub_preferences',
-    RECENT_FILES: 'ds_hub_recent_files',
-    PASSWORD_HISTORY: 'ds_hub_password_history'
+    THEME: 'theme',
+    RECENT_URLS: 'shortened_urls',
+    RECENT_PALETTES: 'saved_palettes',
+    RECENT_QR_CODES: 'saved_qr_codes',
+    PASSWORD_HISTORY: 'password_history'
 };
 
 export const THEMES = {
@@ -26,15 +26,20 @@ export const THEMES = {
 export const FILE_LIMITS = {
     MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
     MAX_IMAGE_DIMENSION: 4096,
-    SUPPORTED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/gif'],
-    SUPPORTED_TEXT_TYPES: ['text/plain', 'text/html', 'text/css', 'text/javascript']
+    SUPPORTED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+    SUPPORTED_AUDIO_TYPES: ['audio/mp3', 'audio/wav', 'audio/mpeg'],
+    MAX_HISTORY_ITEMS: 10
 };
 
 export const UI_CONSTANTS = {
     NOTIFICATION_DURATION: 3000,
-    MAX_RECENT_FILES: 10,
-    DEBOUNCE_DELAY: 300,
-    MOBILE_BREAKPOINT: 768
+    MOBILE_BREAKPOINT: 768,
+    ANIMATION_DURATION: 300,
+    MAX_NOTIFICATIONS: 3,
+    DEBOUNCE_DELAY: 250,
+    MODAL_Z_INDEX: 1000,
+    NOTIFICATION_Z_INDEX: 1100,
+    LOADER_Z_INDEX: 1200
 };
 
 export const ERROR_MESSAGES = {
@@ -43,57 +48,46 @@ export const ERROR_MESSAGES = {
     INVALID_DIMENSIONS: 'Image dimensions exceed the maximum limit',
     NETWORK_ERROR: 'Network error occurred. Please check your connection',
     STORAGE_ERROR: 'Error accessing local storage',
-    GENERIC_ERROR: 'An unexpected error occurred'
-};
-
-export const API_ENDPOINTS = {
-    BASE_URL: 'https://api.example.com',
-    ROUTES: {
-        AUTH: '/auth',
-        FILES: '/files',
-        CONVERT: '/convert',
-        GENERATE: '/generate'
-    }
+    GENERIC_ERROR: 'An unexpected error occurred. Please try again'
 };
 
 export const KEYBOARD_SHORTCUTS = {
-    SAVE: {
-        key: 's',
-        ctrl: true,
-        description: 'Save current work'
-    },
-    UNDO: {
-        key: 'z',
-        ctrl: true,
-        description: 'Undo last action'
-    },
-    REDO: {
-        key: 'y',
-        ctrl: true,
-        description: 'Redo last action'
-    },
-    TOGGLE_THEME: {
+    THEME_TOGGLE: {
         key: 't',
         ctrl: true,
         shift: true,
         description: 'Toggle dark/light theme'
+    },
+    CLOSE_MODAL: {
+        key: 'Escape',
+        description: 'Close modal or popup'
+    },
+    COPY_TO_CLIPBOARD: {
+        key: 'c',
+        ctrl: true,
+        description: 'Copy to clipboard'
     }
 };
 
 export const ACCESSIBILITY = {
     ARIA_LABELS: {
-        MAIN_NAVIGATION: 'Main navigation',
-        THEME_TOGGLE: 'Toggle theme',
-        LANGUAGE_SELECTOR: 'Select language',
-        FILE_UPLOAD: 'Upload file',
-        SETTINGS_MENU: 'Settings menu'
+        THEME_TOGGLE: 'Toggle dark/light theme',
+        FILE_UPLOAD: 'Choose a file to upload',
+        CLOSE_MODAL: 'Close modal',
+        COPY_BUTTON: 'Copy to clipboard',
+        DOWNLOAD_BUTTON: 'Download file',
+        GENERATE_BUTTON: 'Generate',
+        NOTIFICATION: 'Notification message',
+        LOADING: 'Loading, please wait'
     },
     ROLES: {
-        MAIN: 'main',
-        NAVIGATION: 'navigation',
+        ALERT: 'alert',
+        DIALOG: 'dialog',
+        STATUS: 'status',
         BUTTON: 'button',
-        MENU: 'menu',
-        MENUITEM: 'menuitem',
-        DIALOG: 'dialog'
+        TOOLBAR: 'toolbar',
+        TABLIST: 'tablist',
+        TAB: 'tab',
+        TABPANEL: 'tabpanel'
     }
 }; 

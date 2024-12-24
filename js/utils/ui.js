@@ -5,6 +5,24 @@
 import { UI_CONSTANTS, THEMES } from './constants.js';
 import utils from './helpers.js';
 
+/**
+ * Create a notification container if it doesn't exist
+ * @private
+ * @returns {HTMLElement} Notification container
+ */
+function getNotificationContainer() {
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.className = 'notification-container';
+        container.setAttribute('role', 'status');
+        container.setAttribute('aria-live', 'polite');
+        document.body.appendChild(container);
+    }
+    return container;
+}
+
 export const notifications = {
     /**
      * Show notification message
@@ -13,12 +31,27 @@ export const notifications = {
      * @param {number} [duration] - Duration in milliseconds
      */
     show(message, type = 'info', duration = UI_CONSTANTS.NOTIFICATION_DURATION) {
+        const container = getNotificationContainer();
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        notification.setAttribute('role', 'alert');
+        notification.setAttribute('role', type === 'error' ? 'alert' : 'status');
+        
+        const icon = document.createElement('i');
+        icon.className = `fas ${this._getIconForType(type)}`;
+        notification.appendChild(icon);
 
-        document.body.appendChild(notification);
+        const messageElement = document.createElement('span');
+        messageElement.textContent = message;
+        notification.appendChild(messageElement);
+
+        const closeButton = document.createElement('button');
+        closeButton.className = 'notification-close';
+        closeButton.innerHTML = '&times;';
+        closeButton.setAttribute('aria-label', 'Close notification');
+        closeButton.onclick = () => this._removeNotification(notification);
+        notification.appendChild(closeButton);
+
+        container.appendChild(notification);
         
         // Trigger animation
         requestAnimationFrame(() => {
@@ -26,36 +59,78 @@ export const notifications = {
         });
 
         // Remove notification after duration
-        setTimeout(() => {
-            notification.classList.remove('show');
-            notification.addEventListener('transitionend', () => {
-                notification.remove();
-            });
-        }, duration);
+        if (duration !== Infinity) {
+            setTimeout(() => {
+                this._removeNotification(notification);
+            }, duration);
+        }
     },
 
     /**
      * Show success notification
      * @param {string} message - Success message
+     * @param {number} [duration] - Duration in milliseconds
      */
-    success(message) {
-        this.show(message, 'success');
+    success(message, duration) {
+        this.show(message, 'success', duration);
     },
 
     /**
      * Show error notification
      * @param {string} message - Error message
+     * @param {number} [duration] - Duration in milliseconds
      */
-    error(message) {
-        this.show(message, 'error');
+    error(message, duration) {
+        this.show(message, 'error', duration);
     },
 
     /**
      * Show warning notification
      * @param {string} message - Warning message
+     * @param {number} [duration] - Duration in milliseconds
      */
-    warning(message) {
-        this.show(message, 'warning');
+    warning(message, duration) {
+        this.show(message, 'warning', duration);
+    },
+
+    /**
+     * Show info notification
+     * @param {string} message - Info message
+     * @param {number} [duration] - Duration in milliseconds
+     */
+    info(message, duration) {
+        this.show(message, 'info', duration);
+    },
+
+    /**
+     * Get icon class for notification type
+     * @private
+     * @param {string} type - Notification type
+     * @returns {string} Icon class
+     */
+    _getIconForType(type) {
+        switch (type) {
+            case 'success': return 'fa-check-circle';
+            case 'error': return 'fa-exclamation-circle';
+            case 'warning': return 'fa-exclamation-triangle';
+            default: return 'fa-info-circle';
+        }
+    },
+
+    /**
+     * Remove notification element
+     * @private
+     * @param {HTMLElement} notification - Notification element to remove
+     */
+    _removeNotification(notification) {
+        notification.classList.remove('show');
+        notification.addEventListener('transitionend', () => {
+            notification.remove();
+            const container = document.getElementById('notification-container');
+            if (container && !container.hasChildNodes()) {
+                container.remove();
+            }
+        });
     }
 };
 
@@ -113,9 +188,11 @@ export const modal = {
      * @param {string} options.title - Modal title
      * @param {string|HTMLElement} options.content - Modal content
      * @param {Object} [options.buttons] - Modal buttons configuration
+     * @param {boolean} [options.closeOnEscape=true] - Whether to close on Escape key
+     * @param {boolean} [options.closeOnOverlay=true] - Whether to close on overlay click
      * @returns {Promise} Resolves when modal is closed
      */
-    show({ title, content, buttons = {} }) {
+    show({ title, content, buttons = {}, closeOnEscape = true, closeOnOverlay = true }) {
         return new Promise((resolve) => {
             const modal = document.createElement('div');
             modal.className = 'modal';
@@ -151,9 +228,15 @@ export const modal = {
             const modalFooter = document.createElement('div');
             modalFooter.className = 'modal-footer';
 
+            // Add default buttons if none provided
+            if (Object.keys(buttons).length === 0) {
+                buttons.Close = () => {};
+            }
+
             Object.entries(buttons).forEach(([label, callback]) => {
                 const button = document.createElement('button');
                 button.textContent = label;
+                button.className = 'modal-button';
                 button.addEventListener('click', () => {
                     callback();
                     this.close(modal);
@@ -173,17 +256,32 @@ export const modal = {
             };
 
             closeButton.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
-            });
+            
+            if (closeOnOverlay) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal();
+                });
+            }
 
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeModal();
-            });
+            if (closeOnEscape) {
+                const escapeHandler = (e) => {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                        document.removeEventListener('keydown', escapeHandler);
+                    }
+                };
+                document.addEventListener('keydown', escapeHandler);
+            }
+
+            // Trap focus within modal
+            this._trapFocus(modal);
 
             document.body.appendChild(modal);
             requestAnimationFrame(() => {
                 modal.classList.add('show');
+                // Focus first focusable element
+                const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (focusable) focusable.focus();
             });
         });
     },
@@ -197,6 +295,35 @@ export const modal = {
         modal.addEventListener('transitionend', () => {
             modal.remove();
         });
+    },
+
+    /**
+     * Trap focus within modal
+     * @private
+     * @param {HTMLElement} modal - Modal element
+     */
+    _trapFocus(modal) {
+        const focusableElements = modal.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstFocusable = focusableElements[0];
+        const lastFocusable = focusableElements[focusableElements.length - 1];
+
+        modal.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                if (e.shiftKey) {
+                    if (document.activeElement === firstFocusable) {
+                        e.preventDefault();
+                        lastFocusable.focus();
+                    }
+                } else {
+                    if (document.activeElement === lastFocusable) {
+                        e.preventDefault();
+                        firstFocusable.focus();
+                    }
+                }
+            }
+        });
     }
 };
 
@@ -204,13 +331,15 @@ export const loader = {
     /**
      * Show loader
      * @param {string} [message] - Loading message
+     * @param {boolean} [overlay=true] - Whether to show overlay
      * @returns {HTMLElement} Loader element
      */
-    show(message = 'Loading...') {
+    show(message = 'Loading...', overlay = true) {
         const loader = document.createElement('div');
-        loader.className = 'loader';
+        loader.className = `loader${overlay ? ' loader-overlay' : ''}`;
         loader.setAttribute('role', 'alert');
         loader.setAttribute('aria-busy', 'true');
+        loader.setAttribute('aria-label', message);
 
         const spinner = document.createElement('div');
         spinner.className = 'loader-spinner';
@@ -223,6 +352,11 @@ export const loader = {
         loader.appendChild(messageElement);
         document.body.appendChild(loader);
 
+        // Prevent background scrolling if overlay
+        if (overlay) {
+            document.body.style.overflow = 'hidden';
+        }
+
         return loader;
     },
 
@@ -232,7 +366,11 @@ export const loader = {
      */
     hide(loader) {
         if (loader && loader.parentNode) {
+            const hasOverlay = loader.classList.contains('loader-overlay');
             loader.remove();
+            if (hasOverlay) {
+                document.body.style.overflow = '';
+            }
         }
     }
 };
@@ -249,11 +387,11 @@ export const responsiveHelper = {
     /**
      * Add resize listener
      * @param {Function} callback - Callback function
-     * @returns {Function} Cleanup function
+     * @returns {Function} Function to remove listener
      */
-    addResizeListener(callback) {
-        const debouncedCallback = utils.debounce(callback, UI_CONSTANTS.DEBOUNCE_DELAY);
-        window.addEventListener('resize', debouncedCallback);
-        return () => window.removeEventListener('resize', debouncedCallback);
+    onResize(callback) {
+        const handler = utils.debounce(callback, 250);
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
     }
 }; 
