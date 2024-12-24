@@ -4,96 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator - Digital Services Hub</title>
+    <meta name="description" content="Generate customizable QR codes with various styles and download options.">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/qr-code.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="neon-text">QR Code Generator</h1>
-        
-        <nav id="main-nav"></nav>
-
-        <div class="content">
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <h1>Digital Services Hub</h1>
+                </a>
+            </div>
             <div class="theme-toggle">
-                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">QR Code Generator</h2>
+            <p class="hero-subtitle">Create customizable QR codes for your links and data</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="qr-controls">
+            <div class="input-group">
+                <label for="text-input">Text or URL:</label>
+                <textarea 
+                    id="text-input" 
+                    rows="3" 
+                    placeholder="Enter text or URL to generate QR code"
+                    aria-label="Enter text or URL to generate QR code"
+                ></textarea>
             </div>
 
-            <div class="qr-controls">
+            <div class="settings-grid">
                 <div class="input-group">
-                    <label for="text-input">Text or URL:</label>
-                    <textarea 
-                        id="text-input" 
-                        rows="3" 
-                        placeholder="Enter text or URL to generate QR code"
-                        aria-label="Enter text or URL to generate QR code"
-                    ></textarea>
+                    <label for="size-input">Size (px):</label>
+                    <input 
+                        type="number" 
+                        id="size-input" 
+                        value="256" 
+                        min="128" 
+                        max="1024" 
+                        step="32"
+                        aria-label="QR code size in pixels"
+                    >
                 </div>
 
-                <div class="settings-grid">
-                    <div class="input-group">
-                        <label for="size-input">Size (px):</label>
-                        <input 
-                            type="number" 
-                            id="size-input" 
-                            value="256" 
-                            min="128" 
-                            max="1024" 
-                            step="32"
-                            aria-label="QR code size in pixels"
-                        >
-                    </div>
-
-                    <div class="input-group">
-                        <label for="error-correction-select">Error Correction:</label>
-                        <select 
-                            id="error-correction-select"
-                            aria-label="Error correction level"
-                        >
-                            <option value="L">Low (7%)</option>
-                            <option value="M">Medium (15%)</option>
-                            <option value="Q">Quartile (25%)</option>
-                            <option value="H" selected>High (30%)</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="dark-color-input">Dark Color:</label>
-                        <input 
-                            type="color" 
-                            id="dark-color-input" 
-                            value="#000000"
-                            aria-label="QR code dark color"
-                        >
-                    </div>
-
-                    <div class="input-group">
-                        <label for="light-color-input">Light Color:</label>
-                        <input 
-                            type="color" 
-                            id="light-color-input" 
-                            value="#ffffff"
-                            aria-label="QR code light color"
-                        >
-                    </div>
+                <div class="input-group">
+                    <label for="error-correction-select">Error Correction:</label>
+                    <select 
+                        id="error-correction-select"
+                        aria-label="Error correction level"
+                    >
+                        <option value="L">Low (7%)</option>
+                        <option value="M">Medium (15%)</option>
+                        <option value="Q">Quartile (25%)</option>
+                        <option value="H" selected>High (30%)</option>
+                    </select>
                 </div>
 
-                <button id="generate-button" class="tech-button">Generate QR Code</button>
+                <div class="input-group">
+                    <label for="dark-color-input">Dark Color:</label>
+                    <input 
+                        type="color" 
+                        id="dark-color-input" 
+                        value="#000000"
+                        aria-label="QR code dark color"
+                    >
+                </div>
 
-                <div class="output-container">
-                    <div id="qr-container" class="qr-output" role="img" aria-label="Generated QR code"></div>
-                    
-                    <div class="output-actions">
-                        <button id="download-button" class="tech-button small" disabled>Download QR Code</button>
-                    </div>
+                <div class="input-group">
+                    <label for="light-color-input">Light Color:</label>
+                    <input 
+                        type="color" 
+                        id="light-color-input" 
+                        value="#ffffff"
+                        aria-label="QR code light color"
+                    >
+                </div>
+            </div>
+
+            <button id="generate-button">
+                <i class="fas fa-qrcode"></i>
+                Generate QR Code
+            </button>
+
+            <div class="output-container">
+                <div id="qr-container" class="qr-output" role="img" aria-label="Generated QR code"></div>
+                
+                <div class="output-actions">
+                    <button id="download-button" disabled>
+                        <i class="fas fa-download"></i>
+                        Download QR Code
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <div class="notification" role="alert" aria-live="polite"></div>
 
-    <script src="../js/common.js"></script>
+    <!-- Load QR Code library first -->
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <!-- Then load our scripts -->
     <script src="../js/features/qr-code.js"></script>
 </body>
 </html> 

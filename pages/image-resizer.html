@@ -4,68 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Resizer - Digital Services Hub</title>
+    <meta name="description" content="Resize and optimize your images while maintaining quality. Support for multiple formats and aspect ratio preservation.">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/image-resizer.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="neon-text">Image Resizer</h1>
-        
-        <nav id="main-nav"></nav>
-
-        <div class="content">
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <h1>Digital Services Hub</h1>
+                </a>
+            </div>
             <div class="theme-toggle">
-                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
-
-            <div class="image-container">
-                <div class="drop-message">
-                    Drop image here or click to upload
-                </div>
-                <div class="preview-container">
-                    <img src="" alt="Preview" style="display: none;">
-                    <div class="preview-overlay">
-                        <button class="tech-button small">Change Image</button>
-                    </div>
-                </div>
-                <div class="file-info"></div>
-            </div>
-
-            <div class="image-controls">
-                <div class="input-group">
-                    <div class="dimension-controls">
-                        <div>
-                            <label for="width">Width:</label>
-                            <input type="number" id="width" min="1" step="1">
-                        </div>
-                        <span class="aspect-ratio-lock" title="Lock aspect ratio">🔒</span>
-                        <div>
-                            <label for="height">Height:</label>
-                            <input type="number" id="height" min="1" step="1">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label for="format">Format:</label>
-                    <select id="format">
-                        <option value="jpeg">JPEG</option>
-                        <option value="png">PNG</option>
-                        <option value="webp">WebP</option>
-                        <option value="gif">GIF</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label for="quality">Quality: <span id="quality-value">80%</span></label>
-                    <input type="range" id="quality" min="1" max="100" value="80">
-                </div>
-            </div>
-
-            <button id="download-button" class="tech-button" disabled>Download Resized Image</button>
+        </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">Image Resizer</h2>
+            <p class="hero-subtitle">Resize and optimize your images with precision</p>
         </div>
-    </div>
-    <script src="../js/common.js"></script>
+    </header>
+
+    <main class="container">
+        <div class="resizer-controls">
+            <!-- Drop Zone -->
+            <div class="drop-zone" id="drop-zone">
+                <input type="file" id="file-input" accept="image/*" class="file-input" aria-label="Choose an image file">
+                <div class="drop-zone-content">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drop image here or click to upload</p>
+                    <p class="file-types">Supports: JPG, PNG, WebP, GIF</p>
+                </div>
+            </div>
+
+            <!-- Preview Area -->
+            <div class="preview-container" id="preview-container" style="display: none;">
+                <div class="preview-header">
+                    <span class="file-info" id="file-info"></span>
+                    <button class="change-image" id="change-image">
+                        <i class="fas fa-sync-alt"></i>
+                        Change Image
+                    </button>
+                </div>
+                <div class="preview-image-container">
+                    <img id="preview-image" src="" alt="Image preview">
+                </div>
+            </div>
+
+            <!-- Image Settings -->
+            <div class="settings-panel" id="settings-panel" style="display: none;">
+                <div class="settings-grid">
+                    <!-- Dimensions -->
+                    <div class="dimension-controls">
+                        <div class="input-group">
+                            <label for="width">Width (px):</label>
+                            <input type="number" id="width" min="1" step="1" aria-label="Width in pixels">
+                        </div>
+                        <button class="aspect-ratio-lock" id="aspect-ratio-lock" aria-label="Lock aspect ratio">
+                            <i class="fas fa-lock"></i>
+                        </button>
+                        <div class="input-group">
+                            <label for="height">Height (px):</label>
+                            <input type="number" id="height" min="1" step="1" aria-label="Height in pixels">
+                        </div>
+                    </div>
+
+                    <!-- Format -->
+                    <div class="input-group">
+                        <label for="format">Output Format:</label>
+                        <select id="format" aria-label="Output format">
+                            <option value="jpeg">JPEG</option>
+                            <option value="png">PNG</option>
+                            <option value="webp">WebP</option>
+                            <option value="gif">GIF</option>
+                        </select>
+                    </div>
+
+                    <!-- Quality -->
+                    <div class="input-group">
+                        <label for="quality">Quality: <span id="quality-value">80%</span></label>
+                        <input type="range" id="quality" min="1" max="100" value="80" aria-label="Image quality">
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="action-buttons">
+                    <button id="resize-button" class="primary-button">
+                        <i class="fas fa-crop-alt"></i>
+                        Resize Image
+                    </button>
+                    <button id="download-button" class="secondary-button" disabled>
+                        <i class="fas fa-download"></i>
+                        Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="notification" role="alert" aria-live="polite"></div>
+
     <script src="../js/features/image-resizer.js"></script>
 </body>
 </html>

@@ -3,30 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Services Hub</title>
+    <title>Digital Services Hub - Web Tools for Digital Tasks</title>
+    <meta name="description" content="A collection of free web-based tools for everyday digital tasks including text-to-speech, image resizing, color palettes, ASCII art, and QR codes.">
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/components/navigation.css">
-    <script type="module" src="js/common.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <h1>Digital Services Hub</h1>
-        <nav>
-            <ul>
-                <li><a href="pages/text-to-speech.html">Text to Speech</a></li>
-                <li><a href="pages/image-resizer.html">Image Resizer</a></li>
-                <li><a href="pages/color-palette.html">Color Palette</a></li>
-                <li><a href="pages/ascii-art.html">ASCII Art</a></li>
-                <li><a href="pages/qr-code.html">QR Code</a></li>
-                <li><a href="pages/about.html">About</a></li>
-            </ul>
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <h1>Digital Services Hub</h1>
+            </div>
+            <div class="theme-toggle">
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
         </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">Welcome to Digital Services Hub</h2>
+            <p class="hero-subtitle">Free web-based tools for your digital tasks</p>
+        </div>
     </header>
-    <main>
-        <section class="welcome">
-            <h2>Welcome to Digital Services Hub</h2>
-            <p>A collection of useful web-based tools for everyday digital tasks.</p>
+
+    <main class="container">
+        <section class="tools-grid">
+            <article class="tool-card" onclick="window.location.href='pages/text-to-speech.html'">
+                <div class="tool-icon">
+                    <i class="fas fa-volume-up"></i>
+                </div>
+                <h3>Text to Speech</h3>
+                <p>Convert text to natural-sounding speech with multiple voices and languages.</p>
+                <div class="tool-features">
+                    <span>Multiple voices</span>
+                    <span>Download audio</span>
+                </div>
+            </article>
+
+            <article class="tool-card" onclick="window.location.href='pages/image-resizer.html'">
+                <div class="tool-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <h3>Image Resizer</h3>
+                <p>Resize and optimize your images while maintaining quality.</p>
+                <div class="tool-features">
+                    <span>Preserve ratio</span>
+                    <span>Multiple formats</span>
+                </div>
+            </article>
+
+            <article class="tool-card" onclick="window.location.href='pages/color-palette.html'">
+                <div class="tool-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3>Color Palette</h3>
+                <p>Generate beautiful color harmonies for your designs.</p>
+                <div class="tool-features">
+                    <span>Color harmony</span>
+                    <span>Export options</span>
+                </div>
+            </article>
+
+            <article class="tool-card" onclick="window.location.href='pages/ascii-art.html'">
+                <div class="tool-icon">
+                    <i class="fas fa-font"></i>
+                </div>
+                <h3>ASCII Art</h3>
+                <p>Convert images into creative ASCII art with customization options.</p>
+                <div class="tool-features">
+                    <span>Custom styles</span>
+                    <span>Export text</span>
+                </div>
+            </article>
+
+            <article class="tool-card" onclick="window.location.href='pages/qr-code.html'">
+                <div class="tool-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h3>QR Code</h3>
+                <p>Generate customizable QR codes for your links and data.</p>
+                <div class="tool-features">
+                    <span>Custom styles</span>
+                    <span>Download PNG</span>
+                </div>
+            </article>
+        </section>
+
+        <section class="features">
+            <h2>Why Choose Digital Services Hub?</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Fast & Efficient</h3>
+                    <p>All tools are optimized for speed and performance.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-lock"></i>
+                    <h3>Secure</h3>
+                    <p>Your data stays in your browser, no server uploads needed.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-universal-access"></i>
+                    <h3>Accessible</h3>
+                    <p>Built with accessibility in mind for all users.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Responsive</h3>
+                    <p>Works seamlessly on desktop and mobile devices.</p>
+                </div>
+            </div>
         </section>
     </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Digital Services Hub</h4>
+                <p>Free web-based tools for everyday digital tasks.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="pages/about.html">About</a></li>
+                    <li><a href="https://github.com/yourusername/digital-services-hub">GitHub</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Digital Services Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/common.js"></script>
 </body>
 </html>

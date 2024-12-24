@@ -1,10 +1,11 @@
-import { BaseTool } from './base-tool.js';
-import { notifications } from '../utils/ui.js';
-import { STORAGE_KEYS, UI_CONSTANTS } from '../utils/constants.js';
-import { inputValidation } from '../utils/validation.js';
-import utils from '../utils/helpers.js';
+class QRCode {
+    constructor() {
+        this.elements = this.initializeElements();
+        this.state = this.initializeState();
+        this.initialize();
+        this.bindEvents();
+    }
 
-class QRCode extends BaseTool {
     initializeElements() {
         return {
             textInput: document.getElementById('text-input'),
@@ -22,7 +23,7 @@ class QRCode extends BaseTool {
 
     initializeState() {
         return {
-            currentTheme: utils.getStorageItem(STORAGE_KEYS.THEME) || 'dark',
+            currentTheme: localStorage.getItem('theme') || 'dark',
             qrInstance: null,
             defaultOptions: {
                 width: 256,
@@ -50,24 +51,40 @@ class QRCode extends BaseTool {
         };
     }
 
+    showNotification(message, type = 'info') {
+        this.elements.notification.textContent = message;
+        this.elements.notification.className = `notification ${type}`;
+        this.elements.notification.style.display = 'block';
+
+        setTimeout(() => {
+            this.elements.notification.style.display = 'none';
+        }, 3000);
+    }
+
     validateInput() {
-        try {
-            const text = this.elements.textInput.value.trim();
-            inputValidation.validateRequired(text, 'Text or URL');
-
-            // If it looks like a URL, validate it
-            if (text.includes('://') || text.includes('www.')) {
-                inputValidation.validateURL(text);
-            }
-
-            const size = parseInt(this.elements.sizeInput.value);
-            inputValidation.validateNumberRange(size, 128, 1024, 'QR Code size');
-
-            return true;
-        } catch (error) {
-            notifications.error(error.message);
+        const text = this.elements.textInput.value.trim();
+        if (!text) {
+            this.showNotification('Please enter text or URL', 'error');
             return false;
         }
+
+        // If it looks like a URL, validate it
+        if (text.includes('://') || text.includes('www.')) {
+            try {
+                new URL(text.startsWith('http') ? text : `http://${text}`);
+            } catch {
+                this.showNotification('Please enter a valid URL', 'error');
+                return false;
+            }
+        }
+
+        const size = parseInt(this.elements.sizeInput.value);
+        if (isNaN(size) || size < 128 || size > 1024) {
+            this.showNotification('Size must be between 128 and 1024 pixels', 'error');
+            return false;
+        }
+
+        return true;
     }
 
     getQROptions() {
@@ -106,17 +123,16 @@ class QRCode extends BaseTool {
             this.elements.qrContainer.innerHTML = '';
             
             // Generate new QR code
-            const qrCode = await QRCodeStyling.create(options);
-            this.state.qrInstance = qrCode;
+            this.state.qrInstance = new QRCodeStyling(options);
             
             // Render QR code
-            await qrCode.append(this.elements.qrContainer);
+            await this.state.qrInstance.append(this.elements.qrContainer);
             
             this.elements.downloadButton.disabled = false;
-            notifications.success('QR code generated successfully!');
+            this.showNotification('QR code generated successfully!', 'success');
         } catch (error) {
             console.error('Error generating QR code:', error);
-            notifications.error('Error generating QR code. Please try again.');
+            this.showNotification('Error generating QR code. Please try again.', 'error');
             this.resetState();
         }
     }
@@ -129,7 +145,7 @@ class QRCode extends BaseTool {
 
     async downloadQRCode() {
         if (!this.state.qrInstance) {
-            notifications.error('Please generate a QR code first.');
+            this.showNotification('Please generate a QR code first.', 'error');
             return;
         }
 
@@ -143,17 +159,36 @@ class QRCode extends BaseTool {
                 name: fileName
             });
             
-            notifications.success('QR code downloaded successfully!');
+            this.showNotification('QR code downloaded successfully!', 'success');
         } catch (error) {
             console.error('Error downloading QR code:', error);
-            notifications.error('Error downloading QR code. Please try again.');
+            this.showNotification('Error downloading QR code. Please try again.', 'error');
         }
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    toggleTheme() {
+        const newTheme = this.state.currentTheme === 'dark' ? 'light' : 'dark';
+        this.state.currentTheme = newTheme;
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
     }
 
     bindEvents() {
         // Generate QR code
         this.elements.generateButton.addEventListener('click', 
-            this.debounce(() => this.generateQRCode(), UI_CONSTANTS.DEBOUNCE_DELAY)
+            this.debounce(() => this.generateQRCode(), 300)
         );
 
         // Auto-generate on input change
@@ -171,7 +206,7 @@ class QRCode extends BaseTool {
                     if (this.elements.textInput.value.trim()) {
                         this.generateQRCode();
                     }
-                }, UI_CONSTANTS.DEBOUNCE_DELAY)
+                }, 300)
             );
         });
 
@@ -182,20 +217,30 @@ class QRCode extends BaseTool {
 
         // Theme toggle
         this.elements.themeButton.addEventListener('click', () => {
-            this.toggleTheme(STORAGE_KEYS.THEME);
+            this.toggleTheme();
         });
 
         // Enter key in text input
         this.elements.textInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.generateQRCode();
             }
         });
 
         // Keyboard shortcuts
-        this.addKeyboardShortcut('g', () => this.generateQRCode(), { ctrl: true });
-        this.addKeyboardShortcut('s', () => this.downloadQRCode(), { ctrl: true });
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + G to generate
+            if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
+                e.preventDefault();
+                this.generateQRCode();
+            }
+            // Ctrl/Cmd + S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                this.downloadQRCode();
+            }
+        });
     }
 
     initialize() {
