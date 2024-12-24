@@ -1,0 +1,43 @@
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    color: var(--accent-color);
+}
+
+input, textarea, select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-color);
+    padding: 0.5rem;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+input[type="range"] {
+    height: 5px;
+    border-radius: 5px;
+    background: var(--input-bg);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+}
+
+#text-input {
+    height: 150px;
+    resize: vertical;
+    line-height: 1.5;
+} 

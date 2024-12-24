@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Art Converter - Digital Services Hub</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/ascii-art.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -14,22 +14,78 @@
         <nav id="main-nav"></nav>
 
         <div class="content">
-            <div class="input-group">
-                <label for="text-input">Enter your text:</label>
-                <textarea id="text-input" rows="3" placeholder="Type your text here..."></textarea>
-            </div>
-            
-            <button id="convert-button" class="tech-button">Convert to ASCII Art</button>
-
-            <div id="output-container" class="ascii-output">
-                <pre id="ascii-output"></pre>
+            <div class="theme-toggle">
+                <button id="theme-button" class="tech-button small">Toggle Theme</button>
             </div>
 
-            <p class="instructions">Enter your text and click 'Convert to ASCII Art' to see the result.</p>
+            <div class="ascii-controls">
+                <div class="drop-zone" role="region" aria-label="Image upload area">
+                    <label for="file-input" class="visually-hidden">Choose an image file to convert</label>
+                    <input 
+                        type="file" 
+                        id="file-input" 
+                        accept="image/*" 
+                        class="file-input"
+                        aria-label="Choose an image file"
+                        title="Choose an image file to convert to ASCII art"
+                    >
+                    <div class="drop-zone-text">
+                        <p>Drop an image here or click to upload</p>
+                        <p class="small">Supports: JPG, PNG, GIF</p>
+                    </div>
+                </div>
+
+                <div id="preview" class="preview-container" role="img" aria-label="Image preview"></div>
+
+                <div class="settings-grid">
+                    <div class="input-group">
+                        <label for="width-input">Output Width:</label>
+                        <input type="number" id="width-input" value="100" min="10" max="400">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="charset-select">Character Set:</label>
+                        <select id="charset-select">
+                            <option value="standard">Standard</option>
+                            <option value="blocks">Blocks</option>
+                            <option value="simple">Simple</option>
+                            <option value="dots">Dots</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            <input type="checkbox" id="invert-checkbox">
+                            Invert Colors
+                        </label>
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            <input type="checkbox" id="color-checkbox">
+                            Use Colors
+                        </label>
+                    </div>
+                </div>
+
+                <button id="generate-button" class="tech-button">Generate ASCII Art</button>
+
+                <div class="output-container">
+                    <pre id="ascii-output" class="ascii-output" aria-label="ASCII art output"></pre>
+                    
+                    <div class="output-actions">
+                        <button id="copy-button" class="tech-button small">Copy to Clipboard</button>
+                        <button id="download-button" class="tech-button small">Download as Text</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <div class="notification" role="alert" aria-live="polite"></div>
+
     <script src="../js/common.js"></script>
-    <script src="../js/ascii-art.js"></script>
+    <script src="../js/features/ascii-art.js"></script>
 </body>
 </html>

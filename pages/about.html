@@ -5,81 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Digital Services Hub</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <style>
-        .feature-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .feature-list li {
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-        }
-        .feature-list li::before {
-            content: '🚀';
-            margin-right: 0.5rem;
-        }
-        .coming-soon {
-            font-style: italic;
-            color: #00fff2;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <h1 class="neon-text">About Digital Services Hub</h1>
         
-        <nav>
-    <a href="index.html">Home</a>
-    <a href="image-resizer.html">Image Resizer</a>
-    <a href="color-palette.html">Color Palette</a>
-    <a href="ascii-art.html">ASCII Art</a>
-    <a href="qr-code.html">QR Code</a>
-    <a href="text-to-speech.html">Text-to-Speech</a>
-    <a href="about.html">About</a>
-</nav>
+        <nav id="main-nav"></nav>
 
         <div class="content">
-            <p>Welcome to the Digital Services Hub - your gateway to cutting-edge digital tools and AI-powered services!</p>
-            
-            <h2>Our Mission</h2>
-            <p>We strive to provide innovative, user-friendly digital tools that empower creators, developers, and everyday users to unleash their creativity and productivity in the digital realm.</p>
+            <div class="theme-toggle">
+                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+            </div>
 
-            <h2>Current Services</h2>
-            <ul class="feature-list">
-                <li>Futuristic Image Resizer: Resize your images with style</li>
-                <li>Color Palette Generator: Extract beautiful color schemes from images</li>
-                <li>ASCII Art Converter: Transform text into ASCII masterpieces</li>
-                <li>QR Code Generator: Create custom QR codes for various purposes</li>
-            </ul>
+            <div class="about-content">
+                <section class="about-section">
+                    <h2>Welcome to Digital Services Hub</h2>
+                    <p>
+                        Digital Services Hub is a collection of powerful web-based tools designed to help you with various digital tasks. 
+                        Our tools are built with modern web technologies and focus on providing a seamless, user-friendly experience.
+                    </p>
+                </section>
 
-            <h2>Upcoming Features</h2>
-            <p>We're constantly innovating! Here's a sneak peek at some exciting services we're working on:</p>
-            <ul class="feature-list">
-                <li>AI Text Summarizer <span class="coming-soon">(Coming Soon!)</span></li>
-                <li>Sentiment Analysis Tool <span class="coming-soon">(Coming Soon!)</span></li>
-                <li>AI-powered Image Enhancement <span class="coming-soon">(Coming Soon!)</span></li>
-                <li>Virtual Background Generator <span class="coming-soon">(Coming Soon!)</span></li>
-                <li>Text-to-Speech Converter <span class="coming-soon">(Coming Soon!)</span></li>
-            </ul>
-            <p>And many more AI-integrated and high-tech services on the horizon!</p>
+                <section class="features-section">
+                    <h2>Our Tools</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card" data-feature="text-to-speech" tabindex="0">
+                            <div class="feature-icon">🗣️</div>
+                            <h3>Text to Speech</h3>
+                            <p>Convert text to natural-sounding speech with multiple voices and languages.</p>
+                        </div>
 
-            <h2>Our Commitment</h2>
-            <p>At Digital Services Hub, we are committed to:</p>
-            <ul>
-                <li>Providing free, accessible tools for all users</li>
-                <li>Continuously updating and improving our services</li>
-                <li>Maintaining a user-friendly, futuristic interface</li>
-                <li>Protecting user privacy and data security</li>
-            </ul>
+                        <div class="feature-card" data-feature="image-resizer" tabindex="0">
+                            <div class="feature-icon">🖼️</div>
+                            <h3>Image Resizer</h3>
+                            <p>Resize and optimize images with aspect ratio preservation and format conversion.</p>
+                        </div>
 
-            <h2>Get Involved</h2>
-            <p>We welcome feedback, suggestions, and contributions from our community. If you have ideas for new features or improvements, please visit our GitHub repository and open an issue or submit a pull request.</p>
+                        <div class="feature-card" data-feature="color-palette" tabindex="0">
+                            <div class="feature-icon">🎨</div>
+                            <h3>Color Palette</h3>
+                            <p>Generate and customize color palettes with harmony rules and export options.</p>
+                        </div>
 
-            <p>Thank you for choosing Digital Services Hub. Together, let's shape the future of digital creativity and productivity!</p>
+                        <div class="feature-card" data-feature="ascii-art" tabindex="0">
+                            <div class="feature-icon">🎯</div>
+                            <h3>ASCII Art</h3>
+                            <p>Convert images into ASCII art with customizable settings and color support.</p>
+                        </div>
+
+                        <div class="feature-card" data-feature="qr-code" tabindex="0">
+                            <div class="feature-icon">📱</div>
+                            <h3>QR Code</h3>
+                            <p>Generate customizable QR codes with error correction and styling options.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="tech-section">
+                    <h2>Technologies</h2>
+                    <p>Built with modern web technologies:</p>
+                    <ul class="tech-list">
+                        <li>HTML5 & CSS3</li>
+                        <li>Modern JavaScript (ES6+)</li>
+                        <li>Web Speech API</li>
+                        <li>Canvas API</li>
+                        <li>File API</li>
+                        <li>Local Storage</li>
+                    </ul>
+                </section>
+
+                <section class="info-section">
+                    <h2>Project Information</h2>
+                    <div id="version-info" class="version-info"></div>
+                    <p>
+                        This project is open-source and continuously improving. Feel free to contribute or report issues 
+                        through our repository.
+                    </p>
+                </section>
+            </div>
         </div>
     </div>
 
+    <div class="notification" role="alert" aria-live="polite"></div>
+
     <script src="../js/common.js"></script>
+    <script src="../js/features/about.js"></script>
 </body>
 </html>

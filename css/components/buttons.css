@@ -1,0 +1,29 @@
+.tech-button {
+    background: linear-gradient(45deg, var(--button-gradient-1), var(--button-gradient-2));
+    color: var(--bg-color);
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+}
+
+.tech-button:hover {
+    background: linear-gradient(45deg, var(--button-gradient-2), var(--button-gradient-1));
+    box-shadow: 0 0 10px var(--shadow-color);
+}
+
+.tech-button.small {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.tech-button.speaking {
+    background: linear-gradient(45deg, var(--error-color), #ff6b6b);
+    animation: pulse 2s infinite;
+} 

@@ -5,39 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Palette Generator - Digital Services Hub</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/color-palette.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <h1 class="neon-text">Color Palette Generator</h1>
         
-        <nav>
-    <a href="index.html">Home</a>
-    <a href="image-resizer.html">Image Resizer</a>
-    <a href="color-palette.html">Color Palette</a>
-    <a href="ascii-art.html">ASCII Art</a>
-    <a href="qr-code.html">QR Code</a>
-    <a href="text-to-speech.html">Text-to-Speech</a>
-    <a href="about.html">About</a>
-</nav>
+        <nav id="main-nav"></nav>
 
         <div class="content">
-            <div class="input-group">
-                <label for="file-input">Upload an image:</label>
-                <input type="file" id="file-input" accept="image/*">
+            <div class="theme-toggle">
+                <button id="theme-button" class="tech-button small">Toggle Theme</button>
             </div>
 
-            <div id="image-container"></div>
-            
-            <div id="palette-container"></div>
+            <div class="palette-controls">
+                <div class="color-picker-container">
+                    <canvas></canvas>
+                </div>
 
-            <button id="generate-button" class="tech-button">Generate Palette</button>
+                <div class="input-group">
+                    <label for="harmony">Color Harmony:</label>
+                    <select id="harmony">
+                        <option value="complementary">Complementary</option>
+                        <option value="analogous">Analogous</option>
+                        <option value="triadic">Triadic</option>
+                        <option value="split-complementary">Split Complementary</option>
+                        <option value="tetradic">Tetradic</option>
+                    </select>
+                    <button id="generate-button" class="tech-button">Generate Harmony</button>
+                </div>
+            </div>
 
-            <p class="instructions">Upload an image and click 'Generate Palette' to extract colors.</p>
+            <div class="selected-colors"></div>
+
+            <div class="palette-actions">
+                <button id="save-button" class="tech-button">Save Palette</button>
+                <div class="export-options">
+                    <button class="tech-button small" data-format="hex">Copy HEX</button>
+                    <button class="tech-button small" data-format="rgb">Copy RGB</button>
+                    <button class="tech-button small" data-format="css">Copy CSS Variables</button>
+                </div>
+            </div>
+
+            <div class="saved-palettes">
+                <h3>Saved Palettes</h3>
+                <div class="saved-palette-grid"></div>
+            </div>
         </div>
     </div>
 
+    <div class="notification"></div>
+
     <script src="../js/common.js"></script>
-    <script src="../js/color-palette.js"></script>
+    <script src="../js/features/color-palette.js"></script>
 </body>
 </html>

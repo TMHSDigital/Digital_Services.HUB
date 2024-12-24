@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         { href: "pages/image-resizer.html", text: "Image Resizer" },
         { href: "pages/color-palette.html", text: "Color Palette" },
         { href: "pages/ascii-art.html", text: "ASCII Art" },
-        { href: "pages/qr-generator.html", text: "QR Code" },
+        { href: "pages/qr-code.html", text: "QR Code" },
         { href: "pages/text-to-speech.html", text: "Text-to-Speech" },
         { href: "pages/about.html", text: "About" }
     ];

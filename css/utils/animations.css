@@ -1,0 +1,15 @@
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 5px var(--error-color); }
+    50% { box-shadow: 0 0 20px var(--error-color); }
+}
+
+.neon-text {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--text-color);
+    text-shadow: 0 0 5px var(--text-color), 
+                 0 0 10px var(--text-color), 
+                 0 0 15px var(--accent-color), 
+                 0 0 20px var(--accent-color);
+    text-align: center;
+    margin-bottom: 2rem;
+} 

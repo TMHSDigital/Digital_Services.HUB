@@ -14,20 +14,74 @@
         <nav id="main-nav"></nav>
 
         <div class="content">
+            <div class="theme-toggle">
+                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+            </div>
+
             <div class="input-group">
-                <label for="text-input">Enter Text:</label>
+                <div class="text-controls">
+                    <label for="text-input">Enter Text: <span id="char-count">(0 characters)</span></label>
+                    <div class="text-actions">
+                        <button id="clear-button" class="tech-button small">Clear</button>
+                        <button id="save-text" class="tech-button small">Save Text</button>
+                    </div>
+                </div>
                 <textarea id="text-input" rows="5" placeholder="Enter text to convert to speech"></textarea>
+                <div id="language-detect">Detected Language: <span>None</span></div>
             </div>
             
-            <div class="input-group">
-                <label for="voice-select">Select Voice:</label>
-                <select id="voice-select"></select>
+            <div class="controls-grid">
+                <div class="input-group">
+                    <label for="voice-select">Voice:</label>
+                    <select id="voice-select"></select>
+                </div>
+
+                <div class="input-group">
+                    <label for="rate">Speed: <span id="rate-value">1x</span></label>
+                    <input type="range" id="rate" min="0.5" max="2" value="1" step="0.1">
+                </div>
+
+                <div class="input-group">
+                    <label for="pitch">Pitch: <span id="pitch-value">1</span></label>
+                    <input type="range" id="pitch" min="0.5" max="2" value="1" step="0.1">
+                </div>
+
+                <div class="input-group">
+                    <label for="volume">Volume: <span id="volume-value">100%</span></label>
+                    <input type="range" id="volume" min="0" max="1" value="1" step="0.1">
+                </div>
             </div>
-            
-            <button id="speak-button" class="tech-button">Speak</button>
+
+            <div class="action-buttons">
+                <button id="preview-voice" class="tech-button small">Preview Voice</button>
+                <button id="speak-button" class="tech-button">Speak</button>
+                <button id="download-audio" class="tech-button small">Download Audio</button>
+            </div>
+
+            <div class="progress-container hidden">
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <span class="progress-text">0%</span>
+            </div>
+
+            <div class="history-section">
+                <h3>Recent Texts</h3>
+                <div id="history-list" class="history-list"></div>
+            </div>
+
+            <div class="templates-section">
+                <h3>Templates</h3>
+                <div class="template-buttons">
+                    <button class="tech-button small" data-template="greeting">Greeting</button>
+                    <button class="tech-button small" data-template="introduction">Introduction</button>
+                    <button class="tech-button small" data-template="farewell">Farewell</button>
+                </div>
+            </div>
         </div>
     </div>
     <script src="../js/common.js"></script>
-    <script src="../js/text-to-speech.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/languagedetect/languagedetect.js"></script>
+    <script src="../js/features/text-to-speech.js"></script>
 </body>
 </html>

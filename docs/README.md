@@ -1,121 +1,154 @@
 # Digital Services Hub
 
-Welcome to the Digital Services Hub repository! This project contains a set of web tools designed to enhance digital experiences. Below you'll find details about the different themes available, features, and usage instructions.
-
-## Documentation
-
-- [README](docs/README.md)
-- [Future Features](docs/FUTURE-FEATURES.md)
-
-## Repository Stats
-
-![GitHub Stars](https://img.shields.io/github/stars/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![GitHub Forks](https://img.shields.io/github/forks/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Watchers](https://img.shields.io/github/watchers/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Contributors](https://img.shields.io/github/contributors/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Open Issues](https://img.shields.io/github/issues-raw/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Closed Issues](https://img.shields.io/github/issues-closed-raw/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Pull Requests](https://img.shields.io/github/issues-pr/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Last Commit](https://img.shields.io/github/last-commit/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Commit Activity](https://img.shields.io/github/commit-activity/m/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![License](https://img.shields.io/github/license/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Code Size](https://img.shields.io/github/languages/code-size/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Repository Size](https://img.shields.io/github/repo-size/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Language Count](https://img.shields.io/github/languages/count/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-![Top Language](https://img.shields.io/github/languages/top/TMHSDigital/Digital_Services.HUB?style=for-the-badge)
-
-## Themes
-
-> ### [![Cutting-Edge-Theme](https://img.shields.io/badge/Cutting--Edge-Theme-blue?style=for-the-badge)](https://github.com/TMHSDigital/Digital_Services.HUB/tree/Cutting-Edge-Theme)
-> ___A futuristic and vibrant theme with glowing elements and modern design aesthetics.___
-
-___
-
-> ### [![Minimalistic-Theme](https://img.shields.io/badge/Minimalistic-Theme-green?style=for-the-badge)](https://github.com/TMHSDigital/Digital_Services.HUB/tree/Minimalistic-Theme)
-> ___A clean and simple theme focused on usability and minimalist design principles.___
+A modern web-based platform offering various digital tools and services, built with a focus on modularity, accessibility, and user experience.
 
 ## Features
 
-- **Image Resizer:** Easily resize images by specifying width and height.
-- **Color Palette Generator:** Create and explore various color palettes for design projects.
-- **ASCII Art Converter:** Transform text into ASCII masterpieces.
-- **QR Code Generator:** Create custom QR codes for various purposes.
+1. **Text to Speech**
+   - Convert text to natural-sounding speech
+   - Multiple voices and languages
+   - Adjustable speed, pitch, and volume
+   - Save and load history
+   - Export audio files
 
-## 🚀 Upcoming Features
+2. **Image Resizer**
+   - Resize images with aspect ratio preservation
+   - Multiple output formats
+   - Quality control
+   - Drag and drop support
+   - Preview functionality
 
-We're constantly innovating! Check out our [Future Features Roadmap](docs/FUTURE-FEATURES.md) for exciting upcoming additions.
+3. **Color Palette**
+   - Generate color harmonies
+   - Save and load palettes
+   - Export in multiple formats (HEX, RGB, CSS)
+   - Color picker with gradient
+   - Real-time preview
 
-## Usage
+4. **ASCII Art**
+   - Convert images to ASCII art
+   - Multiple character sets
+   - Color support
+   - Size customization
+   - Export functionality
 
-<details>
-<summary><strong>How to Use</strong></summary>
+5. **QR Code**
+   - Generate customizable QR codes
+   - Error correction levels
+   - Custom colors and size
+   - Real-time preview
+   - Download as PNG
 
-### General Usage Instructions:
+## Getting Started
 
-1. **Visit the GitHub Pages Site:**
-   Click on the button below to visit our GitHub Pages site where all tools are hosted:
-   <p align="center">
-     <a href="https://tmhsdigital.github.io/Digital_Services.HUB/" target="_blank">
-       <img src="https://img.shields.io/badge/Visit-Site-brightgreen?style=for-the-badge" alt="Visit Site">
-     </a>
-   </p>
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/digital-services-hub.git
+   ```
 
-2. **Select a Theme:**
-   Choose your preferred theme from the available options. Each theme offers a unique look and feel to enhance your user experience.
+2. Open index.html in your browser or set up a local server:
+   ```bash
+   python -m http.server 8000
+   ```
 
-3. **Navigate to the Desired Tool:**
-   Browse through the list of available tools. Click on the tool you want to use. Each tool is designed to be intuitive and user-friendly.
+3. Visit http://localhost:8000 in your browser
 
-4. **Follow On-Screen Instructions:**
-   Each tool comes with its own set of instructions. Follow these instructions to utilize the tool effectively. For instance:
-   
-   - **Image Resizer:** Upload an image, specify the desired width and height, and click "Resize" to get the resized image.
-   - **Color Palette Generator:** Choose or input base colors, and the tool will generate a palette of complementary colors.
-   - **ASCII Art Converter:** Input your text, choose formatting options, and click "Convert" to generate ASCII art.
-   - **QR Code Generator:** Input the data you want encoded, choose customization options, and generate the QR code.
+## Architecture
 
-5. **Enjoy Enhanced Digital Experience:**
-   Utilize the results as needed. Download images, copy text, or use the generated content in your projects.
+### Base Tool Class
+All tools extend the BaseTool class which provides:
+- Theme management
+- File handling
+- Notifications
+- Keyboard shortcuts
+- Error handling
 
-### Detailed Tool Instructions:
+### Utility Modules
+- **constants.js**: Configuration values
+- **helpers.js**: Common functions
+- **validation.js**: Input validation
+- **ui.js**: UI components
 
-#### Image Resizer:
-- **Upload an Image:** Click on the "Upload" button to select an image from your device.
-- **Specify Dimensions:** Enter the desired width and height for the image.
-- **Resize:** Click "Resize" to process the image. The resized image will be available for download.
+### Features
+Each tool is implemented as a module with:
+- Consistent interface
+- Error handling
+- Accessibility support
+- Keyboard navigation
+- Theme support
 
-#### Color Palette Generator:
-- **Select Base Colors:** Either select colors using a color picker or input hex values.
-- **Generate Palette:** Click "Generate" to see a palette of complementary colors.
-- **Explore Variations:** Adjust the base colors and regenerate as needed.
+## Keyboard Shortcuts
 
-#### ASCII Art Converter:
-- **Input Text:** Type or paste the text you want to convert.
-- **Choose Options:** Select font style, size, and other formatting options.
-- **Convert:** Click "Convert" to see your text in ASCII art format. Copy the art for use.
+### Global
+- `Alt + 1-5`: Navigate to tools
+- `Ctrl + T`: Toggle theme
 
-#### QR Code Generator:
-- **Input Data:** Enter the URL or text you want to encode in the QR code.
-- **Customize:** Choose color, size, and error correction level.
-- **Generate:** Click "Generate" to create the QR code. Download or share it directly.
+### Text to Speech
+- `Ctrl + Enter`: Start/Stop speech
+- `Ctrl + S`: Save text
 
-</details>
+### Image Resizer
+- `Ctrl + S`: Download image
+- `Ctrl + L`: Toggle aspect ratio lock
 
-## Connect
+### Color Palette
+- `Ctrl + S`: Save palette
+- `Ctrl + E`: Export colors
+- `Ctrl + G`: Generate harmony
 
-<details>
-<summary><strong>Get in Touch</strong></summary>
-<p align="center">
-  <a href="https://github.com/TMHSDigital" target="_blank">
-    <img src="https://img.shields.io/badge/GitHub-Profile-lightgrey?style=for-the-badge" alt="GitHub Profile">
-  </a>
-</p>
-</details>
+### ASCII Art
+- `Ctrl + G`: Generate art
+- `Ctrl + C`: Copy to clipboard
+- `Ctrl + S`: Download result
+
+### QR Code
+- `Ctrl + G`: Generate code
+- `Ctrl + S`: Download QR code
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Development
+
+### Prerequisites
+- Modern web browser
+- Text editor
+- Basic understanding of HTML, CSS, and JavaScript
+
+### Project Structure
+```
+digital-services-hub/
+├── css/
+│   ├── components/
+│   ├── themes/
+│   └── utils/
+├── js/
+│   ├── features/
+│   └── utils/
+├── pages/
+└── index.html
+```
+
+### Adding New Features
+1. Create feature files:
+   - `js/features/your-feature.js`
+   - `css/components/your-feature.css`
+   - `pages/your-feature.html`
+2. Extend BaseTool class
+3. Add to navigation
+4. Update documentation
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 
-<details>
-<summary><strong>MIT License</strong></summary>
-<p>This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.</p>
-</details>
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

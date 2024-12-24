@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Digital Services Hub</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="neon-text">QR Code Generator</h1>
+        
+        <nav id="main-nav"></nav>
+
+        <div class="content">
+            <div class="theme-toggle">
+                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+            </div>
+
+            <div class="qr-controls">
+                <div class="input-group">
+                    <label for="text-input">Text or URL:</label>
+                    <textarea 
+                        id="text-input" 
+                        rows="3" 
+                        placeholder="Enter text or URL to generate QR code"
+                        aria-label="Enter text or URL to generate QR code"
+                    ></textarea>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="input-group">
+                        <label for="size-input">Size (px):</label>
+                        <input 
+                            type="number" 
+                            id="size-input" 
+                            value="256" 
+                            min="128" 
+                            max="1024" 
+                            step="32"
+                            aria-label="QR code size in pixels"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="error-correction-select">Error Correction:</label>
+                        <select 
+                            id="error-correction-select"
+                            aria-label="Error correction level"
+                        >
+                            <option value="L">Low (7%)</option>
+                            <option value="M">Medium (15%)</option>
+                            <option value="Q">Quartile (25%)</option>
+                            <option value="H" selected>High (30%)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="dark-color-input">Dark Color:</label>
+                        <input 
+                            type="color" 
+                            id="dark-color-input" 
+                            value="#000000"
+                            aria-label="QR code dark color"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="light-color-input">Light Color:</label>
+                        <input 
+                            type="color" 
+                            id="light-color-input" 
+                            value="#ffffff"
+                            aria-label="QR code light color"
+                        >
+                    </div>
+                </div>
+
+                <button id="generate-button" class="tech-button">Generate QR Code</button>
+
+                <div class="output-container">
+                    <div id="qr-container" class="qr-output" role="img" aria-label="Generated QR code"></div>
+                    
+                    <div class="output-actions">
+                        <button id="download-button" class="tech-button small" disabled>Download QR Code</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" role="alert" aria-live="polite"></div>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/features/qr-code.js"></script>
+</body>
+</html> 
