@@ -6,6 +6,7 @@
     <title>Digital Services Hub - Web Tools for Digital Tasks</title>
     <meta name="description" content="A collection of free web-based tools for everyday digital tasks including text-to-speech, image resizing, color palettes, ASCII art, QR codes, and secure password generation.">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components/about.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -22,38 +23,137 @@
             </div>
         </nav>
         <div class="hero-content">
-            <h2 class="hero-title">Welcome to Digital Services Hub</h2>
-            <p class="hero-subtitle">Free web-based tools for your digital tasks</p>
+            <h2 class="hero-title">Digital Services Hub</h2>
+            <p class="hero-subtitle">Empowering users with modern web tools</p>
         </div>
     </header>
 
     <main class="container">
-        <!-- Tool categories will be dynamically generated here -->
-        <div id="tools-container"></div>
+        <!-- Mission Section -->
+        <section class="mission-section">
+            <div class="section-content">
+                <h2>Our Mission</h2>
+                <p>Digital Services Hub is dedicated to providing free, accessible, and powerful web-based tools for everyday digital tasks. We believe that quality digital tools should be available to everyone, regardless of technical expertise or budget.</p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">7+</span>
+                        <span class="stat-label">Tools</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Free</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Ads</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <section class="features">
-            <h2>Why Choose Digital Services Hub?</h2>
+        <!-- Tools Section -->
+        <section class="tools-section">
+            <h2>Our Tools</h2>
+            <!-- Tool categories will be dynamically generated here -->
+            <div id="tools-container"></div>
+        </section>
+
+        <!-- Technologies Section -->
+        <section class="tech-section">
+            <h2>Technologies</h2>
+            <div class="tech-stack">
+                <div class="tech-category">
+                    <h3>Frontend</h3>
+                    <ul class="tech-list">
+                        <li><i class="fab fa-html5"></i> HTML5</li>
+                        <li><i class="fab fa-css3-alt"></i> CSS3</li>
+                        <li><i class="fab fa-js"></i> JavaScript (ES6+)</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Libraries</h3>
+                    <ul class="tech-list">
+                        <li><i class="fas fa-palette"></i> Web Speech API</li>
+                        <li><i class="fas fa-image"></i> Canvas API</li>
+                        <li><i class="fas fa-file"></i> File API</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Tools</h3>
+                    <ul class="tech-list">
+                        <li><i class="fab fa-git-alt"></i> Git</li>
+                        <li><i class="fab fa-github"></i> GitHub</li>
+                        <li><i class="fas fa-code"></i> VS Code</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>Key Features</h2>
             <div class="features-grid">
-                <div class="feature">
-                    <i class="fas fa-bolt"></i>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
                     <h3>Fast & Efficient</h3>
-                    <p>All tools are optimized for speed and performance.</p>
+                    <p>All tools are optimized for speed and performance, ensuring quick results without delays.</p>
                 </div>
-                <div class="feature">
-                    <i class="fas fa-lock"></i>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
                     <h3>Secure</h3>
-                    <p>Your data stays in your browser, no server uploads needed.</p>
+                    <p>Your data stays in your browser. No server uploads, no tracking, complete privacy.</p>
                 </div>
-                <div class="feature">
-                    <i class="fas fa-universal-access"></i>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-universal-access"></i>
+                    </div>
                     <h3>Accessible</h3>
-                    <p>Built with accessibility in mind for all users.</p>
+                    <p>Built with accessibility in mind, following WCAG guidelines for all users.</p>
                 </div>
-                <div class="feature">
-                    <i class="fas fa-mobile-alt"></i>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
                     <h3>Responsive</h3>
-                    <p>Works seamlessly on desktop and mobile devices.</p>
+                    <p>Works seamlessly across all devices and screen sizes.</p>
                 </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Open Source</h3>
+                    <p>Fully open source and free to use, modify, and distribute.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <h3>Regular Updates</h3>
+                    <p>Continuously improved with new features and security updates.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contribution Section -->
+        <section class="contribute-section">
+            <h2>Contribute</h2>
+            <p>Digital Services Hub is an open-source project. We welcome contributions from developers of all skill levels.</p>
+            <div class="contribute-links">
+                <a href="https://github.com/TMHDigital/Digital_Services.HUB" class="tech-button" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i> GitHub Repository
+                </a>
+                <a href="https://github.com/TMHDigital/Digital_Services.HUB/issues" class="tech-button" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-bug"></i> Report Issues
+                </a>
             </div>
         </section>
     </main>
@@ -67,7 +167,6 @@
             <div class="footer-section">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="pages/about.html">About</a></li>
                     <li><a href="https://github.com/TMHDigital/Digital_Services.HUB">GitHub</a></li>
                 </ul>
             </div>
@@ -84,6 +183,6 @@
         </div>
     </footer>
 
-    <script src="js/common.js" type="module"></script>
+    <script src="js/features/about.js" type="module"></script>
 </body>
 </html>
