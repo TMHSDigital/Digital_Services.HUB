@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech Converter - Digital Services Hub</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="neon-text">Text-to-Speech Converter</h1>
+        
+        <nav id="main-nav"></nav>
+
+        <div class="content">
+            <div class="input-group">
+                <label for="text-input">Enter Text:</label>
+                <textarea id="text-input" rows="5" placeholder="Enter text to convert to speech"></textarea>
+            </div>
+            
+            <div class="input-group">
+                <label for="voice-select">Select Voice:</label>
+                <select id="voice-select"></select>
+            </div>
+            
+            <button id="speak-button" class="tech-button">Speak</button>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+    <script src="../js/text-to-speech.js"></script>
+</body>
+</html>

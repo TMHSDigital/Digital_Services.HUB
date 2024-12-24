@@ -1,31 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Services Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1 id="digital-services-hub" class="neon-text">Digital Services Hub</h1>
+document.addEventListener('DOMContentLoaded', () => {
+    const textInput = document.getElementById('text-input');
+    const voiceSelect = document.getElementById('voice-select');
+    const speakButton = document.getElementById('speak-button');
+    let voices = [];
+    let synthesis = window.speechSynthesis;
 
-        <div class="content">
-            <p class="welcome-text">Welcome to our Digital Services Hub!</p>
+    // Function to populate voice list
+    function populateVoiceList() {
+        voices = synthesis.getVoices();
+        voiceSelect.innerHTML = '';
+        
+        voices.forEach((voice, index) => {
+            const option = document.createElement('option');
+            option.textContent = `${voice.name} (${voice.lang})`;
+            option.value = index;
+            voiceSelect.appendChild(option);
+        });
+    }
 
-            <p>We offer a range of free tools to help with your digital media needs:</p>
+    // Initialize voices
+    populateVoiceList();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoiceList;
+    }
 
-            <ul class="services-list">
-                <li><a href="pages/image-resizer.html">Futuristic Image Resizer</a></li>
-                <li><a href="pages/color-palette.html">Color Palette Generator</a></li>
-                <li><a href="pages/ascii-art.html">ASCII Art Converter</a></li>
-                <li><a href="pages/qr-generator.html">QR Code Generator</a></li>
-                <li><a href="pages/text-to-speech.html">Text-to-Speech Converter</a></li>
-            </ul>
+    // Speak function
+    function speak() {
+        if (synthesis.speaking) {
+            synthesis.cancel();
+        }
 
-            <p class="cta-text">Choose a service above to get started, or visit our <a href="pages/about.html">About page</a> to learn more.</p>
-        </div>
-    </div>
-</body>
-</html>
+        const text = textInput.value.trim();
+        if (!text) {
+            alert('Please enter some text to speak.');
+            return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        const selectedVoice = voices[voiceSelect.value];
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        }
+
+        // Add event handlers
+        utterance.onstart = () => {
+            speakButton.textContent = 'Stop';
+            speakButton.classList.add('speaking');
+        };
+
+        utterance.onend = () => {
+            speakButton.textContent = 'Speak';
+            speakButton.classList.remove('speaking');
+        };
+
+        utterance.onerror = (event) => {
+            console.error('SpeechSynthesis Error:', event);
+            speakButton.textContent = 'Speak';
+            speakButton.classList.remove('speaking');
+        };
+
+        synthesis.speak(utterance);
+    }
+
+    // Event listeners
+    speakButton.addEventListener('click', () => {
+        if (synthesis.speaking) {
+            synthesis.cancel();
+            speakButton.textContent = 'Speak';
+            speakButton.classList.remove('speaking');
+        } else {
+            speak();
+        }
+    });
+
+    // Add keyboard shortcuts
+    textInput.addEventListener('keydown', (e) => {
+        // Ctrl/Cmd + Enter to speak
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            speak();
+        }
+    });
+});
