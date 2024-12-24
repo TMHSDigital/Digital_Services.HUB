@@ -2,8 +2,9 @@ import { BaseTool } from './base-tool.js';
 import { notifications } from '../utils/ui.js';
 import { STORAGE_KEYS, UI_CONSTANTS, KEYBOARD_SHORTCUTS } from '../utils/constants.js';
 import utils from '../utils/helpers.js';
+import { showNotification } from '../utils/ui.js';
 
-class TextToSpeech extends BaseTool {
+class TextToSpeech {
     constructor() {
         this.initializeElements();
         this.initializeState();
@@ -150,9 +151,19 @@ class TextToSpeech extends BaseTool {
     }
 
     detectLanguage(text) {
-        const lngDetector = new LanguageDetector();
-        const [detected] = lngDetector.detect(text, 1);
-        return detected ? detected[0].toUpperCase() : 'Unknown';
+        // Simple language detection based on character sets
+        const hasChineseChars = /[\u4e00-\u9fff]/.test(text);
+        const hasJapaneseChars = /[\u3040-\u309f\u30a0-\u30ff]/.test(text);
+        const hasKoreanChars = /[\uac00-\ud7af\u1100-\u11ff]/.test(text);
+        const hasCyrillicChars = /[\u0400-\u04FF]/.test(text);
+        
+        if (hasChineseChars) return 'zh-CN';
+        if (hasJapaneseChars) return 'ja-JP';
+        if (hasKoreanChars) return 'ko-KR';
+        if (hasCyrillicChars) return 'ru-RU';
+        
+        // Default to English if no specific characters are detected
+        return 'en-US';
     }
 
     updateControlValue(control, input, display) {
