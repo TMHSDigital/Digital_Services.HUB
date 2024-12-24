@@ -1,4 +1,206 @@
-<!DOCTYPE html>
+import { TOOLS } from '../js/config/tools.js';
+import { generateToolPage } from '../js/utils/template-generator.js';
+import fs from 'fs/promises';
+import path from 'path';
+
+async function buildToolPages() {
+    try {
+        // Ensure pages directory exists
+        await fs.mkdir('pages', { recursive: true });
+
+        // Generate each tool page
+        for (const tool of TOOLS) {
+            const pageContent = generateToolPage(tool.id);
+            await fs.writeFile(
+                path.join('pages', tool.path),
+                pageContent,
+                'utf-8'
+            );
+            console.log(`Generated ${tool.path}`);
+        }
+
+        // Generate index page
+        await generateIndexPage();
+        console.log('Generated index.html');
+
+        // Generate about page
+        await generateAboutPage();
+        console.log('Generated about.html');
+
+        // Ensure all required CSS files exist
+        await ensureToolStyles();
+        console.log('Verified tool styles');
+
+        // Ensure all required JS files exist
+        await ensureToolScripts();
+        console.log('Verified tool scripts');
+
+    } catch (error) {
+        console.error('Build failed:', error);
+        process.exit(1);
+    }
+}
+
+async function ensureToolStyles() {
+    const cssDir = path.join('css', 'components');
+    await fs.mkdir(cssDir, { recursive: true });
+
+    for (const tool of TOOLS) {
+        const cssPath = path.join(cssDir, `${tool.id}.css`);
+        try {
+            await fs.access(cssPath);
+        } catch {
+            // Create empty CSS file if it doesn't exist
+            await fs.writeFile(cssPath, '/* Styles for ' + tool.name + ' */\n', 'utf-8');
+            console.log(`Created empty CSS file for ${tool.id}`);
+        }
+    }
+}
+
+async function ensureToolScripts() {
+    const jsDir = path.join('js', 'features');
+    await fs.mkdir(jsDir, { recursive: true });
+
+    for (const tool of TOOLS) {
+        const jsPath = path.join(jsDir, `${tool.id}.js`);
+        try {
+            await fs.access(jsPath);
+        } catch {
+            // Create basic JS file if it doesn't exist
+            const basicScript = `import { BaseTool } from './base-tool.js';
+
+class ${toPascalCase(tool.id)} extends BaseTool {
+    constructor() {
+        super();
+        this.initializeElements();
+        this.setupEventListeners();
+    }
+
+    initializeElements() {
+        // Initialize tool elements
+    }
+
+    setupEventListeners() {
+        // Setup event listeners
+    }
+}
+
+// Initialize the tool
+const ${toCamelCase(tool.id)} = new ${toPascalCase(tool.id)}();
+`;
+            await fs.writeFile(jsPath, basicScript, 'utf-8');
+            console.log(`Created basic JS file for ${tool.id}`);
+        }
+    }
+}
+
+function toPascalCase(str) {
+    return str.split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
+}
+
+function toCamelCase(str) {
+    const pascal = toPascalCase(str);
+    return pascal.charAt(0).toLowerCase() + pascal.slice(1);
+}
+
+async function generateIndexPage() {
+    const indexContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Services Hub - Web Tools for Digital Tasks</title>
+    <meta name="description" content="A collection of free web-based tools for everyday digital tasks including text-to-speech, image resizing, color palettes, ASCII art, QR codes, and secure password generation.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <h1>Digital Services Hub</h1>
+            </div>
+            <div class="theme-toggle">
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">Welcome to Digital Services Hub</h2>
+            <p class="hero-subtitle">Free web-based tools for your digital tasks</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Tool categories will be dynamically generated here -->
+        <div id="tools-container"></div>
+
+        <section class="features">
+            <h2>Why Choose Digital Services Hub?</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Fast & Efficient</h3>
+                    <p>All tools are optimized for speed and performance.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-lock"></i>
+                    <h3>Secure</h3>
+                    <p>Your data stays in your browser, no server uploads needed.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-universal-access"></i>
+                    <h3>Accessible</h3>
+                    <p>Built with accessibility in mind for all users.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Responsive</h3>
+                    <p>Works seamlessly on desktop and mobile devices.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Digital Services Hub</h4>
+                <p>Free web-based tools for everyday digital tasks.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="pages/about.html">About</a></li>
+                    <li><a href="https://github.com/TMHDigital/Digital_Services.HUB">GitHub</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Digital Services Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/common.js" type="module"></script>
+</body>
+</html>`;
+
+    await fs.writeFile('index.html', indexContent, 'utf-8');
+}
+
+async function generateAboutPage() {
+    const aboutContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -38,11 +240,11 @@
                 <p>Digital Services Hub is dedicated to providing free, accessible, and powerful web-based tools for everyday digital tasks. We believe that quality digital tools should be available to everyone, regardless of technical expertise or budget.</p>
                 <div class="stats-grid">
                     <div class="stat-item">
-                        <span class="stat-number">7+</span>
+                        <span class="stat-number">${TOOLS.length}+</span>
                         <span class="stat-label">Tools</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">100%</span>
+                        <span class="stat-number">100</span>
                         <span class="stat-label">Free</span>
                     </div>
                     <div class="stat-item">
@@ -188,4 +390,12 @@
 
     <script src="../js/features/about.js" type="module"></script>
 </body>
-</html>
+</html>`;
+
+    await fs.writeFile(path.join('pages', 'about.html'), aboutContent, 'utf-8');
+}
+
+// Run the build process
+buildToolPages().then(() => {
+    console.log('Build completed successfully!');
+}); 
