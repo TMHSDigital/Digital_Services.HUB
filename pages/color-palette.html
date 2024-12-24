@@ -4,59 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Palette Generator - Digital Services Hub</title>
+    <meta name="description" content="Generate beautiful color harmonies for your designs with advanced color theory algorithms.">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/color-palette.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="neon-text">Color Palette Generator</h1>
-        
-        <nav id="main-nav"></nav>
-
-        <div class="content">
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <h1>Digital Services Hub</h1>
+                </a>
+            </div>
             <div class="theme-toggle">
-                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
+        </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">Color Palette Generator</h2>
+            <p class="hero-subtitle">Create harmonious color schemes for your designs</p>
+        </div>
+    </header>
 
-            <div class="palette-controls">
+    <main class="container">
+        <div class="palette-controls">
+            <!-- Color Picker Section -->
+            <div class="color-picker-section">
                 <div class="color-picker-container">
-                    <canvas></canvas>
+                    <div class="color-wheel" id="color-wheel" role="application" aria-label="Color wheel picker"></div>
+                    <div class="color-sliders">
+                        <div class="input-group">
+                            <label for="hue">Hue: <span id="hue-value">0°</span></label>
+                            <input type="range" id="hue" min="0" max="360" value="0" aria-label="Adjust hue value">
+                        </div>
+                        <div class="input-group">
+                            <label for="saturation">Saturation: <span id="saturation-value">100%</span></label>
+                            <input type="range" id="saturation" min="0" max="100" value="100" aria-label="Adjust saturation value">
+                        </div>
+                        <div class="input-group">
+                            <label for="lightness">Lightness: <span id="lightness-value">50%</span></label>
+                            <input type="range" id="lightness" min="0" max="100" value="50" aria-label="Adjust lightness value">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="harmony">Color Harmony:</label>
-                    <select id="harmony">
-                        <option value="complementary">Complementary</option>
-                        <option value="analogous">Analogous</option>
-                        <option value="triadic">Triadic</option>
-                        <option value="split-complementary">Split Complementary</option>
-                        <option value="tetradic">Tetradic</option>
-                    </select>
-                    <button id="generate-button" class="tech-button">Generate Harmony</button>
+                <!-- Harmony Controls -->
+                <div class="harmony-controls">
+                    <div class="input-group">
+                        <label for="harmony">Color Harmony:</label>
+                        <select id="harmony" aria-label="Select color harmony type">
+                            <option value="complementary">Complementary</option>
+                            <option value="analogous">Analogous</option>
+                            <option value="triadic">Triadic</option>
+                            <option value="split-complementary">Split Complementary</option>
+                            <option value="tetradic">Tetradic (Double Complementary)</option>
+                            <option value="monochromatic">Monochromatic</option>
+                        </select>
+                    </div>
+                    <button id="generate-button" class="primary-button" aria-label="Generate color harmony">
+                        <i class="fas fa-magic" aria-hidden="true"></i>
+                        Generate Harmony
+                    </button>
+                    <button id="random-button" class="secondary-button" aria-label="Generate random colors">
+                        <i class="fas fa-random" aria-hidden="true"></i>
+                        Random Colors
+                    </button>
                 </div>
             </div>
 
-            <div class="selected-colors"></div>
-
-            <div class="palette-actions">
-                <button id="save-button" class="tech-button">Save Palette</button>
-                <div class="export-options">
-                    <button class="tech-button small" data-format="hex">Copy HEX</button>
-                    <button class="tech-button small" data-format="rgb">Copy RGB</button>
-                    <button class="tech-button small" data-format="css">Copy CSS Variables</button>
+            <!-- Generated Palette -->
+            <div class="generated-palette" id="generated-palette">
+                <div class="palette-header">
+                    <h3>Generated Palette</h3>
+                    <div class="palette-actions">
+                        <button id="save-button" class="primary-button small" aria-label="Save current palette">
+                            <i class="fas fa-save" aria-hidden="true"></i>
+                            Save Palette
+                        </button>
+                        <div class="export-dropdown">
+                            <button class="secondary-button small" id="export-button" aria-label="Export color values">
+                                <i class="fas fa-download" aria-hidden="true"></i>
+                                Export
+                            </button>
+                            <div class="export-menu" role="menu">
+                                <button data-format="hex" role="menuitem">Copy HEX Values</button>
+                                <button data-format="rgb" role="menuitem">Copy RGB Values</button>
+                                <button data-format="hsl" role="menuitem">Copy HSL Values</button>
+                                <button data-format="css" role="menuitem">Copy CSS Variables</button>
+                                <button data-format="sass" role="menuitem">Copy SASS Variables</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="color-swatches" id="color-swatches" role="list" aria-label="Generated color swatches"></div>
             </div>
 
+            <!-- Saved Palettes -->
             <div class="saved-palettes">
-                <h3>Saved Palettes</h3>
-                <div class="saved-palette-grid"></div>
+                <div class="saved-header">
+                    <h3>Saved Palettes</h3>
+                    <button id="clear-saved" class="secondary-button small" aria-label="Clear all saved palettes">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                        Clear All
+                    </button>
+                </div>
+                <div class="saved-palette-grid" id="saved-palette-grid" role="list" aria-label="Saved color palettes"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Color Info Modal -->
+    <div class="modal" id="color-modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Color Information</h3>
+                <button class="close-modal" aria-label="Close color information">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="color-preview" role="img" aria-label="Color preview"></div>
+                <div class="color-values">
+                    <div class="input-group">
+                        <label for="hex-value">HEX:</label>
+                        <input type="text" id="hex-value" class="hex-value" readonly aria-label="HEX color value">
+                        <button class="copy-button" data-type="hex" aria-label="Copy HEX value">
+                            <i class="fas fa-copy" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <label for="rgb-value">RGB:</label>
+                        <input type="text" id="rgb-value" class="rgb-value" readonly aria-label="RGB color value">
+                        <button class="copy-button" data-type="rgb" aria-label="Copy RGB value">
+                            <i class="fas fa-copy" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <label for="hsl-value">HSL:</label>
+                        <input type="text" id="hsl-value" class="hsl-value" readonly aria-label="HSL color value">
+                        <button class="copy-button" data-type="hsl" aria-label="Copy HSL value">
+                            <i class="fas fa-copy" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="notification"></div>
+    <div class="notification" role="alert" aria-live="polite"></div>
 
-    <script src="../js/common.js"></script>
+    <!-- Load color wheel library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iro.js/5.5.2/iro.min.js"></script>
+    <!-- Load our scripts -->
     <script src="../js/features/color-palette.js"></script>
 </body>
 </html>

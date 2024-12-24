@@ -52,6 +52,7 @@ digital-services-hub/
 │   │   ├── ascii-art.css
 │   │   ├── color-palette.css
 │   │   ├── image-resizer.css
+│   │   ├── password-generator.css
 │   │   ├── qr-code.css
 │   │   └── text-to-speech.css
 │   ├── themes/
@@ -65,6 +66,7 @@ digital-services-hub/
 │   │   ├── ascii-art.js
 │   │   ├── color-palette.js
 │   │   ├── image-resizer.js
+│   │   ├── password-generator.js
 │   │   ├── qr-code.js
 │   │   └── text-to-speech.js
 │   └── utils/
@@ -76,6 +78,7 @@ digital-services-hub/
 │   ├── ascii-art.html
 │   ├── color-palette.html
 │   ├── image-resizer.html
+│   ├── password-generator.html
 │   ├── qr-code.html
 │   └── text-to-speech.html
 └── index.html
@@ -127,6 +130,16 @@ digital-services-hub/
        generateCode() { /* ... */ }
        updateOptions() { /* ... */ }
        downloadQR() { /* ... */ }
+   }
+   ```
+
+6. **Password Generator**
+   ```javascript
+   class PasswordGenerator extends BaseTool {
+       generatePassword() { /* ... */ }
+       calculateStrength() { /* ... */ }
+       updateRequirements() { /* ... */ }
+       saveToHistory() { /* ... */ }
    }
    ```
 

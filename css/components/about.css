@@ -1,150 +1,269 @@
-.about-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+/* Mission Section */
+.mission-section {
+    text-align: center;
+    padding: 4rem 0;
+    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1), rgba(var(--secondary-color-rgb), 0.1));
+    border-radius: 10px;
+    margin-bottom: 3rem;
 }
 
-.about-section {
-    text-align: center;
+.section-content {
     max-width: 800px;
     margin: 0 auto;
+    padding: 0 2rem;
 }
 
-.about-section p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: var(--text-color);
-}
-
-.features-section {
-    padding: 2rem 0;
-}
-
-.feature-grid {
+.stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
 }
 
-.feature-card {
-    background-color: var(--container-bg);
-    border: 2px solid var(--accent-color);
-    border-radius: 10px;
-    padding: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, var(--accent-color-transparent), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
 }
 
-.feature-card:hover::before,
-.feature-card.hover::before {
-    opacity: 0.1;
+.stat-label {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    opacity: 0.8;
 }
 
-.feature-card:hover,
-.feature-card.hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px var(--shadow-color);
+/* Tools Section */
+.tools-section {
+    margin-bottom: 3rem;
 }
 
-.feature-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.feature-card h3 {
-    color: var(--accent-color);
-    margin: 0.5rem 0;
-}
-
-.feature-card p {
-    font-size: 0.9rem;
-    color: var(--text-color);
-    margin: 0;
-}
-
-.tech-section {
-    background-color: var(--container-bg);
-    border-radius: 10px;
-    padding: 2rem;
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
     margin-top: 2rem;
 }
 
-.tech-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    list-style: none;
-    padding: 0;
-    margin: 1rem 0;
-}
-
-.tech-list li {
-    background-color: var(--input-bg);
-    padding: 0.8rem;
-    border-radius: 5px;
-    text-align: center;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
-    color: var(--accent-color);
-}
-
-.info-section {
-    text-align: center;
+.tool-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
     padding: 2rem;
-    background-color: var(--container-bg);
+    text-align: center;
+    transition: var(--transition);
+}
+
+.tool-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.tool-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+}
+
+.tool-icon i {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+}
+
+.tool-item h3 {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.tool-item p {
+    margin-bottom: 1.5rem;
+    color: var(--text-light);
+    opacity: 0.8;
+}
+
+/* Technologies Section */
+.tech-section {
+    margin-bottom: 3rem;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
 }
 
-.version-info {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--accent-color);
-    margin: 1rem 0;
+.tech-stack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
 }
 
-.version-info p {
-    margin: 0.5rem 0;
+.tech-category h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
 }
 
+.tech-list {
+    list-style: none;
+    padding: 0;
+}
+
+.tech-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.tech-list li i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+/* Features Section */
+.features-section {
+    margin-bottom: 3rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.feature-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+}
+
+.feature-icon i {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+.feature-item h3 {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.feature-item p {
+    color: var(--text-light);
+    opacity: 0.8;
+}
+
+/* Contribution Section */
+.contribute-section {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1), rgba(var(--secondary-color-rgb), 0.1));
+    border-radius: 10px;
+    margin-bottom: 3rem;
+}
+
+.contribute-section p {
+    max-width: 600px;
+    margin: 1rem auto 2rem;
+    color: var(--text-light);
+    opacity: 0.8;
+}
+
+.contribute-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.contribute-links .tech-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tool-item,
+.feature-item,
+.stat-item {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+.tool-item:nth-child(2),
+.feature-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.tool-item:nth-child(3),
+.feature-item:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .feature-grid {
+    .stats-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
-    
-    .tech-list {
-        grid-template-columns: 1fr 1fr;
-    }
-    
-    .about-section p {
-        font-size: 1rem;
-    }
-}
 
-@media (max-width: 480px) {
-    .tech-list {
+    .tools-grid,
+    .features-grid {
         grid-template-columns: 1fr;
     }
-    
-    .feature-icon {
-        font-size: 2rem;
+
+    .tech-stack {
+        grid-template-columns: 1fr;
     }
-    
-    .feature-card {
-        padding: 1rem;
+
+    .section-content {
+        padding: 0 1rem;
+    }
+
+    .contribute-links {
+        flex-direction: column;
+    }
+
+    .contribute-links .tech-button {
+        width: 100%;
     }
 } 

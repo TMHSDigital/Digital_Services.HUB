@@ -4,318 +4,430 @@ import { STORAGE_KEYS, UI_CONSTANTS } from '../utils/constants.js';
 import utils from '../utils/helpers.js';
 
 class ColorPalette extends BaseTool {
-    initializeElements() {
-        return {
-            colorPicker: document.querySelector('.color-picker-container canvas'),
-            paletteContainer: document.querySelector('.palette-container'),
-            selectedColors: document.querySelector('.selected-colors'),
-            harmonySelect: document.getElementById('harmony'),
-            generateButton: document.getElementById('generate-button'),
-            saveButton: document.getElementById('save-button'),
-            exportButton: document.getElementById('export-button'),
-            savedPalettes: document.querySelector('.saved-palette-grid'),
-            themeButton: document.getElementById('theme-button'),
-            notification: document.querySelector('.notification')
-        };
+    constructor() {
+        this.initializeElements();
+        this.initializeColorPicker();
+        this.initializeState();
+        this.setupEventListeners();
+        this.loadSavedPalettes();
     }
 
-    initializeState() {
-        return {
-            currentColor: '#000000',
-            selectedColors: [],
-            maxColors: 5,
-            currentTheme: utils.getStorageItem(STORAGE_KEYS.THEME) || 'dark',
-            savedPalettes: utils.getStorageItem('saved-palettes') || [],
-            colorPickerContext: null
+    initializeElements() {
+        // Color picker elements
+        this.colorWheel = document.getElementById('color-wheel');
+        this.hueSlider = document.getElementById('hue');
+        this.saturationSlider = document.getElementById('saturation');
+        this.lightnessSlider = document.getElementById('lightness');
+        this.hueValue = document.getElementById('hue-value');
+        this.saturationValue = document.getElementById('saturation-value');
+        this.lightnessValue = document.getElementById('lightness-value');
+
+        // Control elements
+        this.harmonySelect = document.getElementById('harmony');
+        this.generateButton = document.getElementById('generate-button');
+        this.randomButton = document.getElementById('random-button');
+        this.saveButton = document.getElementById('save-button');
+        this.exportButton = document.getElementById('export-button');
+        this.clearSavedButton = document.getElementById('clear-saved');
+
+        // Display elements
+        this.colorSwatches = document.getElementById('color-swatches');
+        this.savedPaletteGrid = document.getElementById('saved-palette-grid');
+        this.exportMenu = document.querySelector('.export-menu');
+        this.notification = document.querySelector('.notification');
+
+        // Modal elements
+        this.modal = document.getElementById('color-modal');
+        this.modalPreview = this.modal.querySelector('.color-preview');
+        this.modalInputs = {
+            hex: this.modal.querySelector('.hex-value'),
+            rgb: this.modal.querySelector('.rgb-value'),
+            hsl: this.modal.querySelector('.hsl-value')
         };
+        this.closeModalButton = this.modal.querySelector('.close-modal');
     }
 
     initializeColorPicker() {
-        const canvas = this.elements.colorPicker;
-        const ctx = canvas.getContext('2d');
-        this.state.colorPickerContext = ctx;
+        this.colorPicker = new iro.ColorPicker('#color-wheel', {
+            width: 280,
+            color: '#f00',
+            borderWidth: 1,
+            borderColor: '#fff',
+            layout: [
+                { 
+                    component: iro.ui.Wheel,
+                    options: {}
+                }
+            ]
+        });
 
-        // Set canvas size
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-
-        // Create gradient
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        for (let i = 0; i <= 360; i += 60) {
-            gradient.addColorStop(i / 360, `hsl(${i}, 100%, 50%)`);
-        }
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Add black to white vertical gradient
-        const bwGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        bwGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-        bwGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
-        bwGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
-        bwGradient.addColorStop(1, 'rgba(0, 0, 0, 1)');
-        ctx.fillStyle = bwGradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Sync color picker with sliders
+        this.colorPicker.on('color:change', (color) => {
+            this.updateSliders(color);
+        });
     }
 
-    getColorFromCanvas(x, y) {
-        const pixel = this.state.colorPickerContext.getImageData(x, y, 1, 1).data;
-        return `#${[...pixel].slice(0, 3).map(x => x.toString(16).padStart(2, '0')).join('')}`;
+    initializeState() {
+        this.currentColor = this.colorPicker.color;
+        this.currentPalette = [];
+        this.savedPalettes = [];
     }
 
-    addColor(color) {
-        if (this.state.selectedColors.length >= this.state.maxColors) {
-            notifications.warning('Maximum colors reached. Remove some to add more.');
-            return;
-        }
-        
-        if (!this.state.selectedColors.includes(color)) {
-            this.state.selectedColors.push(color);
-            this.updateSelectedColors();
-            notifications.success('Color added to palette');
-        }
+    setupEventListeners() {
+        // Color control events
+        this.hueSlider.addEventListener('input', () => this.updateFromSliders());
+        this.saturationSlider.addEventListener('input', () => this.updateFromSliders());
+        this.lightnessSlider.addEventListener('input', () => this.updateFromSliders());
+
+        // Button events
+        this.generateButton.addEventListener('click', () => this.generateHarmony());
+        this.randomButton.addEventListener('click', () => this.generateRandomPalette());
+        this.saveButton.addEventListener('click', () => this.savePalette());
+        this.clearSavedButton.addEventListener('click', () => this.clearSavedPalettes());
+
+        // Export menu events
+        this.exportButton.addEventListener('click', () => this.toggleExportMenu());
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.export-dropdown')) {
+                this.exportMenu.classList.remove('active');
+            }
+        });
+
+        this.exportMenu.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                const format = button.dataset.format;
+                this.copyPaletteValues(format);
+            });
+        });
+
+        // Modal events
+        this.closeModalButton.addEventListener('click', () => this.closeModal());
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) this.closeModal();
+        });
+
+        // Copy button events
+        this.modal.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const type = button.dataset.type;
+                const value = this.modalInputs[type].value;
+                this.copyToClipboard(value);
+            });
+        });
     }
 
-    removeColor(index) {
-        this.state.selectedColors.splice(index, 1);
-        this.updateSelectedColors();
-        notifications.info('Color removed from palette');
+    updateSliders(color) {
+        const hsl = color.hsl;
+        this.hueSlider.value = hsl.h;
+        this.saturationSlider.value = hsl.s;
+        this.lightnessSlider.value = hsl.l;
+        this.updateSliderValues();
     }
 
-    updateSelectedColors() {
-        this.elements.selectedColors.innerHTML = this.state.selectedColors
-            .map((color, index) => `
-                <div class="selected-color" 
-                     style="background-color: ${utils.sanitizeHTML(color)}"
-                     data-index="${index}"
-                     title="${utils.sanitizeHTML(color)}">
-                </div>
-            `).join('');
+    updateFromSliders() {
+        const hsl = {
+            h: parseInt(this.hueSlider.value),
+            s: parseInt(this.saturationSlider.value),
+            l: parseInt(this.lightnessSlider.value)
+        };
+        this.colorPicker.color.hsl = hsl;
+        this.updateSliderValues();
+    }
+
+    updateSliderValues() {
+        this.hueValue.textContent = `${Math.round(this.hueSlider.value)}°`;
+        this.saturationValue.textContent = `${Math.round(this.saturationSlider.value)}%`;
+        this.lightnessValue.textContent = `${Math.round(this.lightnessSlider.value)}%`;
     }
 
     generateHarmony() {
-        const harmony = this.elements.harmonySelect.value;
-        const baseColor = this.state.selectedColors[0];
-        if (!baseColor) {
-            notifications.error('Please select a base color first.');
-            return;
-        }
+        const baseColor = this.colorPicker.color.hsl;
+        const harmony = this.harmonySelect.value;
+        this.currentPalette = this.calculateHarmony(baseColor, harmony);
+        this.displayPalette(this.currentPalette);
+    }
 
-        const hsl = this.hexToHSL(baseColor);
-        let colors = [baseColor];
+    calculateHarmony(baseColor, harmony) {
+        const { h, s, l } = baseColor;
+        let colors = [];
 
         switch (harmony) {
             case 'complementary':
-                colors.push(this.HSLToHex((hsl[0] + 180) % 360, hsl[1], hsl[2]));
+                colors = [
+                    { h, s, l },
+                    { h: (h + 180) % 360, s, l }
+                ];
                 break;
             case 'analogous':
-                colors.push(this.HSLToHex((hsl[0] + 30) % 360, hsl[1], hsl[2]));
-                colors.push(this.HSLToHex((hsl[0] - 30 + 360) % 360, hsl[1], hsl[2]));
+                colors = [
+                    { h: (h - 30 + 360) % 360, s, l },
+                    { h, s, l },
+                    { h: (h + 30) % 360, s, l }
+                ];
                 break;
             case 'triadic':
-                colors.push(this.HSLToHex((hsl[0] + 120) % 360, hsl[1], hsl[2]));
-                colors.push(this.HSLToHex((hsl[0] + 240) % 360, hsl[1], hsl[2]));
+                colors = [
+                    { h, s, l },
+                    { h: (h + 120) % 360, s, l },
+                    { h: (h + 240) % 360, s, l }
+                ];
                 break;
             case 'split-complementary':
-                colors.push(this.HSLToHex((hsl[0] + 150) % 360, hsl[1], hsl[2]));
-                colors.push(this.HSLToHex((hsl[0] + 210) % 360, hsl[1], hsl[2]));
+                colors = [
+                    { h, s, l },
+                    { h: (h + 150) % 360, s, l },
+                    { h: (h + 210) % 360, s, l }
+                ];
                 break;
             case 'tetradic':
-                colors.push(this.HSLToHex((hsl[0] + 90) % 360, hsl[1], hsl[2]));
-                colors.push(this.HSLToHex((hsl[0] + 180) % 360, hsl[1], hsl[2]));
-                colors.push(this.HSLToHex((hsl[0] + 270) % 360, hsl[1], hsl[2]));
+                colors = [
+                    { h, s, l },
+                    { h: (h + 90) % 360, s, l },
+                    { h: (h + 180) % 360, s, l },
+                    { h: (h + 270) % 360, s, l }
+                ];
+                break;
+            case 'monochromatic':
+                colors = [
+                    { h, s, l: Math.max(0, l - 30) },
+                    { h, s, l },
+                    { h, s: Math.min(100, s + 20), l },
+                    { h, s, l: Math.min(100, l + 30) }
+                ];
                 break;
         }
 
-        this.state.selectedColors = colors;
-        this.updateSelectedColors();
-        notifications.success(`Generated ${harmony} color harmony`);
+        return colors;
     }
 
-    hexToHSL(hex) {
-        let r = parseInt(hex.slice(1, 3), 16) / 255;
-        let g = parseInt(hex.slice(3, 5), 16) / 255;
-        let b = parseInt(hex.slice(5, 7), 16) / 255;
-
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        let h, s, l = (max + min) / 2;
-
-        if (max === min) {
-            h = s = 0;
-        } else {
-            const d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-            h *= 60;
+    generateRandomPalette() {
+        const colors = [];
+        for (let i = 0; i < 5; i++) {
+            colors.push({
+                h: Math.floor(Math.random() * 360),
+                s: Math.floor(Math.random() * 40) + 60, // 60-100 for vibrant colors
+                l: Math.floor(Math.random() * 40) + 30  // 30-70 for visible colors
+            });
         }
-
-        return [Math.round(h), Math.round(s * 100), Math.round(l * 100)];
+        this.currentPalette = colors;
+        this.displayPalette(colors);
     }
 
-    HSLToHex(h, s, l) {
-        s /= 100;
-        l /= 100;
-        const a = s * Math.min(l, 1 - l);
-        const f = n => {
-            const k = (n + h / 30) % 12;
-            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-            return Math.round(255 * color).toString(16).padStart(2, '0');
+    displayPalette(colors) {
+        this.colorSwatches.innerHTML = '';
+        colors.forEach(color => {
+            const swatch = document.createElement('div');
+            swatch.className = 'color-swatch';
+            swatch.style.backgroundColor = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+            
+            const info = document.createElement('div');
+            info.className = 'color-swatch-info';
+            info.textContent = this.formatColor(color, 'hex');
+            
+            swatch.appendChild(info);
+            swatch.addEventListener('click', () => this.showColorInfo(color));
+            this.colorSwatches.appendChild(swatch);
+        });
+    }
+
+    formatColor(color, format) {
+        const hslToRgb = (h, s, l) => {
+            s /= 100;
+            l /= 100;
+            const a = s * Math.min(l, 1 - l);
+            const f = (n, k = (n + h / 30) % 12) => l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+            return [f(0), f(8), f(4)].map(x => Math.round(x * 255));
         };
-        return `#${f(0)}${f(8)}${f(4)}`;
+
+        const hslToHex = (h, s, l) => {
+            const rgb = hslToRgb(h, s, l);
+            return '#' + rgb.map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        };
+
+        switch (format) {
+            case 'hex':
+                return hslToHex(color.h, color.s, color.l);
+            case 'rgb':
+                const [r, g, b] = hslToRgb(color.h, color.s, color.l);
+                return `rgb(${r}, ${g}, ${b})`;
+            case 'hsl':
+                return `hsl(${Math.round(color.h)}, ${Math.round(color.s)}%, ${Math.round(color.l)}%)`;
+            case 'css':
+                return `--color: ${hslToHex(color.h, color.s, color.l)};`;
+            case 'sass':
+                return `$color: ${hslToHex(color.h, color.s, color.l)};`;
+            default:
+                return hslToHex(color.h, color.s, color.l);
+        }
+    }
+
+    showColorInfo(color) {
+        this.modalPreview.style.backgroundColor = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+        this.modalInputs.hex.value = this.formatColor(color, 'hex');
+        this.modalInputs.rgb.value = this.formatColor(color, 'rgb');
+        this.modalInputs.hsl.value = this.formatColor(color, 'hsl');
+        this.modal.classList.add('active');
+    }
+
+    closeModal() {
+        this.modal.classList.remove('active');
     }
 
     savePalette() {
-        if (this.state.selectedColors.length === 0) {
-            notifications.error('Please select some colors first.');
+        if (this.currentPalette.length === 0) {
+            this.showNotification('Please generate a palette first', 'error');
             return;
         }
 
         const palette = {
-            colors: [...this.state.selectedColors],
-            timestamp: Date.now()
+            id: Date.now(),
+            colors: this.currentPalette,
+            timestamp: new Date().toISOString()
         };
 
-        this.state.savedPalettes.unshift(palette);
-        if (this.state.savedPalettes.length > UI_CONSTANTS.MAX_RECENT_FILES) {
-            this.state.savedPalettes.pop();
+        this.savedPalettes.unshift(palette);
+        this.savePalettesToStorage();
+        this.displaySavedPalettes();
+        this.showNotification('Palette saved successfully', 'success');
+    }
+
+    savePalettesToStorage() {
+        localStorage.setItem('savedPalettes', JSON.stringify(this.savedPalettes));
+    }
+
+    loadSavedPalettes() {
+        const saved = localStorage.getItem('savedPalettes');
+        this.savedPalettes = saved ? JSON.parse(saved) : [];
+        this.displaySavedPalettes();
+    }
+
+    displaySavedPalettes() {
+        this.savedPaletteGrid.innerHTML = '';
+        this.savedPalettes.forEach(palette => {
+            const element = document.createElement('div');
+            element.className = 'saved-palette';
+            
+            const colors = document.createElement('div');
+            colors.className = 'saved-palette-colors';
+            palette.colors.forEach(color => {
+                const swatch = document.createElement('div');
+                swatch.className = 'saved-palette-color';
+                swatch.style.backgroundColor = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+                colors.appendChild(swatch);
+            });
+
+            const info = document.createElement('div');
+            info.className = 'saved-palette-info';
+            
+            const date = new Date(palette.timestamp);
+            const dateStr = date.toLocaleDateString();
+            
+            const actions = document.createElement('div');
+            actions.className = 'saved-palette-actions';
+            
+            const loadButton = document.createElement('button');
+            loadButton.className = 'secondary-button small';
+            loadButton.innerHTML = '<i class="fas fa-sync-alt"></i>';
+            loadButton.setAttribute('aria-label', 'Load palette');
+            loadButton.addEventListener('click', () => {
+                this.currentPalette = palette.colors;
+                this.displayPalette(palette.colors);
+                this.showNotification('Palette loaded', 'success');
+            });
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'secondary-button small';
+            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteButton.setAttribute('aria-label', 'Delete palette');
+            deleteButton.addEventListener('click', () => {
+                this.deletePalette(palette.id);
+            });
+
+            actions.appendChild(loadButton);
+            actions.appendChild(deleteButton);
+            info.appendChild(document.createTextNode(dateStr));
+            info.appendChild(actions);
+
+            element.appendChild(colors);
+            element.appendChild(info);
+            this.savedPaletteGrid.appendChild(element);
+        });
+    }
+
+    deletePalette(id) {
+        this.savedPalettes = this.savedPalettes.filter(p => p.id !== id);
+        this.savePalettesToStorage();
+        this.displaySavedPalettes();
+        this.showNotification('Palette deleted', 'success');
+    }
+
+    clearSavedPalettes() {
+        if (confirm('Are you sure you want to clear all saved palettes?')) {
+            this.savedPalettes = [];
+            this.savePalettesToStorage();
+            this.displaySavedPalettes();
+            this.showNotification('All palettes cleared', 'success');
         }
-
-        utils.setStorageItem('saved-palettes', this.state.savedPalettes);
-        this.updateSavedPalettes();
-        notifications.success('Palette saved successfully!');
     }
 
-    updateSavedPalettes() {
-        this.elements.savedPalettes.innerHTML = this.state.savedPalettes
-            .map((palette, index) => `
-                <div class="saved-palette" data-index="${index}">
-                    <div class="saved-palette-colors">
-                        ${palette.colors.map(color => `
-                            <div class="saved-palette-color" 
-                                 style="background-color: ${utils.sanitizeHTML(color)}">
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="saved-palette-info">
-                        ${new Date(palette.timestamp).toLocaleDateString(utils.getBrowserLanguage())}
-                    </div>
-                </div>
-            `).join('');
+    toggleExportMenu() {
+        this.exportMenu.classList.toggle('active');
     }
 
-    async exportPalette(format = 'hex') {
-        if (this.state.selectedColors.length === 0) {
-            notifications.error('Please select some colors first.');
+    copyPaletteValues(format) {
+        if (this.currentPalette.length === 0) {
+            this.showNotification('Please generate a palette first', 'error');
             return;
         }
 
-        let output = '';
+        let text = '';
         switch (format) {
             case 'hex':
-                output = this.state.selectedColors.join(', ');
-                break;
             case 'rgb':
-                output = this.state.selectedColors
-                    .map(color => {
-                        const r = parseInt(color.slice(1, 3), 16);
-                        const g = parseInt(color.slice(3, 5), 16);
-                        const b = parseInt(color.slice(5, 7), 16);
-                        return `rgb(${r}, ${g}, ${b})`;
-                    })
-                    .join(', ');
+            case 'hsl':
+                text = this.currentPalette
+                    .map(color => this.formatColor(color, format))
+                    .join('\n');
                 break;
             case 'css':
-                output = `:root {\n${this.state.selectedColors
-                    .map((color, i) => `    --color-${i + 1}: ${color};`)
-                    .join('\n')}\n}`;
+                text = this.currentPalette
+                    .map((color, i) => `--color-${i + 1}: ${this.formatColor(color, 'hex')};`)
+                    .join('\n');
+                break;
+            case 'sass':
+                text = this.currentPalette
+                    .map((color, i) => `$color-${i + 1}: ${this.formatColor(color, 'hex')};`)
+                    .join('\n');
                 break;
         }
 
-        try {
-            await utils.copyToClipboard(output);
-            notifications.success(`Copied ${format.toUpperCase()} values to clipboard!`);
-        } catch (error) {
-            console.error('Error copying to clipboard:', error);
-            notifications.error('Failed to copy to clipboard. Please try again.');
-        }
+        this.copyToClipboard(text);
+        this.exportMenu.classList.remove('active');
     }
 
-    bindEvents() {
-        // Color picker events
-        this.elements.colorPicker.addEventListener('click', 
-            this.debounce((e) => {
-                const rect = e.target.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const color = this.getColorFromCanvas(x, y);
-                this.addColor(color);
-            }, UI_CONSTANTS.DEBOUNCE_DELAY)
-        );
-
-        // Selected colors events
-        this.elements.selectedColors.addEventListener('click', (e) => {
-            const colorElement = e.target.closest('.selected-color');
-            if (colorElement) {
-                const index = parseInt(colorElement.dataset.index);
-                this.removeColor(index);
-            }
+    copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            this.showNotification('Copied to clipboard', 'success');
+        }).catch(() => {
+            this.showNotification('Failed to copy to clipboard', 'error');
         });
-
-        // Generate harmony
-        this.elements.generateButton.addEventListener('click', () => {
-            this.generateHarmony();
-        });
-
-        // Save palette
-        this.elements.saveButton.addEventListener('click', () => {
-            this.savePalette();
-        });
-
-        // Export options
-        this.elements.exportButton.addEventListener('click', (e) => {
-            const format = e.target.dataset.format || 'hex';
-            this.exportPalette(format);
-        });
-
-        // Load saved palette
-        this.elements.savedPalettes.addEventListener('click', (e) => {
-            const palette = e.target.closest('.saved-palette');
-            if (palette) {
-                const index = parseInt(palette.dataset.index);
-                this.state.selectedColors = [...this.state.savedPalettes[index].colors];
-                this.updateSelectedColors();
-                notifications.success('Palette loaded successfully');
-            }
-        });
-
-        // Theme toggle
-        this.elements.themeButton.addEventListener('click', () => {
-            this.toggleTheme(STORAGE_KEYS.THEME);
-        });
-
-        // Window resize
-        window.addEventListener('resize', 
-            this.debounce(() => this.initializeColorPicker(), UI_CONSTANTS.DEBOUNCE_DELAY)
-        );
-
-        // Keyboard shortcuts
-        this.addKeyboardShortcut('s', () => this.savePalette(), { ctrl: true });
-        this.addKeyboardShortcut('e', () => this.exportPalette('hex'), { ctrl: true });
-        this.addKeyboardShortcut('g', () => this.generateHarmony(), { ctrl: true });
     }
 
-    initialize() {
-        document.documentElement.setAttribute('data-theme', this.state.currentTheme);
-        this.initializeColorPicker();
-        this.updateSavedPalettes();
+    showNotification(message, type = 'success') {
+        this.notification.textContent = message;
+        this.notification.className = `notification ${type}`;
+        this.notification.style.display = 'block';
+        
+        setTimeout(() => {
+            this.notification.style.display = 'none';
+        }, 3000);
     }
 }
 
-// Initialize the feature when the DOM is ready
+// Initialize the color palette generator
 document.addEventListener('DOMContentLoaded', () => {
     new ColorPalette();
 }); 

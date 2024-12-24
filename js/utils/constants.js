@@ -13,7 +13,8 @@ export const STORAGE_KEYS = {
     THEME: 'ds_hub_theme',
     LANGUAGE: 'ds_hub_language',
     USER_PREFERENCES: 'ds_hub_preferences',
-    RECENT_FILES: 'ds_hub_recent_files'
+    RECENT_FILES: 'ds_hub_recent_files',
+    PASSWORD_HISTORY: 'ds_hub_password_history'
 };
 
 export const THEMES = {

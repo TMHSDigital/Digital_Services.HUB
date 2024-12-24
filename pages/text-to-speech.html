@@ -4,84 +4,193 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text-to-Speech Converter - Digital Services Hub</title>
+    <meta name="description" content="Convert text to natural-sounding speech with multiple voices and customization options.">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/text-to-speech.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="neon-text">Text-to-Speech Converter</h1>
-        
-        <nav id="main-nav"></nav>
-
-        <div class="content">
-            <div class="theme-toggle">
-                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <h1>Digital Services Hub</h1>
+                </a>
             </div>
+            <div class="theme-toggle">
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">Text-to-Speech Converter</h2>
+            <p class="hero-subtitle">Convert text to natural-sounding speech</p>
+        </div>
+    </header>
 
-            <div class="input-group">
+    <main class="container">
+        <div class="tts-controls">
+            <!-- Text Input Section -->
+            <div class="text-input-section">
                 <div class="text-controls">
-                    <label for="text-input">Enter Text: <span id="char-count">(0 characters)</span></label>
+                    <label for="text-input">Enter Text</label>
                     <div class="text-actions">
-                        <button id="clear-button" class="tech-button small">Clear</button>
-                        <button id="save-text" class="tech-button small">Save Text</button>
+                        <button id="clear-button" class="tech-button small" aria-label="Clear text">
+                            <i class="fas fa-eraser" aria-hidden="true"></i>
+                            Clear
+                        </button>
+                        <button id="paste-button" class="tech-button small" aria-label="Paste from clipboard">
+                            <i class="fas fa-paste" aria-hidden="true"></i>
+                            Paste
+                        </button>
+                        <button id="save-text" class="tech-button small" aria-label="Save text">
+                            <i class="fas fa-save" aria-hidden="true"></i>
+                            Save
+                        </button>
                     </div>
                 </div>
-                <textarea id="text-input" rows="5" placeholder="Enter text to convert to speech"></textarea>
-                <div id="language-detect">Detected Language: <span>None</span></div>
+                <div class="text-input-container">
+                    <textarea 
+                        id="text-input" 
+                        class="text-input"
+                        placeholder="Enter text to convert to speech (max 5000 characters)"
+                        maxlength="5000"
+                        aria-label="Text to convert to speech"
+                    ></textarea>
+                    <div class="char-count" aria-live="polite">0 / 5000 characters</div>
+                </div>
+                <div id="language-detect" class="language-detect" aria-live="polite">
+                    Detected Language: <span>None</span>
+                </div>
             </div>
-            
+
+            <!-- Voice Controls -->
             <div class="controls-grid">
                 <div class="input-group">
                     <label for="voice-select">Voice:</label>
-                    <select id="voice-select"></select>
+                    <select id="voice-select" aria-label="Select voice">
+                        <option value="">Loading voices...</option>
+                    </select>
                 </div>
 
                 <div class="input-group">
-                    <label for="rate">Speed: <span id="rate-value">1x</span></label>
-                    <input type="range" id="rate" min="0.5" max="2" value="1" step="0.1">
+                    <label for="rate">
+                        Speed
+                        <span id="rate-value" aria-live="polite">1x</span>
+                    </label>
+                    <input 
+                        type="range" 
+                        id="rate" 
+                        min="0.5" 
+                        max="2" 
+                        value="1" 
+                        step="0.1"
+                        aria-label="Adjust speech speed"
+                    >
                 </div>
 
                 <div class="input-group">
-                    <label for="pitch">Pitch: <span id="pitch-value">1</span></label>
-                    <input type="range" id="pitch" min="0.5" max="2" value="1" step="0.1">
+                    <label for="pitch">
+                        Pitch
+                        <span id="pitch-value" aria-live="polite">1</span>
+                    </label>
+                    <input 
+                        type="range" 
+                        id="pitch" 
+                        min="0.5" 
+                        max="2" 
+                        value="1" 
+                        step="0.1"
+                        aria-label="Adjust speech pitch"
+                    >
                 </div>
 
                 <div class="input-group">
-                    <label for="volume">Volume: <span id="volume-value">100%</span></label>
-                    <input type="range" id="volume" min="0" max="1" value="1" step="0.1">
+                    <label for="volume">
+                        Volume
+                        <span id="volume-value" aria-live="polite">100%</span>
+                    </label>
+                    <input 
+                        type="range" 
+                        id="volume" 
+                        min="0" 
+                        max="1" 
+                        value="1" 
+                        step="0.1"
+                        aria-label="Adjust speech volume"
+                    >
                 </div>
             </div>
 
+            <!-- Action Buttons -->
             <div class="action-buttons">
-                <button id="preview-voice" class="tech-button small">Preview Voice</button>
-                <button id="speak-button" class="tech-button">Speak</button>
-                <button id="download-audio" class="tech-button small">Download Audio</button>
+                <button id="preview-voice" class="tech-button preview-button" aria-label="Preview selected voice">
+                    <i class="fas fa-headphones" aria-hidden="true"></i>
+                    Preview Voice
+                </button>
+                <button id="speak-button" class="tech-button speak-button" aria-label="Convert text to speech">
+                    <i class="fas fa-play" aria-hidden="true"></i>
+                    Speak
+                </button>
+                <button id="download-audio" class="tech-button download-button" aria-label="Download as audio file">
+                    <i class="fas fa-download" aria-hidden="true"></i>
+                    Download
+                </button>
             </div>
 
-            <div class="progress-container hidden">
+            <!-- Progress Bar -->
+            <div class="progress-container" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                 <div class="progress-bar">
                     <div class="progress"></div>
                 </div>
                 <span class="progress-text">0%</span>
             </div>
 
+            <!-- History Section -->
             <div class="history-section">
                 <h3>Recent Texts</h3>
-                <div id="history-list" class="history-list"></div>
+                <div id="history-list" class="history-list" role="list"></div>
             </div>
 
+            <!-- Templates Section -->
             <div class="templates-section">
-                <h3>Templates</h3>
+                <h3>Quick Templates</h3>
                 <div class="template-buttons">
-                    <button class="tech-button small" data-template="greeting">Greeting</button>
-                    <button class="tech-button small" data-template="introduction">Introduction</button>
-                    <button class="tech-button small" data-template="farewell">Farewell</button>
+                    <button class="template-button" data-template="greeting" aria-label="Use greeting template">
+                        <i class="fas fa-hand-wave" aria-hidden="true"></i>
+                        Greeting
+                    </button>
+                    <button class="template-button" data-template="introduction" aria-label="Use introduction template">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                        Introduction
+                    </button>
+                    <button class="template-button" data-template="business" aria-label="Use business template">
+                        <i class="fas fa-briefcase" aria-hidden="true"></i>
+                        Business
+                    </button>
+                    <button class="template-button" data-template="casual" aria-label="Use casual template">
+                        <i class="fas fa-coffee" aria-hidden="true"></i>
+                        Casual
+                    </button>
+                    <button class="template-button" data-template="formal" aria-label="Use formal template">
+                        <i class="fas fa-tie" aria-hidden="true"></i>
+                        Formal
+                    </button>
+                    <button class="template-button" data-template="farewell" aria-label="Use farewell template">
+                        <i class="fas fa-door-open" aria-hidden="true"></i>
+                        Farewell
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
-    <script src="../js/common.js"></script>
+    </main>
+
+    <div class="notification" role="alert" aria-live="polite"></div>
+
+    <!-- Load scripts -->
     <script src="https://cdn.jsdelivr.net/npm/languagedetect/languagedetect.js"></script>
-    <script src="../js/features/text-to-speech.js"></script>
+    <script src="../js/features/text-to-speech.js" type="module"></script>
 </body>
 </html>

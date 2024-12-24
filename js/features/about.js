@@ -1,166 +1,132 @@
 import { BaseTool } from './base-tool.js';
-import { notifications, modal } from '../utils/ui.js';
-import { STORAGE_KEYS, APP_CONFIG } from '../utils/constants.js';
-import utils from '../utils/helpers.js';
+import { APP_CONFIG } from '../utils/constants.js';
 
 class About extends BaseTool {
+    constructor() {
+        super();
+        this.initializeElements();
+        this.setupEventListeners();
+        this.initializeAnimations();
+    }
+
     initializeElements() {
-        return {
-            themeButton: document.getElementById('theme-button'),
-            notification: document.querySelector('.notification'),
-            featureCards: document.querySelectorAll('.feature-card'),
-            versionInfo: document.getElementById('version-info'),
-            githubLink: document.getElementById('github-link')
+        // Stats elements
+        this.statsItems = document.querySelectorAll('.stat-item');
+        
+        // Tool items
+        this.toolItems = document.querySelectorAll('.tool-item');
+        
+        // Feature items
+        this.featureItems = document.querySelectorAll('.feature-item');
+        
+        // Tech items
+        this.techItems = document.querySelectorAll('.tech-list li');
+    }
+
+    setupEventListeners() {
+        // Add hover effects for tool items
+        this.toolItems.forEach(item => {
+            item.addEventListener('mouseenter', () => this.animateItem(item));
+            item.addEventListener('mouseleave', () => this.resetItem(item));
+        });
+
+        // Add hover effects for feature items
+        this.featureItems.forEach(item => {
+            item.addEventListener('mouseenter', () => this.animateItem(item));
+            item.addEventListener('mouseleave', () => this.resetItem(item));
+        });
+
+        // Add intersection observer for animations
+        this.setupIntersectionObserver();
+    }
+
+    initializeAnimations() {
+        // Initial animations for visible elements
+        this.animateVisibleElements();
+        
+        // Animate stats when they come into view
+        this.animateStats();
+    }
+
+    setupIntersectionObserver() {
+        const options = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
         };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, options);
+
+        // Observe all animatable elements
+        [...this.toolItems, ...this.featureItems, ...this.techItems].forEach(item => {
+            observer.observe(item);
+        });
     }
 
-    initializeState() {
-        return {
-            currentTheme: utils.getStorageItem(STORAGE_KEYS.THEME) || 'dark',
-            version: APP_CONFIG.VERSION,
-            lastUpdated: '2024-02',
-            features: [
-                {
-                    name: 'Text to Speech',
-                    description: 'Convert text to natural-sounding speech with multiple voices and languages.',
-                    icon: '🗣️',
-                    path: 'text-to-speech'
-                },
-                {
-                    name: 'Image Resizer',
-                    description: 'Resize and optimize images with aspect ratio preservation and format conversion.',
-                    icon: '🖼️',
-                    path: 'image-resizer'
-                },
-                {
-                    name: 'Color Palette',
-                    description: 'Generate and customize color palettes with harmony rules and export options.',
-                    icon: '🎨',
-                    path: 'color-palette'
-                },
-                {
-                    name: 'ASCII Art',
-                    description: 'Convert images into ASCII art with customizable settings and color support.',
-                    icon: '🎯',
-                    path: 'ascii-art'
-                },
-                {
-                    name: 'QR Code',
-                    description: 'Generate customizable QR codes with error correction and styling options.',
-                    icon: '📱',
-                    path: 'qr-code'
-                }
-            ]
-        };
+    animateVisibleElements() {
+        requestAnimationFrame(() => {
+            this.toolItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            this.featureItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
     }
 
-    updateVersionInfo() {
-        if (this.elements.versionInfo) {
-            this.elements.versionInfo.innerHTML = `
-                <p>Version: ${utils.sanitizeHTML(this.state.version)}</p>
-                <p>Last Updated: ${utils.sanitizeHTML(this.state.lastUpdated)}</p>
-                <p>Author: ${utils.sanitizeHTML(APP_CONFIG.AUTHOR)}</p>
-            `;
-        }
-
-        if (this.elements.githubLink) {
-            this.elements.githubLink.href = APP_CONFIG.GITHUB_URL;
-        }
+    animateStats() {
+        this.statsItems.forEach(item => {
+            const numberElement = item.querySelector('.stat-number');
+            const targetNumber = parseInt(numberElement.textContent);
+            this.animateNumber(numberElement, targetNumber);
+        });
     }
 
-    addFeatureCardEffects() {
-        this.elements.featureCards.forEach(card => {
-            // Mouse hover effects
-            card.addEventListener('mouseenter', () => {
-                card.classList.add('hover');
-            });
+    animateNumber(element, target) {
+        let current = 0;
+        const increment = target / 30; // Divide animation into 30 steps
+        const duration = 1500; // Animation duration in milliseconds
+        const stepTime = duration / 30;
 
-            card.addEventListener('mouseleave', () => {
-                card.classList.remove('hover');
-            });
-
-            // Click navigation
-            card.addEventListener('click', () => {
-                const feature = card.getAttribute('data-feature');
-                if (feature) {
-                    try {
-                        const featureInfo = this.state.features.find(f => f.path === feature);
-                        if (featureInfo) {
-                            window.location.href = `${feature}.html`;
-                            notifications.info(`Navigating to ${featureInfo.name}...`);
-                        }
-                    } catch (error) {
-                        console.error('Error navigating to feature:', error);
-                        notifications.error('Failed to navigate to feature. Please try again.');
-                    }
-                }
-            });
-
-            // Keyboard navigation
-            card.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    card.click();
-                }
-            });
-
-            // Accessibility
-            card.setAttribute('role', 'button');
-            card.setAttribute('tabindex', '0');
-            
-            const feature = card.getAttribute('data-feature');
-            if (feature) {
-                const featureInfo = this.state.features.find(f => f.path === feature);
-                if (featureInfo) {
-                    card.setAttribute('aria-label', `Open ${featureInfo.name} tool`);
-                }
+        const updateNumber = () => {
+            current += increment;
+            if (current >= target) {
+                element.textContent = target + (target === 100 ? '%' : '+');
+            } else {
+                element.textContent = Math.round(current) + (target === 100 ? '%' : '+');
+                requestAnimationFrame(() => {
+                    setTimeout(updateNumber, stepTime);
+                });
             }
-        });
+        };
+
+        updateNumber();
     }
 
-    showFeatureInfo(feature) {
-        const featureInfo = this.state.features.find(f => f.path === feature);
-        if (featureInfo) {
-            modal.show({
-                title: featureInfo.name,
-                content: `
-                    <div class="feature-info">
-                        <div class="feature-icon">${featureInfo.icon}</div>
-                        <p>${utils.sanitizeHTML(featureInfo.description)}</p>
-                    </div>
-                `,
-                buttons: {
-                    'Open Tool': () => window.location.href = `${feature}.html`,
-                    'Close': () => {}
-                }
-            });
-        }
+    animateItem(item) {
+        item.style.transform = 'translateY(-10px)';
+        item.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.3)';
     }
 
-    bindEvents() {
-        // Theme toggle
-        this.elements.themeButton.addEventListener('click', () => {
-            this.toggleTheme(STORAGE_KEYS.THEME);
-        });
-
-        // Feature card interactions
-        this.addFeatureCardEffects();
-
-        // Keyboard shortcuts
-        this.state.features.forEach((feature, index) => {
-            this.addKeyboardShortcut((index + 1).toString(), () => {
-                window.location.href = `${feature.path}.html`;
-            }, { alt: true });
-        });
-    }
-
-    initialize() {
-        document.documentElement.setAttribute('data-theme', this.state.currentTheme);
-        this.updateVersionInfo();
+    resetItem(item) {
+        item.style.transform = 'translateY(0)';
+        item.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
     }
 }
 
-// Initialize the feature when the DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    new About();
-}); 
+// Initialize the about page
+const about = new About(); 

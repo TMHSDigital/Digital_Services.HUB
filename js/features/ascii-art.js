@@ -5,220 +5,370 @@ import { fileValidation } from '../utils/validation.js';
 import utils from '../utils/helpers.js';
 
 class AsciiArt extends BaseTool {
+    constructor() {
+        this.initializeElements();
+        this.initializeState();
+        this.setupEventListeners();
+    }
+
     initializeElements() {
-        return {
-            fileInput: document.getElementById('file-input'),
-            dropZone: document.querySelector('.drop-zone'),
-            preview: document.getElementById('preview'),
-            output: document.getElementById('ascii-output'),
-            widthInput: document.getElementById('width-input'),
-            charsetSelect: document.getElementById('charset-select'),
-            invertCheckbox: document.getElementById('invert-checkbox'),
-            colorCheckbox: document.getElementById('color-checkbox'),
-            generateButton: document.getElementById('generate-button'),
-            copyButton: document.getElementById('copy-button'),
-            downloadButton: document.getElementById('download-button'),
-            themeButton: document.getElementById('theme-button'),
-            notification: document.querySelector('.notification')
-        };
+        // File input elements
+        this.dropZone = document.getElementById('drop-zone');
+        this.fileInput = document.getElementById('file-input');
+        this.previewContainer = document.getElementById('preview-container');
+        this.previewImage = document.getElementById('preview-image');
+
+        // Control elements
+        this.widthInput = document.getElementById('width-input');
+        this.charsetSelect = document.getElementById('charset-select');
+        this.customCharsGroup = document.querySelector('.custom-chars-group');
+        this.customCharsInput = document.getElementById('custom-chars');
+        this.contrastInput = document.getElementById('contrast-input');
+        this.brightnessInput = document.getElementById('brightness-input');
+        this.invertCheckbox = document.getElementById('invert-checkbox');
+        this.colorCheckbox = document.getElementById('color-checkbox');
+        this.generateButton = document.getElementById('generate-button');
+
+        // Output elements
+        this.outputContainer = document.getElementById('output-container');
+        this.asciiOutput = document.getElementById('ascii-output');
+        this.copyButton = document.getElementById('copy-button');
+        this.downloadButton = document.getElementById('download-button');
+        this.shareButton = document.getElementById('share-button');
+
+        // Modal elements
+        this.shareModal = document.getElementById('share-modal');
+        this.closeModalButton = this.shareModal.querySelector('.close-modal');
+        this.shareButtons = this.shareModal.querySelectorAll('.share-button');
+
+        // Notification
+        this.notification = document.querySelector('.notification');
     }
 
     initializeState() {
-        return {
-            currentImage: null,
-            currentTheme: utils.getStorageItem(STORAGE_KEYS.THEME) || 'dark',
-            charsets: {
-                standard: '@%#*+=-:. ',
-                blocks: '█▓▒░ ',
-                simple: '#@$*. ',
-                dots: '●○◐◑◒◓◔◕. ',
-                custom: '@QB#NgWM8RDHdKA$kbq&pmtxjf[]{}?wyl<>i!;:,"^`. '
-            }
+        this.charsets = {
+            standard: '@#$%=+~-.,',
+            blocks: '█▓▒░ ',
+            simple: '#. ',
+            dots: '●○• '
         };
+        this.currentImage = null;
+        this.imageData = null;
+        this.asciiResult = '';
     }
 
-    async handleFileSelect(file) {
-        try {
-            // Validate file
-            await fileValidation.validateFileSize(file);
-            fileValidation.validateFileType(file, FILE_LIMITS.SUPPORTED_IMAGE_TYPES);
+    setupEventListeners() {
+        // File input events
+        this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+        this.dropZone.addEventListener('dragover', (e) => this.handleDragOver(e));
+        this.dropZone.addEventListener('dragleave', () => this.handleDragLeave());
+        this.dropZone.addEventListener('drop', (e) => this.handleDrop(e));
 
-            const img = await utils.loadImage(URL.createObjectURL(file));
-            await fileValidation.validateImageDimensions(img);
+        // Control events
+        this.charsetSelect.addEventListener('change', () => this.handleCharsetChange());
+        this.customCharsInput.addEventListener('input', () => this.validateCustomChars());
+        this.generateButton.addEventListener('click', () => this.generateAsciiArt());
 
-            this.state.currentImage = img;
-            this.displayPreview();
-            notifications.success('Image loaded successfully');
-        } catch (error) {
-            console.error('Error loading image:', error);
-            notifications.error(error.message || 'Failed to load image');
-            this.resetState();
-        }
+        // Output events
+        this.copyButton.addEventListener('click', () => this.copyToClipboard());
+        this.downloadButton.addEventListener('click', () => this.downloadAsciiArt());
+        this.shareButton.addEventListener('click', () => this.openShareModal());
+
+        // Modal events
+        this.closeModalButton.addEventListener('click', () => this.closeShareModal());
+        this.shareModal.addEventListener('click', (e) => {
+            if (e.target === this.shareModal) this.closeShareModal();
+        });
+
+        this.shareButtons.forEach(button => {
+            button.addEventListener('click', () => this.handleShare(button.dataset.platform));
+        });
+
+        // Real-time preview events
+        ['input', 'change'].forEach(event => {
+            this.contrastInput.addEventListener(event, () => this.updateImagePreview());
+            this.brightnessInput.addEventListener(event, () => this.updateImagePreview());
+            this.invertCheckbox.addEventListener(event, () => this.updateImagePreview());
+        });
     }
 
-    resetState() {
-        this.state.currentImage = null;
-        this.elements.preview.innerHTML = '';
-        this.elements.output.innerHTML = '';
+    handleFileSelect(event) {
+        const file = event.target.files[0];
+        this.processFile(file);
     }
 
-    displayPreview() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const maxWidth = 300;
-        const scale = maxWidth / this.state.currentImage.width;
+    handleDragOver(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.dropZone.classList.add('dragover');
+    }
+
+    handleDragLeave() {
+        this.dropZone.classList.remove('dragover');
+    }
+
+    handleDrop(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.dropZone.classList.remove('dragover');
         
-        canvas.width = maxWidth;
-        canvas.height = this.state.currentImage.height * scale;
-        
-        ctx.drawImage(this.state.currentImage, 0, 0, canvas.width, canvas.height);
-        this.elements.preview.innerHTML = '';
-        this.elements.preview.appendChild(canvas);
+        const file = event.dataTransfer.files[0];
+        this.processFile(file);
     }
 
-    getPixelBrightness(r, g, b, invert) {
-        const brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        return invert ? 1 - brightness : brightness;
-    }
+    processFile(file) {
+        if (!file) return;
 
-    rgbToHex(r, g, b) {
-        return '#' + [r, g, b].map(x => {
-            const hex = x.toString(16);
-            return hex.length === 1 ? '0' + hex : hex;
-        }).join('');
-    }
-
-    generateAsciiArt() {
-        if (!this.state.currentImage) {
-            notifications.error('Please select an image first.');
+        if (!file.type.startsWith('image/')) {
+            this.showNotification('Please select an image file', 'error');
             return;
         }
 
-        const width = parseInt(this.elements.widthInput.value) || 100;
-        const charset = this.state.charsets[this.elements.charsetSelect.value];
-        const invert = this.elements.invertCheckbox.checked;
-        const useColor = this.elements.colorCheckbox.checked;
+        if (file.size > 5 * 1024 * 1024) {
+            this.showNotification('File size should be less than 5MB', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.currentImage = new Image();
+            this.currentImage.onload = () => {
+                this.previewImage.src = e.target.result;
+                this.previewContainer.classList.add('active');
+                this.updateImagePreview();
+            };
+            this.currentImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    handleCharsetChange() {
+        const isCustom = this.charsetSelect.value === 'custom';
+        this.customCharsGroup.style.display = isCustom ? 'block' : 'none';
+        if (isCustom && !this.customCharsInput.value) {
+            this.customCharsInput.value = this.charsets.standard;
+        }
+    }
+
+    validateCustomChars() {
+        const chars = this.customCharsInput.value.trim();
+        if (chars.length < 2) {
+            this.showNotification('Please enter at least 2 characters', 'error');
+            return false;
+        }
+        return true;
+    }
+
+    getCharset() {
+        const selected = this.charsetSelect.value;
+        return selected === 'custom' ? 
+            this.customCharsInput.value.trim() : 
+            this.charsets[selected];
+    }
+
+    updateImagePreview() {
+        if (!this.currentImage) return;
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const scale = width / this.state.currentImage.width;
         
-        canvas.width = width;
-        canvas.height = Math.floor(this.state.currentImage.height * scale);
-        
-        ctx.drawImage(this.state.currentImage, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = imageData.data;
+        // Set canvas size to match the image's aspect ratio
+        const aspectRatio = this.currentImage.width / this.currentImage.height;
+        canvas.width = 400;
+        canvas.height = canvas.width / aspectRatio;
 
-        let ascii = '';
-        for (let y = 0; y < canvas.height; y++) {
-            for (let x = 0; x < canvas.width; x++) {
-                const offset = (y * canvas.width + x) * 4;
-                const r = pixels[offset];
-                const g = pixels[offset + 1];
-                const b = pixels[offset + 2];
-                
-                const brightness = this.getPixelBrightness(r, g, b, invert);
-                const charIndex = Math.floor(brightness * (charset.length - 1));
-                
-                if (useColor) {
-                    const color = this.rgbToHex(r, g, b);
-                    ascii += `<span style="color: ${utils.sanitizeHTML(color)}">${utils.sanitizeHTML(charset[charIndex])}</span>`;
-                } else {
-                    ascii += utils.sanitizeHTML(charset[charIndex]);
-                }
-            }
-            ascii += '\\n';
-        }
+        // Apply image adjustments
+        ctx.filter = `
+            contrast(${this.contrastInput.value}%) 
+            brightness(${this.brightnessInput.value}%)
+            ${this.invertCheckbox.checked ? 'invert(100%)' : ''}
+        `;
 
-        this.elements.output.innerHTML = ascii;
-        notifications.success('ASCII art generated successfully!');
+        ctx.drawImage(this.currentImage, 0, 0, canvas.width, canvas.height);
+        this.imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     }
 
-    async copyToClipboard() {
-        try {
-            const text = this.elements.output.innerText;
-            await utils.copyToClipboard(text);
-            notifications.success('ASCII art copied to clipboard!');
-        } catch (error) {
-            console.error('Error copying to clipboard:', error);
-            notifications.error('Failed to copy to clipboard. Please try again.');
+    generateAsciiArt() {
+        if (!this.currentImage) {
+            this.showNotification('Please select an image first', 'error');
+            return;
         }
+
+        if (this.charsetSelect.value === 'custom' && !this.validateCustomChars()) {
+            return;
+        }
+
+        this.generateButton.classList.add('loading');
+        this.updateImagePreview();
+
+        // Use a small delay to allow the UI to update
+        setTimeout(() => {
+            const charset = this.getCharset();
+            const width = parseInt(this.widthInput.value);
+            const useColor = this.colorCheckbox.checked;
+
+            this.asciiResult = this.convertToAscii(this.imageData, width, charset, useColor);
+            this.displayResult();
+            this.generateButton.classList.remove('loading');
+            this.showNotification('ASCII art generated successfully', 'success');
+        }, 100);
+    }
+
+    convertToAscii(imageData, width, charset, useColor) {
+        const height = Math.floor(imageData.height * (width / imageData.width));
+        const cellWidth = imageData.width / width;
+        const cellHeight = imageData.height / height;
+        const pixels = imageData.data;
+        
+        let result = '';
+        
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const avgBrightness = this.getAverageBrightness(
+                    pixels,
+                    imageData.width,
+                    Math.floor(x * cellWidth),
+                    Math.floor(y * cellHeight),
+                    Math.ceil(cellWidth),
+                    Math.ceil(cellHeight)
+                );
+                
+                if (useColor) {
+                    const color = this.getAverageColor(
+                        pixels,
+                        imageData.width,
+                        Math.floor(x * cellWidth),
+                        Math.floor(y * cellHeight),
+                        Math.ceil(cellWidth),
+                        Math.ceil(cellHeight)
+                    );
+                    result += `<span style="color: rgb(${color.join(',')})">`;
+                }
+                
+                const charIndex = Math.floor(avgBrightness * (charset.length - 1));
+                result += charset[charIndex];
+                
+                if (useColor) result += '</span>';
+            }
+            result += '\n';
+        }
+        
+        return result;
+    }
+
+    getAverageBrightness(pixels, width, x, y, w, h) {
+        let total = 0;
+        let count = 0;
+        
+        for (let py = y; py < y + h; py++) {
+            for (let px = x; px < x + w; px++) {
+                const i = (py * width + px) * 4;
+                const brightness = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3 / 255;
+                total += brightness;
+                count++;
+            }
+        }
+        
+        return total / count;
+    }
+
+    getAverageColor(pixels, width, x, y, w, h) {
+        let r = 0, g = 0, b = 0;
+        let count = 0;
+        
+        for (let py = y; py < y + h; py++) {
+            for (let px = x; px < x + w; px++) {
+                const i = (py * width + px) * 4;
+                r += pixels[i];
+                g += pixels[i + 1];
+                b += pixels[i + 2];
+                count++;
+            }
+        }
+        
+        return [
+            Math.round(r / count),
+            Math.round(g / count),
+            Math.round(b / count)
+        ];
+    }
+
+    displayResult() {
+        this.asciiOutput.innerHTML = this.asciiResult;
+        this.outputContainer.classList.add('active');
+        this.outputContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    copyToClipboard() {
+        const plainText = this.asciiResult.replace(/<[^>]*>/g, '');
+        navigator.clipboard.writeText(plainText).then(() => {
+            this.showNotification('Copied to clipboard', 'success');
+        }).catch(() => {
+            this.showNotification('Failed to copy to clipboard', 'error');
+        });
     }
 
     downloadAsciiArt() {
-        try {
-            const text = this.elements.output.innerText;
-            const blob = new Blob([text], { type: 'text/plain' });
-            const filename = `ascii-art_${new Date().toISOString().slice(0,10)}.txt`;
-            this.downloadFile(blob, filename);
-            notifications.success('ASCII art downloaded successfully!');
-        } catch (error) {
-            console.error('Error downloading ASCII art:', error);
-            notifications.error('Failed to download ASCII art. Please try again.');
+        const plainText = this.asciiResult.replace(/<[^>]*>/g, '');
+        const blob = new Blob([plainText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ascii-art.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        this.showNotification('Downloaded ASCII art', 'success');
+    }
+
+    openShareModal() {
+        this.shareModal.classList.add('active');
+    }
+
+    closeShareModal() {
+        this.shareModal.classList.remove('active');
+    }
+
+    handleShare(platform) {
+        const url = window.location.href;
+        const text = 'Check out this ASCII art I created!';
+        
+        let shareUrl = '';
+        switch (platform) {
+            case 'twitter':
+                shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                break;
+            case 'facebook':
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                break;
+            case 'reddit':
+                shareUrl = `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
+                break;
+            case 'link':
+                navigator.clipboard.writeText(url).then(() => {
+                    this.showNotification('Link copied to clipboard', 'success');
+                });
+                this.closeShareModal();
+                return;
         }
+
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        this.closeShareModal();
     }
 
-    bindEvents() {
-        // File input events
-        this.elements.fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                this.handleFileSelect(e.target.files[0]);
-            }
-        });
-
-        // Drag and drop events
-        const dragOverHandler = this.debounce((e) => {
-            e.preventDefault();
-            this.elements.dropZone.classList.add('drag-over');
-        }, UI_CONSTANTS.DEBOUNCE_DELAY);
-
-        this.elements.dropZone.addEventListener('dragover', dragOverHandler);
-
-        this.elements.dropZone.addEventListener('dragleave', () => {
-            this.elements.dropZone.classList.remove('drag-over');
-        });
-
-        this.elements.dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            this.elements.dropZone.classList.remove('drag-over');
-            if (e.dataTransfer.files.length > 0) {
-                this.handleFileSelect(e.dataTransfer.files[0]);
-            }
-        });
-
-        // Generate button
-        this.elements.generateButton.addEventListener('click', 
-            this.debounce(() => this.generateAsciiArt(), UI_CONSTANTS.DEBOUNCE_DELAY)
-        );
-
-        // Copy button
-        this.elements.copyButton.addEventListener('click', () => {
-            this.copyToClipboard();
-        });
-
-        // Download button
-        this.elements.downloadButton.addEventListener('click', () => {
-            this.downloadAsciiArt();
-        });
-
-        // Theme toggle
-        this.elements.themeButton.addEventListener('click', () => {
-            this.toggleTheme(STORAGE_KEYS.THEME);
-        });
-
-        // Keyboard shortcuts
-        this.addKeyboardShortcut('g', () => this.generateAsciiArt(), { ctrl: true });
-        this.addKeyboardShortcut('c', () => this.copyToClipboard(), { ctrl: true });
-        this.addKeyboardShortcut('s', () => this.downloadAsciiArt(), { ctrl: true });
-    }
-
-    initialize() {
-        document.documentElement.setAttribute('data-theme', this.state.currentTheme);
+    showNotification(message, type = 'success') {
+        this.notification.textContent = message;
+        this.notification.className = `notification ${type}`;
+        this.notification.style.display = 'block';
+        
+        setTimeout(() => {
+            this.notification.style.display = 'none';
+        }, 3000);
     }
 }
 
-// Initialize the feature when the DOM is ready
+// Initialize the ASCII art generator
 document.addEventListener('DOMContentLoaded', () => {
     new AsciiArt();
 }); 

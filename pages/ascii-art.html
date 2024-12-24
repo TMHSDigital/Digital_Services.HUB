@@ -3,81 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASCII Art Converter - Digital Services Hub</title>
+    <title>ASCII Art Generator - Digital Services Hub</title>
+    <meta name="description" content="Convert your images into beautiful ASCII art with customizable settings and real-time preview.">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/ascii-art.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="neon-text">ASCII Art Converter</h1>
-        
-        <nav id="main-nav"></nav>
-
-        <div class="content">
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <h1>Digital Services Hub</h1>
+                </a>
+            </div>
             <div class="theme-toggle">
-                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">ASCII Art Generator</h2>
+            <p class="hero-subtitle">Transform your images into text-based art</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="ascii-controls">
+            <!-- Image Upload Section -->
+            <div class="drop-zone" id="drop-zone" role="region" aria-label="Image upload area">
+                <input 
+                    type="file" 
+                    id="file-input" 
+                    accept="image/*" 
+                    class="file-input"
+                    aria-label="Choose an image file"
+                >
+                <div class="drop-zone-text">
+                    <i class="fas fa-cloud-upload-alt fa-3x" aria-hidden="true"></i>
+                    <p>Drop an image here or click to upload</p>
+                    <p class="small">Supports: JPG, PNG, GIF (max 5MB)</p>
+                </div>
             </div>
 
-            <div class="ascii-controls">
-                <div class="drop-zone" role="region" aria-label="Image upload area">
-                    <label for="file-input" class="visually-hidden">Choose an image file to convert</label>
+            <!-- Preview Section -->
+            <div class="preview-container" id="preview-container">
+                <img id="preview-image" alt="Preview of the uploaded image">
+            </div>
+
+            <!-- Settings Section -->
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label for="width-input">Output Width:</label>
                     <input 
-                        type="file" 
-                        id="file-input" 
-                        accept="image/*" 
-                        class="file-input"
-                        aria-label="Choose an image file"
-                        title="Choose an image file to convert to ASCII art"
+                        type="number" 
+                        id="width-input" 
+                        value="100" 
+                        min="10" 
+                        max="400"
+                        aria-label="Set output width in characters"
                     >
-                    <div class="drop-zone-text">
-                        <p>Drop an image here or click to upload</p>
-                        <p class="small">Supports: JPG, PNG, GIF</p>
-                    </div>
                 </div>
 
-                <div id="preview" class="preview-container" role="img" aria-label="Image preview"></div>
-
-                <div class="settings-grid">
-                    <div class="input-group">
-                        <label for="width-input">Output Width:</label>
-                        <input type="number" id="width-input" value="100" min="10" max="400">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="charset-select">Character Set:</label>
-                        <select id="charset-select">
-                            <option value="standard">Standard</option>
-                            <option value="blocks">Blocks</option>
-                            <option value="simple">Simple</option>
-                            <option value="dots">Dots</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label>
-                            <input type="checkbox" id="invert-checkbox">
-                            Invert Colors
-                        </label>
-                    </div>
-
-                    <div class="input-group">
-                        <label>
-                            <input type="checkbox" id="color-checkbox">
-                            Use Colors
-                        </label>
-                    </div>
+                <div class="input-group">
+                    <label for="charset-select">Character Set:</label>
+                    <select id="charset-select" aria-label="Select character set for ASCII art">
+                        <option value="standard">Standard (@#$%=+~-.,)</option>
+                        <option value="blocks">Blocks (█▓▒░ )</option>
+                        <option value="simple">Simple (#. )</option>
+                        <option value="dots">Dots (●○• )</option>
+                        <option value="custom">Custom Characters</option>
+                    </select>
                 </div>
 
-                <button id="generate-button" class="tech-button">Generate ASCII Art</button>
+                <div class="input-group custom-chars-group" style="display: none;">
+                    <label for="custom-chars">Custom Characters:</label>
+                    <input 
+                        type="text" 
+                        id="custom-chars" 
+                        placeholder="Enter characters from dark to light"
+                        aria-label="Enter custom characters for ASCII art"
+                    >
+                </div>
 
-                <div class="output-container">
-                    <pre id="ascii-output" class="ascii-output" aria-label="ASCII art output"></pre>
-                    
-                    <div class="output-actions">
-                        <button id="copy-button" class="tech-button small">Copy to Clipboard</button>
-                        <button id="download-button" class="tech-button small">Download as Text</button>
-                    </div>
+                <div class="input-group">
+                    <label for="contrast-input">Contrast:</label>
+                    <input 
+                        type="range" 
+                        id="contrast-input" 
+                        min="0" 
+                        max="200" 
+                        value="100"
+                        aria-label="Adjust contrast"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="brightness-input">Brightness:</label>
+                    <input 
+                        type="range" 
+                        id="brightness-input" 
+                        min="0" 
+                        max="200" 
+                        value="100"
+                        aria-label="Adjust brightness"
+                    >
+                </div>
+
+                <div class="input-group checkbox-group">
+                    <label>
+                        <input 
+                            type="checkbox" 
+                            id="invert-checkbox"
+                            aria-label="Invert colors"
+                        >
+                        Invert Colors
+                    </label>
+                </div>
+
+                <div class="input-group checkbox-group">
+                    <label>
+                        <input 
+                            type="checkbox" 
+                            id="color-checkbox"
+                            aria-label="Use colors in output"
+                        >
+                        Use Colors
+                    </label>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button id="generate-button" class="tech-button" aria-label="Generate ASCII art">
+                <i class="fas fa-magic" aria-hidden="true"></i>
+                Generate ASCII Art
+            </button>
+
+            <!-- Output Section -->
+            <div class="output-container" id="output-container">
+                <pre id="ascii-output" class="ascii-output" aria-label="Generated ASCII art output"></pre>
+                
+                <div class="output-actions">
+                    <button id="copy-button" class="tech-button small" aria-label="Copy ASCII art to clipboard">
+                        <i class="fas fa-copy" aria-hidden="true"></i>
+                        Copy to Clipboard
+                    </button>
+                    <button id="download-button" class="tech-button small" aria-label="Download ASCII art as text file">
+                        <i class="fas fa-download" aria-hidden="true"></i>
+                        Download as Text
+                    </button>
+                    <button id="share-button" class="tech-button small" aria-label="Share ASCII art">
+                        <i class="fas fa-share-alt" aria-hidden="true"></i>
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Share Modal -->
+    <div class="modal" id="share-modal" role="dialog" aria-labelledby="share-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="share-modal-title">Share ASCII Art</h3>
+                <button class="close-modal" aria-label="Close share dialog">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="share-options">
+                    <button class="share-button" data-platform="twitter" aria-label="Share on Twitter">
+                        <i class="fab fa-twitter" aria-hidden="true"></i>
+                        Twitter
+                    </button>
+                    <button class="share-button" data-platform="facebook" aria-label="Share on Facebook">
+                        <i class="fab fa-facebook" aria-hidden="true"></i>
+                        Facebook
+                    </button>
+                    <button class="share-button" data-platform="reddit" aria-label="Share on Reddit">
+                        <i class="fab fa-reddit" aria-hidden="true"></i>
+                        Reddit
+                    </button>
+                    <button class="share-button" data-platform="link" aria-label="Copy share link">
+                        <i class="fas fa-link" aria-hidden="true"></i>
+                        Copy Link
+                    </button>
                 </div>
             </div>
         </div>
@@ -85,7 +195,7 @@
 
     <div class="notification" role="alert" aria-live="polite"></div>
 
-    <script src="../js/common.js"></script>
-    <script src="../js/features/ascii-art.js"></script>
+    <!-- Load scripts -->
+    <script src="../js/features/ascii-art.js" type="module"></script>
 </body>
 </html>

@@ -4,92 +4,241 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Digital Services Hub</title>
+    <meta name="description" content="Learn about Digital Services Hub, our mission, tools, and the technologies we use.">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/about.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="neon-text">About Digital Services Hub</h1>
-        
-        <nav id="main-nav"></nav>
-
-        <div class="content">
-            <div class="theme-toggle">
-                <button id="theme-button" class="tech-button small">Toggle Theme</button>
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <h1>Digital Services Hub</h1>
+                </a>
             </div>
+            <div class="theme-toggle">
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">About Digital Services Hub</h2>
+            <p class="hero-subtitle">Empowering users with modern web tools</p>
+        </div>
+    </header>
 
-            <div class="about-content">
-                <section class="about-section">
-                    <h2>Welcome to Digital Services Hub</h2>
-                    <p>
-                        Digital Services Hub is a collection of powerful web-based tools designed to help you with various digital tasks. 
-                        Our tools are built with modern web technologies and focus on providing a seamless, user-friendly experience.
-                    </p>
-                </section>
-
-                <section class="features-section">
-                    <h2>Our Tools</h2>
-                    <div class="feature-grid">
-                        <div class="feature-card" data-feature="text-to-speech" tabindex="0">
-                            <div class="feature-icon">🗣️</div>
-                            <h3>Text to Speech</h3>
-                            <p>Convert text to natural-sounding speech with multiple voices and languages.</p>
-                        </div>
-
-                        <div class="feature-card" data-feature="image-resizer" tabindex="0">
-                            <div class="feature-icon">🖼️</div>
-                            <h3>Image Resizer</h3>
-                            <p>Resize and optimize images with aspect ratio preservation and format conversion.</p>
-                        </div>
-
-                        <div class="feature-card" data-feature="color-palette" tabindex="0">
-                            <div class="feature-icon">🎨</div>
-                            <h3>Color Palette</h3>
-                            <p>Generate and customize color palettes with harmony rules and export options.</p>
-                        </div>
-
-                        <div class="feature-card" data-feature="ascii-art" tabindex="0">
-                            <div class="feature-icon">🎯</div>
-                            <h3>ASCII Art</h3>
-                            <p>Convert images into ASCII art with customizable settings and color support.</p>
-                        </div>
-
-                        <div class="feature-card" data-feature="qr-code" tabindex="0">
-                            <div class="feature-icon">📱</div>
-                            <h3>QR Code</h3>
-                            <p>Generate customizable QR codes with error correction and styling options.</p>
-                        </div>
+    <main class="container">
+        <!-- Mission Section -->
+        <section class="mission-section">
+            <div class="section-content">
+                <h2>Our Mission</h2>
+                <p>Digital Services Hub is dedicated to providing free, accessible, and powerful web-based tools for everyday digital tasks. We believe that quality digital tools should be available to everyone, regardless of technical expertise or budget.</p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">6+</span>
+                        <span class="stat-label">Tools</span>
                     </div>
-                </section>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Free</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Ads</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <section class="tech-section">
-                    <h2>Technologies</h2>
-                    <p>Built with modern web technologies:</p>
+        <!-- Tools Section -->
+        <section class="tools-section">
+            <h2>Our Tools</h2>
+            <div class="tools-grid">
+                <div class="tool-item">
+                    <div class="tool-icon">
+                        <i class="fas fa-volume-up"></i>
+                    </div>
+                    <h3>Text to Speech</h3>
+                    <p>Convert text to natural-sounding speech with multiple voices and languages. Perfect for accessibility, learning, or content creation.</p>
+                    <a href="text-to-speech.html" class="tech-button">Try It</a>
+                </div>
+
+                <div class="tool-item">
+                    <div class="tool-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h3>Image Resizer</h3>
+                    <p>Resize and optimize images while maintaining quality. Support for multiple formats and aspect ratio preservation.</p>
+                    <a href="image-resizer.html" class="tech-button">Try It</a>
+                </div>
+
+                <div class="tool-item">
+                    <div class="tool-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>Color Palette</h3>
+                    <p>Generate beautiful color harmonies for your designs with advanced color theory and export options.</p>
+                    <a href="color-palette.html" class="tech-button">Try It</a>
+                </div>
+
+                <div class="tool-item">
+                    <div class="tool-icon">
+                        <i class="fas fa-font"></i>
+                    </div>
+                    <h3>ASCII Art</h3>
+                    <p>Transform images into creative ASCII art with customizable settings and color support.</p>
+                    <a href="ascii-art.html" class="tech-button">Try It</a>
+                </div>
+
+                <div class="tool-item">
+                    <div class="tool-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h3>QR Code</h3>
+                    <p>Generate customizable QR codes with error correction and styling options for your links and data.</p>
+                    <a href="qr-code.html" class="tech-button">Try It</a>
+                </div>
+
+                <div class="tool-item">
+                    <div class="tool-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3>Password Generator</h3>
+                    <p>Create strong, secure passwords with advanced customization and strength indicators.</p>
+                    <a href="password-generator.html" class="tech-button">Try It</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technologies Section -->
+        <section class="tech-section">
+            <h2>Technologies</h2>
+            <div class="tech-stack">
+                <div class="tech-category">
+                    <h3>Frontend</h3>
                     <ul class="tech-list">
-                        <li>HTML5 & CSS3</li>
-                        <li>Modern JavaScript (ES6+)</li>
-                        <li>Web Speech API</li>
-                        <li>Canvas API</li>
-                        <li>File API</li>
-                        <li>Local Storage</li>
+                        <li><i class="fab fa-html5"></i> HTML5</li>
+                        <li><i class="fab fa-css3-alt"></i> CSS3</li>
+                        <li><i class="fab fa-js"></i> JavaScript (ES6+)</li>
                     </ul>
-                </section>
+                </div>
+                <div class="tech-category">
+                    <h3>Libraries</h3>
+                    <ul class="tech-list">
+                        <li><i class="fas fa-palette"></i> Web Speech API</li>
+                        <li><i class="fas fa-image"></i> Canvas API</li>
+                        <li><i class="fas fa-file"></i> File API</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Tools</h3>
+                    <ul class="tech-list">
+                        <li><i class="fab fa-git-alt"></i> Git</li>
+                        <li><i class="fab fa-github"></i> GitHub</li>
+                        <li><i class="fas fa-code"></i> VS Code</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-                <section class="info-section">
-                    <h2>Project Information</h2>
-                    <div id="version-info" class="version-info"></div>
-                    <p>
-                        This project is open-source and continuously improving. Feel free to contribute or report issues 
-                        through our repository.
-                    </p>
-                </section>
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Fast & Efficient</h3>
+                    <p>All tools are optimized for speed and performance, ensuring quick results without delays.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Secure</h3>
+                    <p>Your data stays in your browser. No server uploads, no tracking, complete privacy.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-universal-access"></i>
+                    </div>
+                    <h3>Accessible</h3>
+                    <p>Built with accessibility in mind, following WCAG guidelines for all users.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive</h3>
+                    <p>Works seamlessly across all devices and screen sizes.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Open Source</h3>
+                    <p>Fully open source and free to use, modify, and distribute.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <h3>Regular Updates</h3>
+                    <p>Continuously improved with new features and security updates.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contribution Section -->
+        <section class="contribute-section">
+            <h2>Contribute</h2>
+            <p>Digital Services Hub is an open-source project. We welcome contributions from developers of all skill levels.</p>
+            <div class="contribute-links">
+                <a href="https://github.com/TMHDigital/Digital_Services.HUB" class="tech-button" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i> GitHub Repository
+                </a>
+                <a href="https://github.com/TMHDigital/Digital_Services.HUB/issues" class="tech-button" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-bug"></i> Report Issues
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Digital Services Hub</h4>
+                <p>Free web-based tools for everyday digital tasks.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="https://github.com/TMHDigital/Digital_Services.HUB">GitHub</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                </ul>
             </div>
         </div>
-    </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Digital Services Hub. All rights reserved.</p>
+        </div>
+    </footer>
 
-    <div class="notification" role="alert" aria-live="polite"></div>
-
-    <script src="../js/common.js"></script>
-    <script src="../js/features/about.js"></script>
+    <script src="../js/features/about.js" type="module"></script>
 </body>
 </html>
