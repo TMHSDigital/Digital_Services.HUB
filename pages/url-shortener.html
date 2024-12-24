@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener - Digital Services Hub</title>
+    <meta name="description" content="Free URL shortener tool - Create short, memorable links from long URLs. Track clicks and manage your shortened links easily.">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/url-shortener.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="hero">
+        <nav id="main-nav" class="nav-container">
+            <div class="logo">
+                <a href="../index.html">
+                    <h1>Digital Services Hub</h1>
+                </a>
+            </div>
+            <div class="theme-toggle">
+                <button id="theme-button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <h2 class="hero-title">URL Shortener</h2>
+            <p class="hero-subtitle">Create short, memorable links instantly</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="url-shortener">
+            <div class="input-section">
+                <div class="url-input-container">
+                    <input type="url" id="long-url" placeholder="Paste your long URL here" 
+                           aria-label="Enter your long URL">
+                    <button id="shorten-button" class="primary-button">
+                        <i class="fas fa-link"></i> Shorten URL
+                    </button>
+                </div>
+                
+                <div class="options-container">
+                    <div class="custom-alias">
+                        <input type="text" id="custom-alias" placeholder="Custom alias (optional)" 
+                               aria-label="Custom alias">
+                        <span class="hint">Create a memorable custom link (optional)</span>
+                    </div>
+                    
+                    <div class="expiry-options">
+                        <select id="expiry-time" aria-label="Link expiry time">
+                            <option value="never">Never expires</option>
+                            <option value="24h">24 hours</option>
+                            <option value="7d">7 days</option>
+                            <option value="30d">30 days</option>
+                            <option value="custom">Custom date</option>
+                        </select>
+                        <input type="date" id="custom-expiry" class="hidden" 
+                               aria-label="Custom expiry date">
+                    </div>
+                </div>
+            </div>
+
+            <div id="result-section" class="result-section hidden">
+                <div class="shortened-url-container">
+                    <input type="text" id="shortened-url" readonly 
+                           aria-label="Shortened URL">
+                    <button id="copy-button" class="secondary-button" 
+                            aria-label="Copy shortened URL">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button id="qr-button" class="secondary-button" 
+                            aria-label="Generate QR code">
+                        <i class="fas fa-qrcode"></i>
+                    </button>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat">
+                        <span class="stat-label">Total Clicks</span>
+                        <span id="click-count" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Created</span>
+                        <span id="created-date" class="stat-value">Just now</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Expires</span>
+                        <span id="expiry-date" class="stat-value">Never</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="qr-modal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>QR Code for Your Shortened URL</h3>
+                        <button class="close-button" aria-label="Close modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="qr-code"></div>
+                        <button id="download-qr" class="primary-button">
+                            <i class="fas fa-download"></i> Download QR Code
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="history-section" class="history-section hidden">
+            <h2>Recent URLs</h2>
+            <div class="history-list">
+                <!-- History items will be added here dynamically -->
+            </div>
+        </section>
+
+        <section class="features-section">
+            <h2>Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Click Analytics</h3>
+                    <p>Track the performance of your shortened URLs with detailed click statistics.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-qrcode"></i>
+                    <h3>QR Code Generation</h3>
+                    <p>Generate QR codes for your shortened URLs instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Custom Expiry</h3>
+                    <p>Set custom expiration dates for your shortened URLs.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-text-width"></i>
+                    <h3>Custom Aliases</h3>
+                    <p>Create memorable custom aliases for your links.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Digital Services Hub</h4>
+                <p>Free web-based tools for everyday digital tasks.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="https://github.com/TMHDigital/Digital_Services.HUB">GitHub</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Digital Services Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/features/url-shortener.js" type="module"></script>
+</body>
+</html> 
