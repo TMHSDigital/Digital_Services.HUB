@@ -109,4 +109,47 @@ export function generateToolList() {
     return Object.keys(CATEGORIES)
         .map(category => generateCategorySection(category))
         .join('');
+}
+
+export function generateSocialShare(url, title) {
+    const encodedUrl = encodeURIComponent(url);
+    const encodedTitle = encodeURIComponent(title);
+    
+    return `
+        <div class="social-share">
+            <h3>Share</h3>
+            <div class="share-buttons">
+                <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="share-button twitter"
+                   aria-label="Share on Twitter">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="share-button facebook"
+                   aria-label="Share on Facebook">
+                    <i class="fab fa-facebook"></i>
+                    Facebook
+                </a>
+                <a href="https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="share-button reddit"
+                   aria-label="Share on Reddit">
+                    <i class="fab fa-reddit"></i>
+                    Reddit
+                </a>
+                <button class="share-button copy-link" 
+                        data-url="${url}"
+                        aria-label="Copy link to clipboard">
+                    <i class="fas fa-link"></i>
+                    Copy Link
+                </button>
+            </div>
+        </div>
+    `;
 } 

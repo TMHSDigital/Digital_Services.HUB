@@ -392,4 +392,24 @@ export const responsiveHelper = {
         window.addEventListener('resize', handler);
         return () => window.removeEventListener('resize', handler);
     }
-}; 
+};
+
+export function initializeSocialShare() {
+    document.querySelectorAll('.share-button.copy-link').forEach(button => {
+        button.addEventListener('click', async () => {
+            const url = button.dataset.url;
+            try {
+                await navigator.clipboard.writeText(url);
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                button.classList.add('success');
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-link"></i> Copy Link';
+                    button.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                showNotification('Failed to copy link', 'error');
+            }
+        });
+    });
+} 

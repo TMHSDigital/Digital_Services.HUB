@@ -1,0 +1,93 @@
+.social-share {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+.social-share h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.share-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.share-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.share-button i {
+    font-size: 1.2rem;
+}
+
+/* Twitter */
+.share-button.twitter {
+    background: #1DA1F2;
+    color: white;
+}
+
+.share-button.twitter:hover {
+    background: #0d8ed9;
+}
+
+/* Facebook */
+.share-button.facebook {
+    background: #4267B2;
+    color: white;
+}
+
+.share-button.facebook:hover {
+    background: #365899;
+}
+
+/* Reddit */
+.share-button.reddit {
+    background: #FF4500;
+    color: white;
+}
+
+.share-button.reddit:hover {
+    background: #e63e00;
+}
+
+/* Copy Link */
+.share-button.copy-link {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.share-button.copy-link:hover {
+    background: var(--border-color);
+}
+
+/* Success State */
+.share-button.copy-link.success {
+    background: var(--success-color);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .share-buttons {
+        flex-direction: column;
+    }
+
+    .share-button {
+        width: 100%;
+        justify-content: center;
+    }
+} 
