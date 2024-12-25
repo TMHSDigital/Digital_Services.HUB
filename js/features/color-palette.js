@@ -6,8 +6,8 @@ import utils from '../utils/helpers.js';
 class ColorPalette extends BaseTool {
     constructor() {
         this.initializeElements();
-        this.initializeColorPicker();
         this.initializeState();
+        this.setupColorWheel();
         this.setupEventListeners();
         this.loadSavedPalettes();
     }
@@ -15,9 +15,9 @@ class ColorPalette extends BaseTool {
     initializeElements() {
         // Color picker elements
         this.colorWheel = document.getElementById('color-wheel');
-        this.hueSlider = document.getElementById('hue');
-        this.saturationSlider = document.getElementById('saturation');
-        this.lightnessSlider = document.getElementById('lightness');
+        this.hueInput = document.getElementById('hue');
+        this.saturationInput = document.getElementById('saturation');
+        this.lightnessInput = document.getElementById('lightness');
         this.hueValue = document.getElementById('hue-value');
         this.saturationValue = document.getElementById('saturation-value');
         this.lightnessValue = document.getElementById('lightness-value');
@@ -34,23 +34,29 @@ class ColorPalette extends BaseTool {
         this.colorSwatches = document.getElementById('color-swatches');
         this.savedPaletteGrid = document.getElementById('saved-palette-grid');
         this.exportMenu = document.querySelector('.export-menu');
-        this.notification = document.querySelector('.notification');
 
         // Modal elements
-        this.modal = document.getElementById('color-modal');
-        this.modalPreview = this.modal.querySelector('.color-preview');
-        this.modalInputs = {
-            hex: this.modal.querySelector('.hex-value'),
-            rgb: this.modal.querySelector('.rgb-value'),
-            hsl: this.modal.querySelector('.hsl-value')
-        };
-        this.closeModalButton = this.modal.querySelector('.close-modal');
+        this.colorModal = document.getElementById('color-modal');
+        this.modalPreview = this.colorModal.querySelector('.color-preview');
+        this.hexValue = document.getElementById('hex-value');
+        this.rgbValue = document.getElementById('rgb-value');
+        this.hslValue = document.getElementById('hsl-value');
+        this.closeModal = this.colorModal.querySelector('.close-modal');
+
+        // Notification
+        this.notification = document.querySelector('.notification');
     }
 
-    initializeColorPicker() {
+    initializeState() {
+        this.currentColor = { h: 0, s: 100, l: 50 };
+        this.currentPalette = [];
+        this.savedPalettes = [];
+    }
+
+    setupColorWheel() {
         this.colorPicker = new iro.ColorPicker('#color-wheel', {
-            width: 280,
-            color: '#f00',
+            width: 250,
+            color: 'hsl(0, 100%, 50%)',
             borderWidth: 1,
             borderColor: '#fff',
             layout: [
@@ -61,96 +67,76 @@ class ColorPalette extends BaseTool {
             ]
         });
 
-        // Sync color picker with sliders
         this.colorPicker.on('color:change', (color) => {
-            this.updateSliders(color);
+            this.updateColorValues(color);
         });
-    }
-
-    initializeState() {
-        this.currentColor = this.colorPicker.color;
-        this.currentPalette = [];
-        this.savedPalettes = [];
     }
 
     setupEventListeners() {
-        // Color control events
-        this.hueSlider.addEventListener('input', () => this.updateFromSliders());
-        this.saturationSlider.addEventListener('input', () => this.updateFromSliders());
-        this.lightnessSlider.addEventListener('input', () => this.updateFromSliders());
-
-        // Button events
+        // Generate buttons
         this.generateButton.addEventListener('click', () => this.generateHarmony());
         this.randomButton.addEventListener('click', () => this.generateRandomPalette());
+
+        // Save and export
         this.saveButton.addEventListener('click', () => this.savePalette());
+        this.exportButton.addEventListener('click', () => this.toggleExportMenu());
         this.clearSavedButton.addEventListener('click', () => this.clearSavedPalettes());
 
-        // Export menu events
-        this.exportButton.addEventListener('click', () => this.toggleExportMenu());
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.export-dropdown')) {
-                this.exportMenu.classList.remove('active');
+        // Export menu options
+        this.exportMenu.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                this.exportPalette(e.target.dataset.format);
             }
         });
 
-        this.exportMenu.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', () => {
-                const format = button.dataset.format;
-                this.copyPaletteValues(format);
-            });
+        // Modal
+        this.closeModal.addEventListener('click', () => this.hideColorModal());
+        window.addEventListener('click', (e) => {
+            if (e.target === this.colorModal) {
+                this.hideColorModal();
+            }
         });
 
-        // Modal events
-        this.closeModalButton.addEventListener('click', () => this.closeModal());
-        this.modal.addEventListener('click', (e) => {
-            if (e.target === this.modal) this.closeModal();
-        });
-
-        // Copy button events
-        this.modal.querySelectorAll('.copy-button').forEach(button => {
+        // Color value copy buttons
+        document.querySelectorAll('.copy-button').forEach(button => {
             button.addEventListener('click', () => {
                 const type = button.dataset.type;
-                const value = this.modalInputs[type].value;
-                this.copyToClipboard(value);
+                const input = document.getElementById(`${type}-value`);
+                this.copyToClipboard(input.value);
             });
+        });
+
+        // Close export menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.export-dropdown')) {
+                this.exportMenu.classList.remove('show');
+            }
         });
     }
 
-    updateSliders(color) {
-        const hsl = color.hsl;
-        this.hueSlider.value = hsl.h;
-        this.saturationSlider.value = hsl.s;
-        this.lightnessSlider.value = hsl.l;
-        this.updateSliderValues();
-    }
-
-    updateFromSliders() {
-        const hsl = {
-            h: parseInt(this.hueSlider.value),
-            s: parseInt(this.saturationSlider.value),
-            l: parseInt(this.lightnessSlider.value)
+    updateColorValues(color) {
+        this.currentColor = {
+            h: color.hsl.h,
+            s: color.hsl.s,
+            l: color.hsl.l
         };
-        this.colorPicker.color.hsl = hsl;
-        this.updateSliderValues();
-    }
 
-    updateSliderValues() {
-        this.hueValue.textContent = `${Math.round(this.hueSlider.value)}°`;
-        this.saturationValue.textContent = `${Math.round(this.saturationSlider.value)}%`;
-        this.lightnessValue.textContent = `${Math.round(this.lightnessSlider.value)}%`;
+        this.hueValue.textContent = `${Math.round(this.currentColor.h)}°`;
+        this.saturationValue.textContent = `${Math.round(this.currentColor.s)}%`;
+        this.lightnessValue.textContent = `${Math.round(this.currentColor.l)}%`;
+
+        this.hueInput.value = this.currentColor.h;
+        this.saturationInput.value = this.currentColor.s;
+        this.lightnessInput.value = this.currentColor.l;
     }
 
     generateHarmony() {
-        const baseColor = this.colorPicker.color.hsl;
         const harmony = this.harmonySelect.value;
-        this.currentPalette = this.calculateHarmony(baseColor, harmony);
-        this.displayPalette(this.currentPalette);
-    }
+        const h = this.currentColor.h;
+        const s = this.currentColor.s;
+        const l = this.currentColor.l;
 
-    calculateHarmony(baseColor, harmony) {
-        const { h, s, l } = baseColor;
         let colors = [];
-
         switch (harmony) {
             case 'complementary':
                 colors = [
@@ -191,94 +177,66 @@ class ColorPalette extends BaseTool {
                 colors = [
                     { h, s, l: Math.max(0, l - 30) },
                     { h, s, l },
-                    { h, s: Math.min(100, s + 20), l },
                     { h, s, l: Math.min(100, l + 30) }
                 ];
                 break;
         }
 
-        return colors;
+        this.currentPalette = colors;
+        this.displayPalette(colors);
     }
 
     generateRandomPalette() {
-        const colors = [];
-        for (let i = 0; i < 5; i++) {
-            colors.push({
-                h: Math.floor(Math.random() * 360),
-                s: Math.floor(Math.random() * 40) + 60, // 60-100 for vibrant colors
-                l: Math.floor(Math.random() * 40) + 30  // 30-70 for visible colors
-            });
-        }
+        const colors = Array(5).fill().map(() => ({
+            h: Math.floor(Math.random() * 360),
+            s: Math.floor(Math.random() * 40) + 60, // 60-100% saturation
+            l: Math.floor(Math.random() * 40) + 30  // 30-70% lightness
+        }));
+
         this.currentPalette = colors;
         this.displayPalette(colors);
     }
 
     displayPalette(colors) {
-        this.colorSwatches.innerHTML = '';
-        colors.forEach(color => {
-            const swatch = document.createElement('div');
-            swatch.className = 'color-swatch';
-            swatch.style.backgroundColor = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
-            
-            const info = document.createElement('div');
-            info.className = 'color-swatch-info';
-            info.textContent = this.formatColor(color, 'hex');
-            
-            swatch.appendChild(info);
-            swatch.addEventListener('click', () => this.showColorInfo(color));
-            this.colorSwatches.appendChild(swatch);
+        this.colorSwatches.innerHTML = colors.map(color => `
+            <div class="color-swatch" 
+                 style="background-color: hsl(${color.h}, ${color.s}%, ${color.l}%)"
+                 data-color='${JSON.stringify(color)}'
+                 role="listitem"
+                 tabindex="0"
+                 aria-label="Color swatch: hsl(${color.h}, ${color.s}%, ${color.l}%)">
+            </div>
+        `).join('');
+
+        // Add click listeners to swatches
+        this.colorSwatches.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', () => {
+                const color = JSON.parse(swatch.dataset.color);
+                this.showColorModal(color);
+            });
         });
     }
 
-    formatColor(color, format) {
-        const hslToRgb = (h, s, l) => {
-            s /= 100;
-            l /= 100;
-            const a = s * Math.min(l, 1 - l);
-            const f = (n, k = (n + h / 30) % 12) => l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-            return [f(0), f(8), f(4)].map(x => Math.round(x * 255));
-        };
+    showColorModal(color) {
+        const hsl = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+        const rgb = this.hslToRgb(color.h, color.s, color.l);
+        const hex = this.rgbToHex(rgb.r, rgb.g, rgb.b);
 
-        const hslToHex = (h, s, l) => {
-            const rgb = hslToRgb(h, s, l);
-            return '#' + rgb.map(x => {
-                const hex = x.toString(16);
-                return hex.length === 1 ? '0' + hex : hex;
-            }).join('');
-        };
+        this.modalPreview.style.backgroundColor = hsl;
+        this.hexValue.value = hex;
+        this.rgbValue.value = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+        this.hslValue.value = hsl;
 
-        switch (format) {
-            case 'hex':
-                return hslToHex(color.h, color.s, color.l);
-            case 'rgb':
-                const [r, g, b] = hslToRgb(color.h, color.s, color.l);
-                return `rgb(${r}, ${g}, ${b})`;
-            case 'hsl':
-                return `hsl(${Math.round(color.h)}, ${Math.round(color.s)}%, ${Math.round(color.l)}%)`;
-            case 'css':
-                return `--color: ${hslToHex(color.h, color.s, color.l)};`;
-            case 'sass':
-                return `$color: ${hslToHex(color.h, color.s, color.l)};`;
-            default:
-                return hslToHex(color.h, color.s, color.l);
-        }
+        this.colorModal.style.display = 'block';
     }
 
-    showColorInfo(color) {
-        this.modalPreview.style.backgroundColor = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
-        this.modalInputs.hex.value = this.formatColor(color, 'hex');
-        this.modalInputs.rgb.value = this.formatColor(color, 'rgb');
-        this.modalInputs.hsl.value = this.formatColor(color, 'hsl');
-        this.modal.classList.add('active');
-    }
-
-    closeModal() {
-        this.modal.classList.remove('active');
+    hideColorModal() {
+        this.colorModal.style.display = 'none';
     }
 
     savePalette() {
         if (this.currentPalette.length === 0) {
-            this.showNotification('Please generate a palette first', 'error');
+            this.showNotification('No palette to save', 'error');
             return;
         }
 
@@ -289,72 +247,57 @@ class ColorPalette extends BaseTool {
         };
 
         this.savedPalettes.unshift(palette);
+        if (this.savedPalettes.length > 10) {
+            this.savedPalettes.pop();
+        }
+
         this.savePalettesToStorage();
         this.displaySavedPalettes();
         this.showNotification('Palette saved successfully', 'success');
     }
 
-    savePalettesToStorage() {
-        localStorage.setItem('savedPalettes', JSON.stringify(this.savedPalettes));
-    }
-
-    loadSavedPalettes() {
-        const saved = localStorage.getItem('savedPalettes');
-        this.savedPalettes = saved ? JSON.parse(saved) : [];
-        this.displaySavedPalettes();
-    }
-
     displaySavedPalettes() {
-        this.savedPaletteGrid.innerHTML = '';
-        this.savedPalettes.forEach(palette => {
-            const element = document.createElement('div');
-            element.className = 'saved-palette';
-            
-            const colors = document.createElement('div');
-            colors.className = 'saved-palette-colors';
-            palette.colors.forEach(color => {
-                const swatch = document.createElement('div');
-                swatch.className = 'saved-palette-color';
-                swatch.style.backgroundColor = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
-                colors.appendChild(swatch);
+        this.savedPaletteGrid.innerHTML = this.savedPalettes.map(palette => `
+            <div class="saved-palette" data-id="${palette.id}" role="listitem">
+                <div class="saved-swatches">
+                    ${palette.colors.map(color => `
+                        <div class="saved-swatch" 
+                             style="background-color: hsl(${color.h}, ${color.s}%, ${color.l}%)"
+                             role="img"
+                             aria-label="Color: hsl(${color.h}, ${color.s}%, ${color.l}%)">
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="saved-palette-actions">
+                    <button class="load-palette" aria-label="Load this palette">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                    <button class="delete-palette" aria-label="Delete this palette">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // Add event listeners to saved palette actions
+        this.savedPaletteGrid.querySelectorAll('.saved-palette').forEach(paletteEl => {
+            const id = parseInt(paletteEl.dataset.id);
+            paletteEl.querySelector('.load-palette').addEventListener('click', () => {
+                this.loadPalette(id);
             });
-
-            const info = document.createElement('div');
-            info.className = 'saved-palette-info';
-            
-            const date = new Date(palette.timestamp);
-            const dateStr = date.toLocaleDateString();
-            
-            const actions = document.createElement('div');
-            actions.className = 'saved-palette-actions';
-            
-            const loadButton = document.createElement('button');
-            loadButton.className = 'secondary-button small';
-            loadButton.innerHTML = '<i class="fas fa-sync-alt"></i>';
-            loadButton.setAttribute('aria-label', 'Load palette');
-            loadButton.addEventListener('click', () => {
-                this.currentPalette = palette.colors;
-                this.displayPalette(palette.colors);
-                this.showNotification('Palette loaded', 'success');
+            paletteEl.querySelector('.delete-palette').addEventListener('click', () => {
+                this.deletePalette(id);
             });
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'secondary-button small';
-            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteButton.setAttribute('aria-label', 'Delete palette');
-            deleteButton.addEventListener('click', () => {
-                this.deletePalette(palette.id);
-            });
-
-            actions.appendChild(loadButton);
-            actions.appendChild(deleteButton);
-            info.appendChild(document.createTextNode(dateStr));
-            info.appendChild(actions);
-
-            element.appendChild(colors);
-            element.appendChild(info);
-            this.savedPaletteGrid.appendChild(element);
         });
+    }
+
+    loadPalette(id) {
+        const palette = this.savedPalettes.find(p => p.id === id);
+        if (palette) {
+            this.currentPalette = palette.colors;
+            this.displayPalette(palette.colors);
+            this.showNotification('Palette loaded', 'success');
+        }
     }
 
     deletePalette(id) {
@@ -365,55 +308,101 @@ class ColorPalette extends BaseTool {
     }
 
     clearSavedPalettes() {
-        if (confirm('Are you sure you want to clear all saved palettes?')) {
-            this.savedPalettes = [];
-            this.savePalettesToStorage();
-            this.displaySavedPalettes();
-            this.showNotification('All palettes cleared', 'success');
-        }
+        this.savedPalettes = [];
+        this.savePalettesToStorage();
+        this.displaySavedPalettes();
+        this.showNotification('All palettes cleared', 'success');
     }
 
     toggleExportMenu() {
-        this.exportMenu.classList.toggle('active');
+        this.exportMenu.classList.toggle('show');
     }
 
-    copyPaletteValues(format) {
+    exportPalette(format) {
         if (this.currentPalette.length === 0) {
-            this.showNotification('Please generate a palette first', 'error');
+            this.showNotification('No palette to export', 'error');
             return;
         }
 
         let text = '';
         switch (format) {
             case 'hex':
+                text = this.currentPalette.map(color => {
+                    const rgb = this.hslToRgb(color.h, color.s, color.l);
+                    return this.rgbToHex(rgb.r, rgb.g, rgb.b);
+                }).join(', ');
+                break;
             case 'rgb':
+                text = this.currentPalette.map(color => {
+                    const rgb = this.hslToRgb(color.h, color.s, color.l);
+                    return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+                }).join(', ');
+                break;
             case 'hsl':
-                text = this.currentPalette
-                    .map(color => this.formatColor(color, format))
-                    .join('\n');
+                text = this.currentPalette.map(color => 
+                    `hsl(${Math.round(color.h)}, ${Math.round(color.s)}%, ${Math.round(color.l)}%)`
+                ).join(', ');
                 break;
             case 'css':
-                text = this.currentPalette
-                    .map((color, i) => `--color-${i + 1}: ${this.formatColor(color, 'hex')};`)
-                    .join('\n');
+                text = this.currentPalette.map((color, i) => {
+                    const rgb = this.hslToRgb(color.h, color.s, color.l);
+                    const hex = this.rgbToHex(rgb.r, rgb.g, rgb.b);
+                    return `--color-${i + 1}: ${hex};`;
+                }).join('\n');
                 break;
             case 'sass':
-                text = this.currentPalette
-                    .map((color, i) => `$color-${i + 1}: ${this.formatColor(color, 'hex')};`)
-                    .join('\n');
+                text = this.currentPalette.map((color, i) => {
+                    const rgb = this.hslToRgb(color.h, color.s, color.l);
+                    const hex = this.rgbToHex(rgb.r, rgb.g, rgb.b);
+                    return `$color-${i + 1}: ${hex};`;
+                }).join('\n');
                 break;
         }
 
         this.copyToClipboard(text);
-        this.exportMenu.classList.remove('active');
+        this.exportMenu.classList.remove('show');
     }
 
     copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
             this.showNotification('Copied to clipboard', 'success');
-        }).catch(() => {
+        }).catch(err => {
+            console.error('Copy failed:', err);
             this.showNotification('Failed to copy to clipboard', 'error');
         });
+    }
+
+    loadSavedPalettes() {
+        const saved = localStorage.getItem('saved-palettes');
+        this.savedPalettes = saved ? JSON.parse(saved) : [];
+        this.displaySavedPalettes();
+    }
+
+    savePalettesToStorage() {
+        localStorage.setItem('saved-palettes', JSON.stringify(this.savedPalettes));
+    }
+
+    // Color conversion utilities
+    hslToRgb(h, s, l) {
+        s /= 100;
+        l /= 100;
+        const k = n => (n + h / 30) % 12;
+        const a = s * Math.min(l, 1 - l);
+        const f = n =>
+            l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+        return {
+            r: Math.round(255 * f(0)),
+            g: Math.round(255 * f(8)),
+            b: Math.round(255 * f(4))
+        };
+    }
+
+    rgbToHex(r, g, b) {
+        const toHex = x => {
+            const hex = x.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
 
     showNotification(message, type = 'success') {
@@ -428,6 +417,4 @@ class ColorPalette extends BaseTool {
 }
 
 // Initialize the color palette generator
-document.addEventListener('DOMContentLoaded', () => {
-    new ColorPalette();
-}); 
+const colorPalette = new ColorPalette(); 
