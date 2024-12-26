@@ -1,40 +1,55 @@
+import { THEMES } from '../config/app.js';
+
+/**
+ * Initialize theme system
+ */
 export function initializeTheme() {
     const themeButton = document.getElementById('theme-button');
     const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    const currentTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem('theme');
 
     // Set initial theme
-    if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
-        document.body.classList.add('dark-theme');
-        themeButton.querySelector('i').classList.replace('fa-moon', 'fa-sun');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme === THEMES.DARK);
     } else {
-        document.body.classList.remove('dark-theme');
+        const isDark = prefersDarkScheme.matches;
+        document.documentElement.setAttribute('data-theme', isDark ? THEMES.DARK : THEMES.LIGHT);
+        updateThemeIcon(isDark);
     }
 
     // Theme toggle functionality
     themeButton.addEventListener('click', () => {
-        const isDark = document.body.classList.toggle('dark-theme');
-        const icon = themeButton.querySelector('i');
-        
-        if (isDark) {
-            icon.classList.replace('fa-moon', 'fa-sun');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            icon.classList.replace('fa-sun', 'fa-moon');
-            localStorage.setItem('theme', 'light');
-        }
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme === THEMES.DARK);
+
+        // Trigger a custom event for other components
+        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
     });
 
     // Handle system theme changes
     prefersDarkScheme.addEventListener('change', (e) => {
         if (!localStorage.getItem('theme')) {
-            if (e.matches) {
-                document.body.classList.add('dark-theme');
-                themeButton.querySelector('i').classList.replace('fa-moon', 'fa-sun');
-            } else {
-                document.body.classList.remove('dark-theme');
-                themeButton.querySelector('i').classList.replace('fa-sun', 'fa-moon');
-            }
+            const newTheme = e.matches ? THEMES.DARK : THEMES.LIGHT;
+            document.documentElement.setAttribute('data-theme', newTheme);
+            updateThemeIcon(e.matches);
         }
     });
-} 
+}
+
+/**
+ * Update theme icon
+ * @param {boolean} isDark - Whether dark theme is active
+ */
+function updateThemeIcon(isDark) {
+    const icon = document.getElementById('theme-button').querySelector('i');
+    if (isDark) {
+        icon.classList.replace('fa-moon', 'fa-sun');
+    } else {
+        icon.classList.replace('fa-sun', 'fa-moon');
+    }
+}

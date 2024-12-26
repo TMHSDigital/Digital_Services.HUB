@@ -39,29 +39,36 @@ export function generateToolPage(toolId) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header class="hero">
-        <nav id="main-nav" class="nav-container">
-            <div class="logo">
-                <a href="../index.html">
-                    <h1>Digital Services Hub</h1>
-                </a>
-            </div>
-            <div class="theme-toggle">
-                <button id="theme-button" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </nav>
-        <div class="hero-content">
-            <h2 class="hero-title">${tool.name}</h2>
-            <p class="hero-subtitle">${tool.description}</p>
+    <!-- Navigation -->
+    <nav id="main-nav" class="nav-container">
+        <div class="logo">
+            <a href="../index.html">
+                <h1>Digital Services Hub</h1>
+            </a>
         </div>
-    </header>
+        <div class="nav-links">
+            <a href="../index.html#tools" class="nav-link">Tools</a>
+            <a href="../index.html#features" class="nav-link">Features</a>
+            <a href="../index.html#about" class="nav-link">About</a>
+            <a href="https://github.com/TMHDigital/Digital_Services.HUB" class="nav-link" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        <div class="theme-toggle">
+            <button id="theme-button" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
 
+    <!-- Tool Content -->
     <main class="container">
-        <!-- Tool content will be injected here -->
+        <div class="tool-header">
+            <h1>${tool.name}</h1>
+            <p class="tool-description">${tool.description}</p>
+        </div>
         <div id="${tool.id}-container" class="tool-container">
-            <!-- Tool-specific content -->
+            <!-- Tool-specific content will be injected here -->
         </div>
     </main>
 
@@ -74,7 +81,9 @@ export function generateToolPage(toolId) {
             <div class="footer-section">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../index.html#tools">Tools</a></li>
+                    <li><a href="../index.html#features">Features</a></li>
+                    <li><a href="../index.html#about">About</a></li>
                     <li><a href="https://github.com/TMHDigital/Digital_Services.HUB">GitHub</a></li>
                 </ul>
             </div>
@@ -98,9 +107,9 @@ export function generateToolPage(toolId) {
 </html>`;
 }
 
-export function generateToolCard(tool) {
+export function generateToolCard(tool, index) {
     return `
-<article class="tool-card" onclick="window.location.href='${tool.path}'">
+<article class="tool-card" onclick="window.location.href='${tool.path}'" style="--animation-order: ${index}">
     <div class="tool-icon">
         <i class="fas ${tool.icon}"></i>
     </div>
@@ -124,7 +133,7 @@ export function generateCategorySection(category) {
         <p>${categoryInfo.description}</p>
     </div>
     <div class="tools-grid">
-        ${categoryTools.map(tool => generateToolCard(tool)).join('')}
+        ${categoryTools.map((tool, index) => generateToolCard(tool, index)).join('')}
     </div>
 </section>`;
 }
@@ -140,40 +149,39 @@ export function generateSocialShare(url, title) {
     const encodedTitle = encodeURIComponent(title);
 
     return `
-        <div class="social-share">
-            <h3>Share</h3>
-            <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="share-button twitter"
-                   aria-label="Share on Twitter">
-                    <i class="fab fa-twitter"></i>
-                    Twitter
-                </a>
-                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="share-button facebook"
-                   aria-label="Share on Facebook">
-                    <i class="fab fa-facebook"></i>
-                    Facebook
-                </a>
-                <a href="https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="share-button reddit"
-                   aria-label="Share on Reddit">
-                    <i class="fab fa-reddit"></i>
-                    Reddit
-                </a>
-                <button class="share-button copy-link"
-                        data-url="${url}"
-                        aria-label="Copy link to clipboard">
-                    <i class="fas fa-link"></i>
-                    Copy Link
-                </button>
-            </div>
-        </div>
-    `;
+<div class="social-share">
+    <h3>Share</h3>
+    <div class="share-buttons">
+        <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="share-button twitter"
+           aria-label="Share on Twitter">
+            <i class="fab fa-twitter"></i>
+            Twitter
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="share-button facebook"
+           aria-label="Share on Facebook">
+            <i class="fab fa-facebook"></i>
+            Facebook
+        </a>
+        <a href="https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="share-button reddit"
+           aria-label="Share on Reddit">
+            <i class="fab fa-reddit"></i>
+            Reddit
+        </a>
+        <button class="share-button copy-link"
+                data-url="${url}"
+                aria-label="Copy link to clipboard">
+            <i class="fas fa-link"></i>
+            Copy Link
+        </button>
+    </div>
+</div>`;
 }
