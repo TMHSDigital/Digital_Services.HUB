@@ -36,7 +36,7 @@ export const TOOLS = [
             { name: 'Language Support', icon: 'fas fa-language', description: 'Multiple language options' },
             { name: 'Download Audio', icon: 'fas fa-download', description: 'Save as MP3' }
         ],
-        path: './pages/text-to-speech.html',
+        path: 'pages/text-to-speech.html',
         category: TOOL_CATEGORIES.AUDIO,
         order: 1
     },
@@ -50,7 +50,7 @@ export const TOOLS = [
             { name: 'Multiple Formats', icon: 'fas fa-file-image', description: 'Support for PNG, JPG, WebP' },
             { name: 'Batch Processing', icon: 'fas fa-layer-group', description: 'Process multiple images' }
         ],
-        path: './pages/image-resizer.html',
+        path: 'pages/image-resizer.html',
         category: TOOL_CATEGORIES.IMAGE,
         order: 2
     },
@@ -64,7 +64,7 @@ export const TOOLS = [
             { name: 'Size Control', icon: 'fas fa-arrows-alt', description: 'Adjust output size' },
             { name: 'Export Options', icon: 'fas fa-file-export', description: 'Save as text or image' }
         ],
-        path: './pages/ascii-art.html',
+        path: 'pages/ascii-art.html',
         category: TOOL_CATEGORIES.IMAGE,
         order: 3
     },
@@ -78,7 +78,7 @@ export const TOOLS = [
             { name: 'Export Formats', icon: 'fas fa-file-code', description: 'CSS, SCSS, JSON' },
             { name: 'Accessibility', icon: 'fas fa-universal-access', description: 'Check contrast ratios' }
         ],
-        path: './pages/color-palette.html',
+        path: 'pages/color-palette.html',
         category: TOOL_CATEGORIES.DESIGN,
         order: 4
     },
@@ -92,7 +92,7 @@ export const TOOLS = [
             { name: 'Multiple Formats', icon: 'fas fa-file-image', description: 'PNG, SVG, PDF' },
             { name: 'Error Correction', icon: 'fas fa-shield-alt', description: 'Reliable scanning' }
         ],
-        path: './pages/qr-code.html',
+        path: 'pages/qr-code.html',
         category: TOOL_CATEGORIES.UTILITY,
         order: 5
     },
@@ -106,7 +106,7 @@ export const TOOLS = [
             { name: 'Strength Check', icon: 'fas fa-shield-alt', description: 'Password strength meter' },
             { name: 'Save History', icon: 'fas fa-history', description: 'Recent passwords' }
         ],
-        path: './pages/password-generator.html',
+        path: 'pages/password-generator.html',
         category: TOOL_CATEGORIES.SECURITY,
         order: 6
     },
@@ -120,7 +120,7 @@ export const TOOLS = [
             { name: 'Click Tracking', icon: 'fas fa-chart-line', description: 'Track link usage' },
             { name: 'QR Code Export', icon: 'fas fa-qrcode', description: 'Generate QR codes' }
         ],
-        path: './pages/url-shortener.html',
+        path: 'pages/url-shortener.html',
         category: TOOL_CATEGORIES.UTILITY,
         order: 7
     }

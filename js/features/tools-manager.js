@@ -116,7 +116,11 @@ function generateToolCards() {
 function navigateToTool(toolId) {
     const tool = getToolById(toolId);
     if (tool) {
-        window.location.href = tool.path;
+        // Get base URL from current location
+        const baseUrl = window.location.pathname.split('/').slice(0, -1).join('/');
+        // Combine base URL with tool path
+        const fullPath = `${baseUrl}/${tool.path}`;
+        window.location.href = fullPath;
     }
 }
 
