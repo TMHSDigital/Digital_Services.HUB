@@ -61,15 +61,26 @@ export function generateToolPage(toolId) {
         </div>
     </nav>
 
-    <!-- Tool Content -->
-    <main class="container">
-        <div class="tool-header">
+    <!-- Tool Header -->
+    <header class="tool-header">
+        <div class="tool-header-content">
+            <div class="tool-icon">
+                <i class="fas ${tool.icon}"></i>
+            </div>
             <h1>${tool.name}</h1>
             <p class="tool-description">${tool.description}</p>
+            <div class="tool-features">
+                ${tool.features.map(feature => `<span>${feature}</span>`).join('')}
+            </div>
         </div>
+    </header>
+
+    <!-- Tool Content -->
+    <main class="container">
         <div id="${tool.id}-container" class="tool-container">
             <!-- Tool-specific content will be injected here -->
         </div>
+        ${generateSocialShare(`https://tmhsdigital.github.io/Digital_Services.HUB/pages/${tool.id}.html`, `${tool.name} - Digital Services Hub`)}
     </main>
 
     <footer class="footer">

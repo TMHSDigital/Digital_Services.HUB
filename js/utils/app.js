@@ -55,6 +55,10 @@ function initializeNavigation() {
     // Add active state to current page in navigation
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('nav a');
+    const navLinksContainer = document.querySelector('.nav-links');
+    const themeToggle = document.querySelector('.theme-toggle');
+
+    // Set active state
     navLinks.forEach(link => {
         if (link.getAttribute('href') === currentPath) {
             link.classList.add('active');
@@ -62,9 +66,6 @@ function initializeNavigation() {
     });
 
     // Handle mobile navigation
-    const themeToggle = document.querySelector('.theme-toggle');
-    const navLinks = document.querySelector('.nav-links');
-
     if (window.innerWidth <= 768) {
         const menuButton = document.createElement('button');
         menuButton.className = 'menu-toggle';
@@ -72,13 +73,31 @@ function initializeNavigation() {
         menuButton.innerHTML = '<i class="fas fa-bars"></i>';
 
         menuButton.addEventListener('click', () => {
-            navLinks.classList.toggle('show');
+            navLinksContainer.classList.toggle('show');
             const icon = menuButton.querySelector('i');
             icon.classList.toggle('fa-bars');
             icon.classList.toggle('fa-times');
         });
 
         document.querySelector('.nav-container').insertBefore(menuButton, themeToggle);
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-container') && navLinksContainer.classList.contains('show')) {
+                navLinksContainer.classList.remove('show');
+                const icon = menuButton.querySelector('i');
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+
+        // Close menu when window is resized above mobile breakpoint
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768 && navLinksContainer.classList.contains('show')) {
+                navLinksContainer.classList.remove('show');
+                const icon = menuButton.querySelector('i');
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
     }
 }
 

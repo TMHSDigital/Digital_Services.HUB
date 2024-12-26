@@ -580,3 +580,168 @@ html {
     background: var(--primary-gradient);
     border-radius: var(--radius-full);
 }
+
+/* Tool Header */
+.tool-header {
+    background: var(--surface-gradient);
+    padding: 8rem 2rem 4rem;
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.1) 0%, transparent 70%);
+}
+
+.tool-header-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.tool-header .tool-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.tool-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.tool-header .tool-description {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tool-header .tool-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.tool-header .tool-features span {
+    background: rgba(var(--surface-rgb), 0.1);
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* Social Share */
+.social-share {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+}
+
+.social-share h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.share-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.share-button i {
+    font-size: 1.2rem;
+}
+
+.share-button.twitter {
+    background: #1da1f2;
+    color: white;
+}
+
+.share-button.facebook {
+    background: #4267B2;
+    color: white;
+}
+
+.share-button.reddit {
+    background: #ff4500;
+    color: white;
+}
+
+.share-button.copy-link {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
+}
+
+.share-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+}
+
+.share-button.success {
+    background: #2ea44f;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .tool-header {
+        padding: 6rem 1rem 3rem;
+    }
+
+    .tool-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .tool-header .tool-description {
+        font-size: 1.1rem;
+    }
+
+    .share-buttons {
+        flex-direction: column;
+    }
+
+    .share-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
