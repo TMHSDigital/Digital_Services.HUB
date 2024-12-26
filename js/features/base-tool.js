@@ -1,6 +1,8 @@
 import { initializeTheme } from '../utils/theme.js';
 import { notifications } from '../utils/ui.js';
 import utils from '../utils/helpers.js';
+import { generateSocialShare } from '../utils/template-generator.js';
+import { initializeSocialShare } from '../utils/ui.js';
 
 export class BaseTool {
     constructor() {
@@ -19,6 +21,8 @@ export class BaseTool {
         
         // Set up error boundary
         this.setupErrorBoundary();
+        
+        this.initializeSocialShare();
     }
 
     /**
@@ -197,6 +201,27 @@ export class BaseTool {
             this._boundEvents.forEach(({ element, type, listener }) => {
                 element.removeEventListener(type, listener);
             });
+        }
+    }
+
+    initializeSocialShare() {
+        const mainContainer = document.querySelector('main.container');
+        if (mainContainer) {
+            const shareSection = document.createElement('div');
+            shareSection.id = 'share-section';
+            shareSection.innerHTML = generateSocialShare(
+                window.location.href,
+                document.title
+            );
+            mainContainer.appendChild(shareSection);
+            initializeSocialShare();
+        }
+    }
+
+    updateThemeIcon(theme) {
+        const themeIcon = document.querySelector('#theme-button i');
+        if (themeIcon) {
+            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
     }
 } 

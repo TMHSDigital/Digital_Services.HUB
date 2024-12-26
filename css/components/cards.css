@@ -1,0 +1,145 @@
+/**
+ * Card Components
+ */
+
+/* Base card */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    transition: var(--transition);
+}
+
+/* Card variations */
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-interactive {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.card-interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Card with border */
+.card-bordered {
+    border: 1px solid var(--text-muted);
+}
+
+/* Card with gradient border */
+.card-gradient {
+    position: relative;
+    background: var(--card-bg);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+}
+
+.card-gradient::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border-radius: calc(var(--radius-md) + 2px);
+    z-index: -1;
+    transition: var(--transition);
+    opacity: 0.5;
+}
+
+.card-gradient:hover::before {
+    opacity: 1;
+}
+
+/* Card layouts */
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.card-footer {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--text-muted);
+}
+
+/* Card content */
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: var(--spacing-sm);
+}
+
+.card-subtitle {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.card-content {
+    margin-bottom: var(--spacing-md);
+}
+
+/* Card with image */
+.card-image {
+    margin: calc(var(--spacing-md) * -1) calc(var(--spacing-md) * -1) var(--spacing-md);
+    overflow: hidden;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.card-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.card-image:hover img {
+    transform: scale(1.05);
+}
+
+/* Card groups */
+.card-group {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Card sizes */
+.card-sm {
+    padding: var(--spacing-sm);
+}
+
+.card-lg {
+    padding: var(--spacing-lg);
+}
+
+/* Card themes */
+.card-primary {
+    background: var(--primary-color);
+    color: var(--text-light);
+}
+
+.card-secondary {
+    background: var(--secondary-color);
+    color: var(--text-light);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-group {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: var(--spacing-sm);
+    }
+} 

@@ -1,3 +1,30 @@
+/**
+ * @typedef {Object} Tool
+ * @property {string} id - Unique identifier for the tool
+ * @property {string} name - Display name of the tool
+ * @property {string} description - Tool description
+ * @property {string} icon - FontAwesome icon class
+ * @property {string[]} features - List of key features
+ * @property {string} path - Path to the tool's page
+ * @property {string} category - Tool category
+ * @property {number} order - Display order
+ */
+
+/**
+ * Tool categories
+ * @readonly
+ * @enum {string}
+ */
+export const TOOL_CATEGORIES = {
+    AUDIO: 'audio',
+    IMAGE: 'image',
+    TEXT: 'text',
+    UTILITY: 'utility',
+    DESIGN: 'design',
+    SECURITY: 'security'
+};
+
+/** @type {Tool[]} */
 export const TOOLS = [
     {
         id: 'text-to-speech',
@@ -6,7 +33,7 @@ export const TOOLS = [
         icon: 'fa-volume-up',
         features: ['Multiple voices', 'Download audio'],
         path: './pages/text-to-speech.html',
-        category: 'audio',
+        category: TOOL_CATEGORIES.AUDIO,
         order: 1
     },
     {
@@ -16,7 +43,7 @@ export const TOOLS = [
         icon: 'fa-image',
         features: ['Preserve ratio', 'Multiple formats'],
         path: './pages/image-resizer.html',
-        category: 'image',
+        category: TOOL_CATEGORIES.IMAGE,
         order: 2
     },
     {
@@ -26,7 +53,7 @@ export const TOOLS = [
         icon: 'fa-palette',
         features: ['Color harmony', 'Export options'],
         path: './pages/color-palette.html',
-        category: 'design',
+        category: TOOL_CATEGORIES.DESIGN,
         order: 3
     },
     {
@@ -36,7 +63,7 @@ export const TOOLS = [
         icon: 'fa-font',
         features: ['Custom styles', 'Export text'],
         path: './pages/ascii-art.html',
-        category: 'image',
+        category: TOOL_CATEGORIES.IMAGE,
         order: 4
     },
     {
@@ -46,7 +73,7 @@ export const TOOLS = [
         icon: 'fa-qrcode',
         features: ['Custom styles', 'Download PNG'],
         path: './pages/qr-code.html',
-        category: 'utility',
+        category: TOOL_CATEGORIES.UTILITY,
         order: 5
     },
     {
@@ -56,7 +83,7 @@ export const TOOLS = [
         icon: 'fa-key',
         features: ['Custom options', 'Strength meter'],
         path: './pages/password-generator.html',
-        category: 'security',
+        category: TOOL_CATEGORIES.SECURITY,
         order: 6
     },
     {
@@ -66,39 +93,59 @@ export const TOOLS = [
         icon: 'fa-link',
         features: ['Click analytics', 'Custom aliases'],
         path: './pages/url-shortener.html',
-        category: 'utility',
+        category: TOOL_CATEGORIES.UTILITY,
         order: 7
     }
 ];
 
+/**
+ * @typedef {Object} CategoryInfo
+ * @property {string} name - Display name of the category
+ * @property {string} description - Category description
+ * @property {string} icon - FontAwesome icon class
+ */
+
+/** @type {Record<string, CategoryInfo>} */
 export const CATEGORIES = {
-    audio: {
+    [TOOL_CATEGORIES.AUDIO]: {
         name: 'Audio Tools',
         description: 'Tools for audio processing and conversion',
         icon: 'fa-music'
     },
-    image: {
+    [TOOL_CATEGORIES.IMAGE]: {
         name: 'Image Tools',
         description: 'Tools for image manipulation and conversion',
         icon: 'fa-image'
     },
-    design: {
+    [TOOL_CATEGORIES.DESIGN]: {
         name: 'Design Tools',
         description: 'Tools for design and color management',
         icon: 'fa-palette'
     },
-    utility: {
+    [TOOL_CATEGORIES.UTILITY]: {
         name: 'Utility Tools',
         description: 'General purpose utility tools',
         icon: 'fa-tools'
     },
-    security: {
+    [TOOL_CATEGORIES.SECURITY]: {
         name: 'Security Tools',
         description: 'Tools for security and privacy',
         icon: 'fa-shield-alt'
+    },
+    [TOOL_CATEGORIES.TEXT]: {
+        name: 'Text Tools',
+        description: 'Tools for text manipulation and processing',
+        icon: 'fa-font'
     }
 };
 
+/**
+ * @typedef {Object} ToolStats
+ * @property {number} totalTools - Total number of tools
+ * @property {Record<string, number>} toolsByCategory - Number of tools in each category
+ */
+
+/** @type {ToolStats} */
 export const TOOL_STATS = {
     totalTools: TOOLS.length,
     toolsByCategory: Object.fromEntries(

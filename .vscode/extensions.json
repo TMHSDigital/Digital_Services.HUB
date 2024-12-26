@@ -1,0 +1,29 @@
+{
+    "recommendations": [
+        // Essential extensions
+        "dbaeumer.vscode-eslint",          // ESLint
+        "esbenp.prettier-vscode",          // Prettier
+        "ritwickdey.LiveServer",           // Live Server
+        "formulahendry.auto-rename-tag",   // Auto Rename Tag
+
+        // JavaScript/Web development
+        "christian-kohler.path-intellisense",  // Path Intellisense
+        "formulahendry.auto-close-tag",        // Auto Close Tag
+        "naumovs.color-highlight",             // Color Highlight
+        "csstools.postcss",                    // PostCSS Language Support
+
+        // Git integration
+        "eamodio.gitlens",                    // GitLens
+        "mhutchie.git-graph",                 // Git Graph
+
+        // Productivity
+        "streetsidesoftware.code-spell-checker",  // Code Spell Checker
+        "wayou.vscode-todo-highlight",            // TODO Highlight
+        "yzhang.markdown-all-in-one",            // Markdown All in One
+
+        // Theme and icons (optional but recommended)
+        "pkief.material-icon-theme",           // Material Icon Theme
+        "zhuangtongfa.material-theme"          // One Dark Pro
+    ],
+    "unwantedRecommendations": []
+}

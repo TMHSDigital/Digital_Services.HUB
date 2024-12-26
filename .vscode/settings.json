@@ -1,5 +1,77 @@
 {
-    "githubPullRequests.ignoredPullRequestBranches": [
-        "main"
-    ]
+    // Git settings
+    "githubPullRequests.ignoredPullRequestBranches": ["main"],
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.autofetch": true,
+
+    // Editor settings
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.rulers": [100],
+    "editor.wordWrap": "on",
+    "editor.bracketPairColorization.enabled": true,
+
+    // File settings
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.eol": "\n",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/*.min.js": true,
+        "**/*.min.css": true
+    },
+    "files.associations": {
+        "*.css": "css",
+        "*.js": "javascript",
+        "*.json": "jsonc",
+        "*.md": "markdown"
+    },
+
+    // Language specific settings
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "javascript.suggest.autoImports": true,
+    "javascript.format.enable": false, // Use Prettier instead
+
+    "css.validate": true,
+    "css.lint.duplicateProperties": "warning",
+    "css.lint.zeroUnits": "warning",
+
+    "html.format.wrapLineLength": 100,
+    "html.format.wrapAttributes": "auto",
+
+    // Extension settings
+    "prettier.singleQuote": true,
+    "prettier.printWidth": 100,
+    "prettier.tabWidth": 4,
+    "prettier.trailingComma": "es5",
+
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact"
+    ],
+
+    // Workspace settings
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#00ffff",
+        "statusBar.foreground": "#000000",
+        "statusBar.noFolderBackground": "#ff00de"
+    },
+
+    // Search settings
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/*.min.*": true,
+        "package-lock.json": true
+    }
 }
