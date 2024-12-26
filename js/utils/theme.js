@@ -1,55 +1,79 @@
-import { THEMES } from '../config/app.js';
+/**
+ * Theme system initialization and management
+ */
+
+const THEME_KEY = 'preferred-theme';
+const THEMES = {
+    LIGHT: 'light',
+    DARK: 'dark'
+};
 
 /**
  * Initialize theme system
  */
 export function initializeTheme() {
     const themeButton = document.getElementById('theme-button');
-    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    const savedTheme = localStorage.getItem('theme');
+    if (!themeButton) return;
 
     // Set initial theme
-    if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        updateThemeIcon(savedTheme === THEMES.DARK);
-    } else {
-        const isDark = prefersDarkScheme.matches;
-        document.documentElement.setAttribute('data-theme', isDark ? THEMES.DARK : THEMES.LIGHT);
-        updateThemeIcon(isDark);
-    }
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (prefersDark ? THEMES.DARK : THEMES.LIGHT);
 
-    // Theme toggle functionality
+    setTheme(initialTheme);
+
+    // Add theme toggle handler
     themeButton.addEventListener('click', () => {
         const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
-
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme === THEMES.DARK);
-
-        // Trigger a custom event for other components
-        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
+        const newTheme = currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
+        setTheme(newTheme);
     });
 
-    // Handle system theme changes
-    prefersDarkScheme.addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) {
-            const newTheme = e.matches ? THEMES.DARK : THEMES.LIGHT;
-            document.documentElement.setAttribute('data-theme', newTheme);
-            updateThemeIcon(e.matches);
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem(THEME_KEY)) {
+            setTheme(e.matches ? THEMES.DARK : THEMES.LIGHT);
         }
     });
 }
 
 /**
- * Update theme icon
- * @param {boolean} isDark - Whether dark theme is active
+ * Set theme and update UI
+ * @param {string} theme - Theme to set (light/dark)
  */
-function updateThemeIcon(isDark) {
-    const icon = document.getElementById('theme-button').querySelector('i');
-    if (isDark) {
-        icon.classList.replace('fa-moon', 'fa-sun');
-    } else {
-        icon.classList.replace('fa-sun', 'fa-moon');
+function setTheme(theme) {
+    // Update document theme
+    document.documentElement.setAttribute('data-theme', theme);
+
+    // Update theme button icon
+    const themeButton = document.getElementById('theme-button');
+    if (themeButton) {
+        const icon = themeButton.querySelector('i');
+        if (icon) {
+            icon.className = theme === THEMES.DARK ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        themeButton.setAttribute('aria-label', `Switch to ${theme === THEMES.DARK ? 'light' : 'dark'} theme`);
     }
+
+    // Save preference
+    localStorage.setItem(THEME_KEY, theme);
+
+    // Dispatch theme change event
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
+}
+
+/**
+ * Get current theme
+ * @returns {string} Current theme (light/dark)
+ */
+export function getCurrentTheme() {
+    return document.documentElement.getAttribute('data-theme') || THEMES.LIGHT;
+}
+
+/**
+ * Check if dark theme is active
+ * @returns {boolean} True if dark theme is active
+ */
+export function isDarkTheme() {
+    return getCurrentTheme() === THEMES.DARK;
 }

@@ -1,4 +1,4 @@
-import { TOOLS, TOOL_CATEGORIES } from '../config/tools.js';
+import { TOOLS, TOOL_CATEGORIES, CATEGORIES } from '../config/tools.js';
 
 /**
  * Initialize the tools grid
@@ -14,6 +14,7 @@ export function initializeTools() {
             <div class="tool-content">
                 <div class="tool-title"></div>
                 <div class="tool-description"></div>
+                <div class="tool-features"></div>
             </div>
         </div>
     `).join('');
@@ -24,12 +25,31 @@ export function initializeTools() {
             const toolCards = generateToolCards();
             toolsGrid.innerHTML = toolCards;
 
-            // Add click handlers
-            document.querySelectorAll('.tool-card').forEach(card => {
+            // Add click handlers and animations
+            document.querySelectorAll('.tool-card').forEach((card, index) => {
+                // Add animation delay
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                // Add click handler
                 card.addEventListener('click', () => {
                     const toolId = card.dataset.toolId;
                     if (toolId) {
-                        window.location.href = `tools/${toolId}`;
+                        navigateToTool(toolId);
+                    }
+                });
+
+                // Add hover effects for features
+                card.querySelectorAll('.tool-feature').forEach(feature => {
+                    const tooltip = feature.querySelector('.feature-tooltip');
+                    if (tooltip) {
+                        feature.addEventListener('mouseenter', () => {
+                            tooltip.style.opacity = '1';
+                            tooltip.style.transform = 'translateY(0)';
+                        });
+                        feature.addEventListener('mouseleave', () => {
+                            tooltip.style.opacity = '0';
+                            tooltip.style.transform = 'translateY(5px)';
+                        });
                     }
                 });
             });
@@ -39,6 +59,9 @@ export function initializeTools() {
                 <div class="error-message">
                     <i class="fas fa-exclamation-circle"></i>
                     <p>Failed to load tools. Please try refreshing the page.</p>
+                    <button onclick="window.location.reload()" class="retry-button">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
                 </div>
             `;
         }
@@ -51,9 +74,11 @@ export function initializeTools() {
 function generateToolCards() {
     return TOOLS.sort((a, b) => a.order - b.order)
         .map(tool => {
-            const category = TOOL_CATEGORIES[tool.category];
+            const category = CATEGORIES[tool.category];
+            const categoryStyle = `style="--category-color: ${category.color}"`;
+
             return `
-                <div class="tool-card" data-tool-id="${tool.id}">
+                <div class="tool-card" data-tool-id="${tool.id}" ${categoryStyle}>
                     <div class="tool-icon">
                         <i class="${tool.icon}"></i>
                     </div>
@@ -65,17 +90,34 @@ function generateToolCards() {
                                 <i class="${category.icon}"></i>
                                 ${category.name}
                             </span>
-                            ${tool.features.map(feature => `
-                                <span class="tool-feature" title="${feature.description}">
-                                    <i class="${feature.icon}"></i>
-                                </span>
-                            `).join('')}
+                            <div class="tool-features">
+                                ${tool.features.map(feature => `
+                                    <span class="tool-feature" title="${feature.name}">
+                                        <i class="${feature.icon}"></i>
+                                        <div class="feature-tooltip">
+                                            <strong>${feature.name}</strong>
+                                            <p>${feature.description}</p>
+                                        </div>
+                                    </span>
+                                `).join('')}
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
         })
         .join('');
+}
+
+/**
+ * Navigate to a tool page
+ * @param {string} toolId - Tool ID to navigate to
+ */
+function navigateToTool(toolId) {
+    const tool = getToolById(toolId);
+    if (tool) {
+        window.location.href = tool.path;
+    }
 }
 
 /**
