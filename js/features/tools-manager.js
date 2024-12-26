@@ -116,10 +116,13 @@ function generateToolCards() {
 function navigateToTool(toolId) {
     const tool = getToolById(toolId);
     if (tool) {
-        // Get base URL from current location
-        const baseUrl = window.location.pathname.split('/').slice(0, -1).join('/');
-        // Combine base URL with tool path
-        const fullPath = `${baseUrl}/${tool.path}`;
+        // Get the repository name from the URL
+        const pathParts = window.location.pathname.split('/');
+        const repoIndex = pathParts.indexOf('Digital_Services.HUB');
+        const basePath = repoIndex !== -1 ? pathParts.slice(0, repoIndex + 1).join('/') : '';
+        
+        // Combine base path with tool path
+        const fullPath = `${basePath}/${tool.path}`;
         window.location.href = fullPath;
     }
 }
