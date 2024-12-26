@@ -1,227 +1,114 @@
-import { initializeTheme } from '../utils/theme.js';
-import { notifications } from '../utils/ui.js';
-import utils from '../utils/helpers.js';
-import { generateSocialShare } from '../utils/template-generator.js';
-import { initializeSocialShare } from '../utils/ui.js';
-
 export class BaseTool {
     constructor() {
-        if (new.target === BaseTool) {
-            throw new Error('BaseTool is an abstract class and cannot be instantiated directly');
-        }
-        
-        // Initialize theme first
-        initializeTheme();
-        
-        // Initialize tool
-        this.elements = this.initializeElements();
-        this.state = this.initializeState();
-        this.bindEvents();
-        this.initialize();
-        
-        // Set up error boundary
-        this.setupErrorBoundary();
-        
-        this.initializeSocialShare();
+        this.elements = {};
+        this.state = {};
+        this.keyboardShortcuts = new Map();
     }
 
-    /**
-     * Initialize DOM elements used by the tool
-     * @abstract
-     * @returns {Object} Map of element references
-     */
     initializeElements() {
-        throw new Error('initializeElements must be implemented by subclass');
+        // Override in child class
+        // Should return an object containing all DOM elements
+        return {};
     }
 
-    /**
-     * Initialize tool state
-     * @abstract
-     * @returns {Object} Initial state object
-     */
     initializeState() {
-        throw new Error('initializeState must be implemented by subclass');
+        // Override in child class
+        // Should return an object containing initial state
+        return {};
     }
 
-    /**
-     * Bind event listeners
-     * @abstract
-     */
     bindEvents() {
-        throw new Error('bindEvents must be implemented by subclass');
+        // Override in child class
+        // Should bind all event listeners
     }
 
-    /**
-     * Initialize the tool
-     * @abstract
-     */
     initialize() {
-        throw new Error('initialize must be implemented by subclass');
+        // Override in child class
+        // Should perform any necessary initialization
     }
 
-    /**
-     * Set up error boundary for the tool
-     * @private
-     */
-    setupErrorBoundary() {
-        window.addEventListener('error', (event) => {
-            if (this.isEventFromTool(event)) {
-                this.handleError(event.error);
-                event.preventDefault();
+    addKeyboardShortcut(key, callback, options = {}) {
+        const shortcut = {
+            key: key.toLowerCase(),
+            ctrl: options.ctrl || false,
+            alt: options.alt || false,
+            shift: options.shift || false,
+            callback
+        };
+
+        this.keyboardShortcuts.set(key, shortcut);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === shortcut.key &&
+                (!shortcut.ctrl || (e.ctrlKey || e.metaKey)) &&
+                (!shortcut.alt || e.altKey) &&
+                (!shortcut.shift || e.shiftKey)) {
+                e.preventDefault();
+                shortcut.callback();
             }
         });
-
-        window.addEventListener('unhandledrejection', (event) => {
-            if (this.isEventFromTool(event)) {
-                this.handleError(event.reason);
-                event.preventDefault();
-            }
-        });
     }
 
-    /**
-     * Check if an error event originated from this tool
-     * @private
-     * @param {Event} event - The error event
-     * @returns {boolean} Whether the event is from this tool
-     */
-    isEventFromTool(event) {
-        const toolContainer = document.getElementById(`${this.constructor.name.toLowerCase()}-container`);
-        return toolContainer && (event.target === toolContainer || toolContainer.contains(event.target));
+    showNotification(message, type = 'success') {
+        if (!this.elements.notification) return;
+
+        this.elements.notification.textContent = message;
+        this.elements.notification.className = `notification ${type}`;
+        this.elements.notification.style.display = 'block';
+
+        setTimeout(() => {
+            this.elements.notification.style.display = 'none';
+        }, 3000);
     }
 
-    /**
-     * Handle tool errors
-     * @private
-     * @param {Error} error - The error to handle
-     */
-    handleError(error) {
-        console.error(`${this.constructor.name} Error:`, error);
-        notifications.error('An error occurred. Please try again or refresh the page.');
+    loadFromStorage(key) {
+        try {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : null;
+        } catch (error) {
+            console.error(`Error loading from storage: ${error}`);
+            return null;
+        }
     }
 
-    /**
-     * Show a notification to the user
-     * @param {string} message - Message to display
-     * @param {'success' | 'error' | 'info'} [type='info'] - Type of notification
-     * @param {number} [duration=3000] - Duration in milliseconds
-     */
-    showNotification(message, type = 'info', duration = 3000) {
-        notifications[type](message, duration);
-    }
-
-    /**
-     * Handle file selection with validation
-     * @param {File} file - The selected file
-     * @param {Object} options - Validation options
-     * @param {string[]} options.allowedTypes - Allowed MIME types
-     * @param {number} options.maxSize - Maximum file size in bytes
-     * @returns {Promise<boolean>} Whether the file is valid
-     */
-    async validateFile(file, { allowedTypes, maxSize }) {
-        if (!file) {
-            this.showNotification('No file selected', 'error');
+    saveToStorage(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+            return true;
+        } catch (error) {
+            console.error(`Error saving to storage: ${error}`);
             return false;
         }
+    }
 
-        if (!allowedTypes.includes(file.type)) {
-            this.showNotification(
-                `Unsupported file type. Please use: ${allowedTypes.join(', ')}`,
-                'error'
-            );
-            return false;
-        }
-
-        if (file.size > maxSize) {
-            this.showNotification(
-                `File too large. Maximum size is ${utils.formatFileSize(maxSize)}`,
-                'error'
-            );
-            return false;
-        }
-
+    validateInput() {
+        // Override in child class if needed
+        // Should return true if input is valid, false otherwise
         return true;
     }
 
-    /**
-     * Add keyboard shortcut
-     * @param {string} key - Key to listen for
-     * @param {Function} callback - Function to call
-     * @param {Object} options - Options object
-     * @param {boolean} options.ctrl - Whether Ctrl key is required
-     * @param {boolean} options.alt - Whether Alt key is required
-     * @param {boolean} options.shift - Whether Shift key is required
-     */
-    addKeyboardShortcut(key, callback, { ctrl = false, alt = false, shift = false } = {}) {
-        const listener = (e) => {
-            if (
-                e.key.toLowerCase() === key.toLowerCase() &&
-                e.ctrlKey === ctrl &&
-                e.altKey === alt &&
-                e.shiftKey === shift
-            ) {
-                e.preventDefault();
-                callback.call(this);
+    copyToClipboard(text) {
+        navigator.clipboard.writeText(text)
+            .then(() => this.showNotification('Copied to clipboard', 'success'))
+            .catch(() => this.showNotification('Failed to copy to clipboard', 'error'));
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    throttle(func, limit) {
+        let inThrottle;
+        return (...args) => {
+            if (!inThrottle) {
+                func.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
             }
         };
-        
-        document.addEventListener('keydown', listener);
-        this._boundEvents = this._boundEvents || [];
-        this._boundEvents.push({ element: document, type: 'keydown', listener });
     }
-
-    /**
-     * Download a file
-     * @param {Blob} blob - File data
-     * @param {string} filename - Name for the downloaded file
-     */
-    downloadFile(blob, filename) {
-        try {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            this.showNotification('File downloaded successfully', 'success');
-        } catch (error) {
-            console.error('Error downloading file:', error);
-            this.showNotification('Failed to download file', 'error');
-        }
-    }
-
-    /**
-     * Clean up resources
-     */
-    destroy() {
-        // Remove event listeners
-        if (this._boundEvents) {
-            this._boundEvents.forEach(({ element, type, listener }) => {
-                element.removeEventListener(type, listener);
-            });
-        }
-    }
-
-    initializeSocialShare() {
-        const mainContainer = document.querySelector('main.container');
-        if (mainContainer) {
-            const shareSection = document.createElement('div');
-            shareSection.id = 'share-section';
-            shareSection.innerHTML = generateSocialShare(
-                window.location.href,
-                document.title
-            );
-            mainContainer.appendChild(shareSection);
-            initializeSocialShare();
-        }
-    }
-
-    updateThemeIcon(theme) {
-        const themeIcon = document.querySelector('#theme-button i');
-        if (themeIcon) {
-            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-    }
-} 
+}

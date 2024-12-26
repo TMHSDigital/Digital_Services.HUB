@@ -1,85 +1,127 @@
 import { BaseTool } from './base-tool.js';
 import { notifications } from '../utils/ui.js';
-import { STORAGE_KEYS, FILE_LIMITS, UI_CONSTANTS } from '../utils/constants.js';
+import { FILE_LIMITS } from '../utils/constants.js';
 import { fileValidation } from '../utils/validation.js';
 import utils from '../utils/helpers.js';
 
-class ImageResizer extends BaseTool {
+export default class ImageResizer extends BaseTool {
     constructor() {
-        this.initializeElements();
-        this.initializeState();
-        this.setupEventListeners();
+        super();
+        this.elements = this.initializeElements();
+        this.state = this.initializeState();
+        this.initialize();
+        this.bindEvents();
     }
 
     initializeElements() {
-        // Drop zone elements
-        this.dropZone = document.getElementById('drop-zone');
-        this.fileInput = document.getElementById('file-input');
+        return {
+            // Drop zone elements
+            dropZone: document.getElementById('drop-zone'),
+            fileInput: document.getElementById('file-input'),
 
-        // Preview elements
-        this.previewContainer = document.getElementById('preview-container');
-        this.previewImage = document.getElementById('preview-image');
-        this.fileInfo = document.getElementById('file-info');
-        this.changeImageBtn = document.getElementById('change-image');
+            // Preview elements
+            previewContainer: document.getElementById('preview-container'),
+            previewImage: document.getElementById('preview-image'),
+            fileInfo: document.getElementById('file-info'),
+            changeImageBtn: document.getElementById('change-image'),
 
-        // Settings elements
-        this.settingsPanel = document.getElementById('settings-panel');
-        this.widthInput = document.getElementById('width');
-        this.heightInput = document.getElementById('height');
-        this.aspectRatioLock = document.getElementById('aspect-ratio-lock');
-        this.formatSelect = document.getElementById('format');
-        this.qualityInput = document.getElementById('quality');
-        this.qualityValue = document.getElementById('quality-value');
+            // Settings elements
+            settingsPanel: document.getElementById('settings-panel'),
+            widthInput: document.getElementById('width'),
+            heightInput: document.getElementById('height'),
+            aspectRatioLock: document.getElementById('aspect-ratio-lock'),
+            formatSelect: document.getElementById('format'),
+            qualityInput: document.getElementById('quality'),
+            qualityValue: document.getElementById('quality-value'),
 
-        // Action buttons
-        this.resizeButton = document.getElementById('resize-button');
-        this.downloadButton = document.getElementById('download-button');
+            // Action buttons
+            resizeButton: document.getElementById('resize-button'),
+            downloadButton: document.getElementById('download-button'),
 
-        // Notification
-        this.notification = document.querySelector('.notification');
+            // Notification
+            notification: document.querySelector('.notification')
+        };
     }
 
     initializeState() {
-        this.currentImage = null;
-        this.originalDimensions = { width: 0, height: 0 };
-        this.aspectRatio = 1;
-        this.isAspectRatioLocked = true;
-        this.resizedImage = null;
+        return {
+            currentImage: null,
+            originalDimensions: { width: 0, height: 0 },
+            aspectRatio: 1,
+            isAspectRatioLocked: true,
+            resizedImage: null,
+            maxFileSize: FILE_LIMITS.IMAGE_MAX_SIZE,
+            allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+        };
     }
 
-    setupEventListeners() {
+    bindEvents() {
+        const { dropZone, fileInput, changeImageBtn, widthInput, heightInput, aspectRatioLock, qualityInput, resizeButton, downloadButton } = this.elements;
+
         // File input events
-        this.dropZone.addEventListener('dragover', (e) => this.handleDragOver(e));
-        this.dropZone.addEventListener('drop', (e) => this.handleDrop(e));
-        this.dropZone.addEventListener('click', () => this.fileInput.click());
-        this.fileInput.addEventListener('change', () => this.handleFileSelect());
-        this.changeImageBtn.addEventListener('click', () => this.resetImage());
+        dropZone.addEventListener('dragover', this.handleDragOver.bind(this));
+        dropZone.addEventListener('drop', this.handleDrop.bind(this));
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+        changeImageBtn.addEventListener('click', this.resetImage.bind(this));
 
         // Dimension inputs
-        this.widthInput.addEventListener('input', () => this.handleDimensionChange('width'));
-        this.heightInput.addEventListener('input', () => this.handleDimensionChange('height'));
-        this.aspectRatioLock.addEventListener('click', () => this.toggleAspectRatio());
+        widthInput.addEventListener('input', this.debounce(() => this.handleDimensionChange('width'), 300));
+        heightInput.addEventListener('input', this.debounce(() => this.handleDimensionChange('height'), 300));
+        aspectRatioLock.addEventListener('click', this.toggleAspectRatio.bind(this));
 
         // Quality slider
-        this.qualityInput.addEventListener('input', () => {
-            this.qualityValue.textContent = `${this.qualityInput.value}%`;
-        });
+        qualityInput.addEventListener('input', this.debounce(() => {
+            this.elements.qualityValue.textContent = `${qualityInput.value}%`;
+        }, 100));
 
         // Action buttons
-        this.resizeButton.addEventListener('click', () => this.resizeImage());
-        this.downloadButton.addEventListener('click', () => this.downloadImage());
+        resizeButton.addEventListener('click', this.resizeImage.bind(this));
+        downloadButton.addEventListener('click', this.downloadImage.bind(this));
+
+        // Keyboard shortcuts
+        this.addKeyboardShortcut('r', this.resizeImage.bind(this), { ctrl: true });
+        this.addKeyboardShortcut('s', this.downloadImage.bind(this), { ctrl: true });
+    }
+
+    initialize() {
+        // Hide settings panel initially
+        this.elements.settingsPanel.style.display = 'none';
+        this.elements.downloadButton.disabled = true;
+
+        // Set initial quality value
+        this.elements.qualityValue.textContent = `${this.elements.qualityInput.value}%`;
+    }
+
+    validateFile(file) {
+        if (!file) {
+            this.showNotification('No file selected', 'error');
+            return false;
+        }
+
+        if (!this.state.allowedTypes.includes(file.type)) {
+            this.showNotification('Please select a valid image file (JPEG, PNG, WebP, or GIF)', 'error');
+            return false;
+        }
+
+        if (file.size > this.state.maxFileSize) {
+            this.showNotification(`File size must be less than ${utils.formatFileSize(this.state.maxFileSize)}`, 'error');
+            return false;
+        }
+
+        return true;
     }
 
     handleDragOver(e) {
         e.preventDefault();
         e.stopPropagation();
-        this.dropZone.classList.add('dragover');
+        this.elements.dropZone.classList.add('dragover');
     }
 
     handleDrop(e) {
         e.preventDefault();
         e.stopPropagation();
-        this.dropZone.classList.remove('dragover');
+        this.elements.dropZone.classList.remove('dragover');
 
         const files = e.dataTransfer.files;
         if (files.length > 0) {
@@ -88,76 +130,73 @@ class ImageResizer extends BaseTool {
     }
 
     handleFileSelect() {
-        const files = this.fileInput.files;
+        const files = this.elements.fileInput.files;
         if (files.length > 0) {
             this.processFile(files[0]);
         }
     }
 
     processFile(file) {
-        if (!file.type.startsWith('image/')) {
-            this.showNotification('Please select an image file', 'error');
-            return;
-        }
+        if (!this.validateFile(file)) return;
 
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
-                this.currentImage = img;
-                this.originalDimensions = {
+                this.state.currentImage = img;
+                this.state.originalDimensions = {
                     width: img.width,
                     height: img.height
                 };
-                this.aspectRatio = img.width / img.height;
+                this.state.aspectRatio = img.width / img.height;
                 this.updatePreview();
             };
             img.src = e.target.result;
         };
         reader.readAsDataURL(file);
 
-        this.fileInfo.textContent = `${file.name} (${this.formatFileSize(file.size)})`;
+        this.elements.fileInfo.textContent = `${file.name} (${utils.formatFileSize(file.size)})`;
     }
 
     updatePreview() {
-        this.previewImage.src = this.currentImage.src;
-        this.previewContainer.style.display = 'block';
-        this.settingsPanel.style.display = 'block';
-        this.dropZone.style.display = 'none';
+        this.elements.previewImage.src = this.state.currentImage.src;
+        this.elements.previewContainer.style.display = 'block';
+        this.elements.settingsPanel.style.display = 'block';
+        this.elements.dropZone.style.display = 'none';
 
-        this.widthInput.value = this.originalDimensions.width;
-        this.heightInput.value = this.originalDimensions.height;
-        this.downloadButton.disabled = true;
+        this.elements.widthInput.value = this.state.originalDimensions.width;
+        this.elements.heightInput.value = this.state.originalDimensions.height;
+        this.elements.downloadButton.disabled = true;
     }
 
     handleDimensionChange(dimension) {
-        if (!this.currentImage) return;
+        if (!this.state.currentImage) return;
 
-        const value = parseInt(this[`${dimension}Input`].value);
-        if (this.isAspectRatioLocked) {
+        const value = parseInt(this.elements[`${dimension}Input`].value);
+        if (this.state.isAspectRatioLocked) {
             if (dimension === 'width') {
-                this.heightInput.value = Math.round(value / this.aspectRatio);
+                this.elements.heightInput.value = Math.round(value / this.state.aspectRatio);
             } else {
-                this.widthInput.value = Math.round(value * this.aspectRatio);
+                this.elements.widthInput.value = Math.round(value * this.state.aspectRatio);
             }
         }
     }
 
     toggleAspectRatio() {
-        this.isAspectRatioLocked = !this.isAspectRatioLocked;
-        this.aspectRatioLock.innerHTML = `<i class="fas fa-${this.isAspectRatioLocked ? 'lock' : 'lock-open'}"></i>`;
+        this.state.isAspectRatioLocked = !this.state.isAspectRatioLocked;
+        this.elements.aspectRatioLock.innerHTML = `<i class="fas fa-${this.state.isAspectRatioLocked ? 'lock' : 'lock-open'}"></i>`;
     }
 
     async resizeImage() {
-        if (!this.currentImage) return;
+        if (!this.state.currentImage) return;
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
-        const width = parseInt(this.widthInput.value);
-        const height = parseInt(this.heightInput.value);
-        const quality = parseInt(this.qualityInput.value) / 100;
-        const format = this.formatSelect.value;
+        const width = parseInt(this.elements.widthInput.value);
+        const height = parseInt(this.elements.heightInput.value);
+        const quality = parseInt(this.elements.qualityInput.value) / 100;
+        const format = this.elements.formatSelect.value;
 
         canvas.width = width;
         canvas.height = height;
@@ -167,23 +206,21 @@ class ImageResizer extends BaseTool {
         ctx.imageSmoothingQuality = 'high';
 
         // Draw image with resize
-        ctx.drawImage(this.currentImage, 0, 0, width, height);
+        ctx.drawImage(this.state.currentImage, 0, 0, width, height);
 
-        // Convert to blob
         try {
             const blob = await new Promise(resolve => {
                 canvas.toBlob(resolve, `image/${format}`, quality);
             });
 
-            // Create preview URL
-            if (this.resizedImage) {
-                URL.revokeObjectURL(this.resizedImage);
+            if (this.state.resizedImage) {
+                URL.revokeObjectURL(this.state.resizedImage);
             }
-            this.resizedImage = URL.createObjectURL(blob);
-            this.previewImage.src = this.resizedImage;
-            this.downloadButton.disabled = false;
+            this.state.resizedImage = URL.createObjectURL(blob);
+            this.elements.previewImage.src = this.state.resizedImage;
+            this.elements.downloadButton.disabled = false;
 
-            this.showNotification('Image resized successfully', 'success');
+            this.showNotification('Image resized successfully');
         } catch (error) {
             console.error('Resize error:', error);
             this.showNotification('Error resizing image', 'error');
@@ -191,11 +228,11 @@ class ImageResizer extends BaseTool {
     }
 
     downloadImage() {
-        if (!this.resizedImage) return;
+        if (!this.state.resizedImage) return;
 
-        const format = this.formatSelect.value;
+        const format = this.elements.formatSelect.value;
         const link = document.createElement('a');
-        link.href = this.resizedImage;
+        link.href = this.state.resizedImage;
         link.download = `resized.${format}`;
         document.body.appendChild(link);
         link.click();
@@ -203,33 +240,31 @@ class ImageResizer extends BaseTool {
     }
 
     resetImage() {
-        this.currentImage = null;
-        this.resizedImage = null;
-        this.previewContainer.style.display = 'none';
-        this.settingsPanel.style.display = 'none';
-        this.dropZone.style.display = 'block';
-        this.fileInput.value = '';
-        this.downloadButton.disabled = true;
-    }
+        if (this.state.resizedImage) {
+            URL.revokeObjectURL(this.state.resizedImage);
+        }
 
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        this.state.currentImage = null;
+        this.state.resizedImage = null;
+        this.elements.previewContainer.style.display = 'none';
+        this.elements.settingsPanel.style.display = 'none';
+        this.elements.dropZone.style.display = 'block';
+        this.elements.fileInput.value = '';
+        this.elements.downloadButton.disabled = true;
     }
 
     showNotification(message, type = 'success') {
-        this.notification.textContent = message;
-        this.notification.className = `notification ${type}`;
-        this.notification.style.display = 'block';
-        
+        this.elements.notification.textContent = message;
+        this.elements.notification.className = `notification ${type}`;
+        this.elements.notification.style.display = 'block';
+
         setTimeout(() => {
-            this.notification.style.display = 'none';
+            this.elements.notification.style.display = 'none';
         }, 3000);
     }
 }
 
 // Initialize the image resizer
-const imageResizer = new ImageResizer(); 
+if (document.querySelector('.image-resizer-container')) {
+    new ImageResizer();
+}

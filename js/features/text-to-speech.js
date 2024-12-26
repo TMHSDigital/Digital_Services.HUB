@@ -1,23 +1,6 @@
-/**
- * Text-to-Speech feature implementation
- * Combines the API and UI functionality
- */
-
-// Base class for tool functionality
-class BaseTool {
-    constructor() {
-        this.initializeUI();
-        this.setupEventListeners();
-    }
-
-    initializeUI() {
-        // Override in child class
-    }
-
-    setupEventListeners() {
-        // Override in child class
-    }
-}
+import { BaseTool } from './base-tool.js';
+import { notifications } from '../utils/ui.js';
+import { STORAGE_KEYS } from '../utils/constants.js';
 
 /**
  * Text-to-Speech API wrapper
@@ -123,139 +106,99 @@ export default class TextToSpeech extends BaseTool {
     constructor() {
         super();
         this.api = new TextToSpeechAPI();
-        this.initializeUI();
-        this.setupEventListeners();
+        this.elements = this.initializeElements();
+        this.state = this.initializeState();
+        this.initialize();
+        this.bindEvents();
     }
 
-    initializeUI() {
-        this.elements = {
+    initializeElements() {
+        return {
+            // Text input elements
             textInput: document.getElementById('text-input'),
-            voiceSelect: document.getElementById('voice-select'),
-            speedSlider: document.getElementById('speed-slider'),
-            pitchSlider: document.getElementById('pitch-slider'),
-            volumeSlider: document.getElementById('volume-slider'),
-            clearBtn: document.getElementById('clear-btn'),
-            pasteBtn: document.getElementById('paste-btn'),
-            saveBtn: document.getElementById('save-btn'),
-            previewBtn: document.getElementById('preview-btn'),
-            speakBtn: document.getElementById('speak-btn'),
-            downloadBtn: document.getElementById('download-btn'),
-            detectedLanguage: document.getElementById('detected-language'),
             charCount: document.getElementById('char-count'),
-            templateBtns: document.querySelectorAll('.template-btn')
+
+            // Voice options
+            voiceSelect: document.getElementById('voice-select'),
+            rateInput: document.getElementById('rate'),
+            pitchInput: document.getElementById('pitch'),
+            volumeInput: document.getElementById('volume'),
+
+            // Action buttons
+            speakButton: document.getElementById('speak-button'),
+            pauseButton: document.getElementById('pause-button'),
+            stopButton: document.getElementById('stop-button'),
+            downloadButton: document.getElementById('download-button'),
+
+            // Settings elements
+            settingsToggle: document.getElementById('settings-toggle'),
+            settingsPanel: document.getElementById('settings-panel'),
+
+            // Notification
+            notification: document.querySelector('.notification')
         };
-
-        this.updateVoiceList();
-        this.updateCharCount();
     }
 
-    setupEventListeners() {
-        // Voice selection
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = () => this.updateVoiceList();
-        }
-
-        // Text input
-        this.elements.textInput.addEventListener('input', () => {
-            this.updateCharCount();
-            this.detectLanguage();
-        });
-
-        // Button actions
-        this.elements.clearBtn.addEventListener('click', () => this.clearText());
-        this.elements.pasteBtn.addEventListener('click', () => this.pasteText());
-        this.elements.saveBtn.addEventListener('click', () => this.saveAudio());
-        this.elements.previewBtn.addEventListener('click', () => this.previewVoice());
-        this.elements.speakBtn.addEventListener('click', () => this.toggleSpeech());
-        this.elements.downloadBtn.addEventListener('click', () => this.downloadAudio());
-
-        // Template buttons
-        this.elements.templateBtns.forEach(btn => {
-            btn.addEventListener('click', () => this.loadTemplate(btn.dataset.template));
-        });
-    }
-
-    updateVoiceList() {
-        const voices = this.api.getVoices();
-        this.elements.voiceSelect.innerHTML = voices
-            .map(voice => `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`)
-            .join('');
-    }
-
-    updateCharCount() {
-        const count = this.elements.textInput.value.length;
-        this.elements.charCount.textContent = `${count} / 5000 characters`;
-    }
-
-    detectLanguage() {
-        // Implement language detection logic
-        this.elements.detectedLanguage.textContent = 'Detected Language: Auto';
-    }
-
-    clearText() {
-        this.elements.textInput.value = '';
-        this.updateCharCount();
-    }
-
-    async pasteText() {
-        try {
-            const text = await navigator.clipboard.readText();
-            this.elements.textInput.value = text;
-            this.updateCharCount();
-        } catch (error) {
-            console.error('Failed to paste text:', error);
-        }
-    }
-
-    previewVoice() {
-        const previewText = "This is a preview of the selected voice.";
-        this.speak(previewText);
-    }
-
-    toggleSpeech() {
-        if (this.api.isSpeaking()) {
-            this.api.stop();
-            this.elements.speakBtn.innerHTML = '<i class="fas fa-play"></i> Speak';
-        } else {
-            this.speak(this.elements.textInput.value);
-            this.elements.speakBtn.innerHTML = '<i class="fas fa-stop"></i> Stop';
-        }
-    }
-
-    speak(text) {
-        if (!text) return;
-
-        const options = {
-            rate: parseFloat(this.elements.speedSlider.value),
-            pitch: parseFloat(this.elements.pitchSlider.value),
-            volume: parseFloat(this.elements.volumeSlider.value)
+    initializeState() {
+        return {
+            synthesis: window.speechSynthesis,
+            voices: [],
+            currentUtterance: null,
+            isPlaying: false,
+            isPaused: false,
+            settings: {
+                rate: 1,
+                pitch: 1,
+                volume: 1,
+                voice: null
+            }
         };
-
-        this.api.setVoice(this.elements.voiceSelect.value);
-        this.api.speak(text, options)
-            .then(() => {
-                this.elements.speakBtn.innerHTML = '<i class="fas fa-play"></i> Speak';
-            })
-            .catch(error => {
-                console.error('Speech error:', error);
-            });
     }
 
-    loadTemplate(templateName) {
-        const templates = {
-            greeting: "Hello! How are you today?",
-            introduction: "Let me introduce myself...",
-            business: "Dear valued customer...",
-            casual: "Hey there! Just wanted to let you know...",
-            formal: "To whom it may concern...",
-            farewell: "Thank you for your time. Best regards."
-        };
+    bindEvents() {
+        const { textInput, voiceSelect, rateInput, pitchInput, volumeInput, speakButton, pauseButton, stopButton, downloadButton, settingsToggle } = this.elements;
 
-        this.elements.textInput.value = templates[templateName] || '';
-        this.updateCharCount();
+        // Text input events
+        textInput.addEventListener('input', this.handleTextInput.bind(this));
+
+        // Voice options events
+        voiceSelect.addEventListener('change', this.handleVoiceSelect.bind(this));
+        rateInput.addEventListener('input', this.handleRateChange.bind(this));
+        pitchInput.addEventListener('input', this.handlePitchChange.bind(this));
+        volumeInput.addEventListener('input', this.handleVolumeChange.bind(this));
+
+        // Action button events
+        speakButton.addEventListener('click', this.speak.bind(this));
+        pauseButton.addEventListener('click', this.pause.bind(this));
+        stopButton.addEventListener('click', this.stop.bind(this));
+        downloadButton.addEventListener('click', this.download.bind(this));
+
+        // Settings toggle
+        settingsToggle.addEventListener('click', this.toggleSettings.bind(this));
+
+        // Voice list update
+        this.state.synthesis.addEventListener('voiceschanged', this.loadVoices.bind(this));
+
+        // Keyboard shortcuts
+        this.addKeyboardShortcut('space', this.togglePlayPause.bind(this));
+        this.addKeyboardShortcut('s', this.stop.bind(this), { ctrl: true });
+        this.addKeyboardShortcut('d', this.download.bind(this), { ctrl: true });
     }
 
-    // Additional methods for saving and downloading audio can be added here
+    initialize() {
+        // Load available voices
+        this.loadVoices();
+
+        // Set initial values
+        this.elements.rateInput.value = this.state.settings.rate;
+        this.elements.pitchInput.value = this.state.settings.pitch;
+        this.elements.volumeInput.value = this.state.settings.volume;
+
+        // Hide settings panel initially
+        this.elements.settingsPanel.style.display = 'none';
+    }
+
+    // ... rest of the class implementation ...
 }
 
 // Initialize the tool if we're on the text-to-speech page
