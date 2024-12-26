@@ -36,7 +36,7 @@ export const TOOLS = [
             { name: 'Language Support', icon: 'fas fa-language', description: 'Multiple language options' },
             { name: 'Download Audio', icon: 'fas fa-download', description: 'Save as MP3' }
         ],
-        path: '/tools/text-to-speech',
+        path: './pages/text-to-speech.html',
         category: TOOL_CATEGORIES.AUDIO,
         order: 1
     },
@@ -50,77 +50,77 @@ export const TOOLS = [
             { name: 'Multiple Formats', icon: 'fas fa-file-image', description: 'Support for PNG, JPG, WebP' },
             { name: 'Batch Processing', icon: 'fas fa-layer-group', description: 'Process multiple images' }
         ],
-        path: '/tools/image-resizer',
+        path: './pages/image-resizer.html',
         category: TOOL_CATEGORIES.IMAGE,
         order: 2
     },
     {
-        id: 'color-palette',
-        name: 'Color Palette',
-        description: 'Generate beautiful color harmonies for your designs.',
-        icon: 'fas fa-palette',
+        id: 'ascii-art',
+        name: 'ASCII Art',
+        description: 'Convert images into creative ASCII art.',
+        icon: 'fas fa-font',
         features: [
-            { name: 'Color Harmony', icon: 'fas fa-paint-brush', description: 'Generate matching colors' },
-            { name: 'Export Options', icon: 'fas fa-file-export', description: 'Save in various formats' },
-            { name: 'Accessibility', icon: 'fas fa-universal-access', description: 'Check contrast ratios' }
+            { name: 'Custom Characters', icon: 'fas fa-keyboard', description: 'Choose character set' },
+            { name: 'Size Control', icon: 'fas fa-arrows-alt', description: 'Adjust output size' },
+            { name: 'Export Options', icon: 'fas fa-file-export', description: 'Save as text or image' }
         ],
-        path: '/tools/color-palette',
-        category: TOOL_CATEGORIES.DESIGN,
+        path: './pages/ascii-art.html',
+        category: TOOL_CATEGORIES.IMAGE,
         order: 3
     },
     {
-        id: 'ascii-art',
-        name: 'ASCII Art',
-        description: 'Convert images into creative ASCII art with customization options.',
-        icon: 'fas fa-font',
+        id: 'color-palette',
+        name: 'Color Palette',
+        description: 'Generate beautiful color harmonies for designs.',
+        icon: 'fas fa-palette',
         features: [
-            { name: 'Custom Styles', icon: 'fas fa-brush', description: 'Multiple art styles' },
-            { name: 'Export Text', icon: 'fas fa-file-alt', description: 'Save as text file' },
-            { name: 'Image Input', icon: 'fas fa-file-image', description: 'Convert from images' }
+            { name: 'Color Harmonies', icon: 'fas fa-sync', description: 'Generate matching colors' },
+            { name: 'Export Formats', icon: 'fas fa-file-code', description: 'CSS, SCSS, JSON' },
+            { name: 'Accessibility', icon: 'fas fa-universal-access', description: 'Check contrast ratios' }
         ],
-        path: '/tools/ascii-art',
-        category: TOOL_CATEGORIES.IMAGE,
+        path: './pages/color-palette.html',
+        category: TOOL_CATEGORIES.DESIGN,
         order: 4
     },
     {
         id: 'qr-code',
-        name: 'QR Code',
-        description: 'Generate customizable QR codes for your links and data.',
+        name: 'QR Code Generator',
+        description: 'Create customizable QR codes for your links and data.',
         icon: 'fas fa-qrcode',
         features: [
-            { name: 'Custom Styles', icon: 'fas fa-paint-roller', description: 'Customize appearance' },
-            { name: 'Download PNG', icon: 'fas fa-download', description: 'High-quality export' },
+            { name: 'Custom Styles', icon: 'fas fa-paint-brush', description: 'Customize colors and style' },
+            { name: 'Multiple Formats', icon: 'fas fa-file-image', description: 'PNG, SVG, PDF' },
             { name: 'Error Correction', icon: 'fas fa-shield-alt', description: 'Reliable scanning' }
         ],
-        path: '/tools/qr-code',
+        path: './pages/qr-code.html',
         category: TOOL_CATEGORIES.UTILITY,
         order: 5
     },
     {
         id: 'password-generator',
         name: 'Password Generator',
-        description: 'Create strong, secure passwords with advanced customization.',
+        description: 'Generate secure passwords with advanced options.',
         icon: 'fas fa-key',
         features: [
-            { name: 'Custom Options', icon: 'fas fa-sliders-h', description: 'Customize complexity' },
-            { name: 'Strength Meter', icon: 'fas fa-tachometer-alt', description: 'Check password strength' },
-            { name: 'Secure Generation', icon: 'fas fa-lock', description: 'Cryptographically secure' }
+            { name: 'Custom Rules', icon: 'fas fa-sliders-h', description: 'Customize complexity' },
+            { name: 'Strength Check', icon: 'fas fa-shield-alt', description: 'Password strength meter' },
+            { name: 'Save History', icon: 'fas fa-history', description: 'Recent passwords' }
         ],
-        path: '/tools/password-generator',
+        path: './pages/password-generator.html',
         category: TOOL_CATEGORIES.SECURITY,
         order: 6
     },
     {
         id: 'url-shortener',
         name: 'URL Shortener',
-        description: 'Create short, memorable links for easy sharing and tracking.',
+        description: 'Create short, trackable links instantly.',
         icon: 'fas fa-link',
         features: [
-            { name: 'Click Analytics', icon: 'fas fa-chart-line', description: 'Track link usage' },
-            { name: 'Custom Aliases', icon: 'fas fa-tag', description: 'Personalize URLs' },
+            { name: 'Custom Aliases', icon: 'fas fa-tag', description: 'Create memorable links' },
+            { name: 'Click Tracking', icon: 'fas fa-chart-line', description: 'Track link usage' },
             { name: 'QR Code Export', icon: 'fas fa-qrcode', description: 'Generate QR codes' }
         ],
-        path: '/tools/url-shortener',
+        path: './pages/url-shortener.html',
         category: TOOL_CATEGORIES.UTILITY,
         order: 7
     }
