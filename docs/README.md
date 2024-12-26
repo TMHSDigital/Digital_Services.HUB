@@ -28,6 +28,26 @@ Digital Services Hub provides a modern, accessible platform focused on:
 - **Password Generator**: Generate secure passwords with advanced options
 - **URL Shortener**: Create short, trackable links
 
+## 🚀 UI Components
+
+The project includes a comprehensive set of accessible, themeable UI components:
+
+### Core Components
+- **Buttons**: Multiple variants, sizes, and states with keyboard navigation
+- **Forms**: Fully accessible form controls with validation states
+- **Alerts**: Customizable notifications with auto-dismiss
+- **Progress**: Interactive progress bars with various states
+- **Modal**: Accessible dialog system with keyboard trapping
+- **Tooltip**: Customizable tooltips with multiple positions
+- **Navigation**: Responsive navigation with mobile support
+
+### Features
+- **Dark/Light Theme**: Automatic theme detection with manual override
+- **Responsive Design**: Mobile-first approach with fluid layouts
+- **Accessibility**: ARIA attributes and keyboard navigation
+- **Animations**: Smooth transitions and loading states
+- **Error Handling**: Comprehensive error states and feedback
+
 ## 🚀 Getting Started
 
 1. Clone the repository:
@@ -78,6 +98,13 @@ Digital_Services.HUB/
 - `npm run test`: Run tests
 - `npm run lint`: Lint code
 - `npm run validate`: Validate project structure
+
+### Component Development
+1. Follow the established component structure in `js/components/`
+2. Ensure accessibility features are implemented
+3. Add corresponding styles in `css/components/`
+4. Include dark theme support
+5. Add tests in `js/components/__tests__/`
 
 ### Contributing
 1. Fork the repository
