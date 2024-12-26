@@ -16,7 +16,6 @@ Digital Services Hub provides a modern, accessible platform focused on:
 
 ### Audio Tools
 - **Text to Speech**: Convert text to natural-sounding speech with multiple voices and languages
-- **Audio Converter** (Coming Soon): Convert between various audio formats
 
 ### Image Tools
 - **Image Resizer**: Resize and optimize images while maintaining quality
@@ -72,17 +71,70 @@ Digital_Services.HUB/
 ├── css/                  # Stylesheets
 │   ├── base/            # Base styles and reset
 │   ├── components/      # Component styles
+│   │   ├── alerts.css
+│   │   ├── ascii-art.css
+│   │   ├── buttons.css
+│   │   ├── cards.css
+│   │   ├── color-palette.css
+│   │   ├── forms.css
+│   │   ├── image-resizer.css
+│   │   ├── modal.css
+│   │   ├── navigation.css
+│   │   ├── notifications.css
+│   │   ├── password-generator.css
+│   │   ├── progress.css
+│   │   ├── qr-code.css
+│   │   ├── social-share.css
+│   │   ├── spinner.css
+│   │   ├── text-to-speech.css
+│   │   ├── tool-page.css
+│   │   ├── tooltip.css
+│   │   ├── ui.css
+│   │   └── url-shortener.css
 │   ├── themes/          # Theme configuration
-│   └── utils/           # Utility styles
+│   ├── utils/          # Utility styles
+│   └── styles.css      # Main stylesheet
 ├── js/                  # JavaScript files
-│   ├── build/           # Build scripts
-│   ├── components/      # UI components
-│   ├── config/          # Configuration
-│   ├── features/        # Tool implementations
-│   └── utils/           # Utility functions
-├── pages/               # Tool pages
-├── images/              # Static images
-└── docs/                # Documentation
+│   ├── api/            # API integrations
+│   │   └── text-to-speech-api.js
+│   ├── build/          # Build scripts
+│   ├── components/     # UI components
+│   ├── config/         # Configuration
+│   ├── features/       # Tool implementations
+│   │   ├── about.js
+│   │   ├── ascii-art.js
+│   │   ├── base-tool.js
+│   │   ├── color-palette.js
+│   │   ├── image-resizer.js
+│   │   ├── password-generator.js
+│   │   ├── qr-code.js
+│   │   ├── text-to-speech.js
+│   │   ├── tools-manager.js
+│   │   └── url-shortener.js
+│   ├── templates/      # HTML templates
+│   └── utils/          # Utility functions
+├── pages/              # Tool pages
+│   ├── ascii-art.html
+│   ├── color-palette.html
+│   ├── image-resizer.html
+│   ├── password-generator.html
+│   ├── qr-code.html
+│   ├── text-to-speech.html
+│   └── url-shortener.html
+├── docs/               # Documentation
+│   ├── API.md         # API documentation
+│   ├── FUTURE-FEATURES.md
+│   ├── README.md      # Main documentation
+│   └── TECHNICAL.md   # Technical documentation
+├── index.html         # Main entry point
+├── package.json       # Project dependencies
+├── rollup.config.js   # Build configuration
+├── .eslintrc.json    # ESLint configuration
+├── .gitignore        # Git ignore rules
+├── CHANGELOG.md      # Version history
+├── CONTRIBUTING.md   # Contribution guidelines
+├── LICENSE          # Project license
+└── TO-DO.md        # Project tasks
 ```
 
 ## 🛠️ Development
