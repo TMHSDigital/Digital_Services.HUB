@@ -32,7 +32,7 @@ export const TOOLS = [
         description: 'Convert text to natural-sounding speech with multiple voices and languages.',
         icon: 'fa-volume-up',
         features: ['Multiple voices', 'Download audio'],
-        path: './pages/text-to-speech.html',
+        path: 'pages/text-to-speech.html',
         category: TOOL_CATEGORIES.AUDIO,
         order: 1
     },
@@ -42,7 +42,7 @@ export const TOOLS = [
         description: 'Resize and optimize your images while maintaining quality.',
         icon: 'fa-image',
         features: ['Preserve ratio', 'Multiple formats'],
-        path: './pages/image-resizer.html',
+        path: 'pages/image-resizer.html',
         category: TOOL_CATEGORIES.IMAGE,
         order: 2
     },
@@ -52,7 +52,7 @@ export const TOOLS = [
         description: 'Generate beautiful color harmonies for your designs.',
         icon: 'fa-palette',
         features: ['Color harmony', 'Export options'],
-        path: './pages/color-palette.html',
+        path: 'pages/color-palette.html',
         category: TOOL_CATEGORIES.DESIGN,
         order: 3
     },
@@ -62,7 +62,7 @@ export const TOOLS = [
         description: 'Convert images into creative ASCII art with customization options.',
         icon: 'fa-font',
         features: ['Custom styles', 'Export text'],
-        path: './pages/ascii-art.html',
+        path: 'pages/ascii-art.html',
         category: TOOL_CATEGORIES.IMAGE,
         order: 4
     },
@@ -72,7 +72,7 @@ export const TOOLS = [
         description: 'Generate customizable QR codes for your links and data.',
         icon: 'fa-qrcode',
         features: ['Custom styles', 'Download PNG'],
-        path: './pages/qr-code.html',
+        path: 'pages/qr-code.html',
         category: TOOL_CATEGORIES.UTILITY,
         order: 5
     },
@@ -82,7 +82,7 @@ export const TOOLS = [
         description: 'Create strong, secure passwords with advanced customization.',
         icon: 'fa-key',
         features: ['Custom options', 'Strength meter'],
-        path: './pages/password-generator.html',
+        path: 'pages/password-generator.html',
         category: TOOL_CATEGORIES.SECURITY,
         order: 6
     },
@@ -92,7 +92,7 @@ export const TOOLS = [
         description: 'Create short, memorable links for easy sharing and tracking.',
         icon: 'fa-link',
         features: ['Click analytics', 'Custom aliases'],
-        path: './pages/url-shortener.html',
+        path: 'pages/url-shortener.html',
         category: TOOL_CATEGORIES.UTILITY,
         order: 7
     }
@@ -154,4 +154,4 @@ export const TOOL_STATS = {
             TOOLS.filter(tool => tool.category === category).length
         ])
     )
-}; 
+};

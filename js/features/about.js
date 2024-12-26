@@ -1,5 +1,5 @@
-import { generateToolList } from '../utils/template-generator.js';
-import { initializeTheme } from '../utils/theme.js';
+import { generateToolList } from '/js/utils/template-generator.js';
+import { initializeTheme } from '/js/utils/theme.js';
 
 // Initialize theme
 initializeTheme();
@@ -8,4 +8,4 @@ initializeTheme();
 const toolsContainer = document.getElementById('tools-container');
 if (toolsContainer) {
     toolsContainer.innerHTML = generateToolList();
-} 
+}
