@@ -1,11 +1,12 @@
 /**
- * DOM manipulation and browser utilities
+ * DOM Utilities
+ * @module utils/dom
  */
 
 /**
- * Sanitize HTML string to prevent XSS
+ * Sanitize HTML string to prevent XSS attacks
  * @param {string} html - HTML string to sanitize
- * @returns {string} Sanitized HTML
+ * @returns {string} Sanitized HTML string
  */
 export function sanitizeHTML(html) {
     const div = document.createElement('div');
@@ -14,57 +15,73 @@ export function sanitizeHTML(html) {
 }
 
 /**
- * Check if element is in viewport
- * @param {Element} element - Element to check
- * @param {number} offset - Offset from viewport edges
- * @returns {boolean} Whether element is in viewport
+ * Create an element with attributes and children
+ * @param {string} tag - Element tag name
+ * @param {Object} [attrs={}] - Element attributes
+ * @param {Array} [children=[]] - Child elements or text
+ * @returns {HTMLElement} Created element
  */
-export function isInViewport(element, offset = 0) {
+export function createElement(tag, attrs = {}, children = []) {
+    const element = document.createElement(tag);
+
+    Object.entries(attrs).forEach(([key, value]) => {
+        if (key === 'className') {
+            element.className = value;
+        } else if (key === 'dataset') {
+            Object.entries(value).forEach(([dataKey, dataValue]) => {
+                element.dataset[dataKey] = dataValue;
+            });
+        } else if (key.startsWith('on') && typeof value === 'function') {
+            element.addEventListener(key.slice(2).toLowerCase(), value);
+        } else {
+            element.setAttribute(key, value);
+        }
+    });
+
+    children.forEach(child => {
+        if (typeof child === 'string') {
+            element.appendChild(document.createTextNode(child));
+        } else if (child instanceof Node) {
+            element.appendChild(child);
+        }
+    });
+
+    return element;
+}
+
+/**
+ * Add multiple event listeners to an element
+ * @param {HTMLElement} element - Target element
+ * @param {Object} listeners - Event listeners object
+ */
+export function addEventListeners(element, listeners) {
+    Object.entries(listeners).forEach(([event, callback]) => {
+        element.addEventListener(event, callback);
+    });
+}
+
+/**
+ * Remove multiple event listeners from an element
+ * @param {HTMLElement} element - Target element
+ * @param {Object} listeners - Event listeners object
+ */
+export function removeEventListeners(element, listeners) {
+    Object.entries(listeners).forEach(([event, callback]) => {
+        element.removeEventListener(event, callback);
+    });
+}
+
+/**
+ * Check if an element is visible in viewport
+ * @param {HTMLElement} element - Element to check
+ * @returns {boolean} Whether element is visible
+ */
+export function isInViewport(element) {
     const rect = element.getBoundingClientRect();
     return (
-        rect.top >= 0 - offset &&
-        rect.left >= 0 - offset &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) + offset &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) + offset
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
 }
-
-/**
- * Copy text to clipboard
- * @param {string} text - Text to copy
- * @returns {Promise<void>}
- */
-export async function copyToClipboard(text) {
-    try {
-        await navigator.clipboard.writeText(text);
-    } catch (err) {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand('copy');
-        } finally {
-            document.body.removeChild(textArea);
-        }
-    }
-}
-
-/**
- * Check if device is mobile
- * @returns {boolean} Whether device is mobile
- */
-export function isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-/**
- * Get browser language
- * @returns {string} Browser language code
- */
-export function getBrowserLanguage() {
-    return navigator.language || navigator.userLanguage;
-} 
