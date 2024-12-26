@@ -2,36 +2,39 @@
  * Application initialization and common utilities
  */
 
-import { generateToolList } from './template-generator.js';
 import { initializeTheme } from './theme.js';
+import { initializeTools } from '../features/tools-manager.js';
 
 /**
- * Initialize the application
- * Sets up theme, generates tool listings, and handles common functionality
+ * Initialize mobile menu functionality
  */
-export function initializeApp() {
-    try {
-        // Initialize theme
-        initializeTheme();
+function initializeMobileMenu() {
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    const navLinksItems = document.querySelectorAll('.nav-link');
 
-        // Generate tool listings if on index page
-        const toolsGrid = document.getElementById('tools-grid');
-        if (toolsGrid) {
-            toolsGrid.innerHTML = generateToolList();
-        }
+    if (!menuToggle || !navLinks) return;
 
-        // Initialize smooth scrolling
-        initializeSmoothScroll();
+    menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        menuToggle.querySelector('i').classList.toggle('fa-bars');
+        menuToggle.querySelector('i').classList.toggle('fa-times');
+        document.body.classList.toggle('menu-open');
+    });
 
-        // Initialize navigation
-        initializeNavigation();
-    } catch (error) {
-        console.error('Failed to initialize application:', error);
-    }
+    // Close menu when clicking nav links
+    navLinksItems.forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            menuToggle.querySelector('i').classList.add('fa-bars');
+            menuToggle.querySelector('i').classList.remove('fa-times');
+            document.body.classList.remove('menu-open');
+        });
+    });
 }
 
 /**
- * Initialize smooth scrolling for anchor links
+ * Initialize smooth scrolling for navigation links
  */
 function initializeSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -49,56 +52,37 @@ function initializeSmoothScroll() {
 }
 
 /**
- * Initialize navigation functionality
+ * Initialize the application
  */
-function initializeNavigation() {
-    // Add active state to current page in navigation
-    const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll('nav a');
-    const navLinksContainer = document.querySelector('.nav-links');
-    const themeToggle = document.querySelector('.theme-toggle');
+function initializeApp() {
+    // Initialize theme system
+    initializeTheme();
 
-    // Set active state
-    navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
-        }
+    // Initialize mobile menu
+    initializeMobileMenu();
+
+    // Initialize smooth scroll
+    initializeSmoothScroll();
+
+    // Initialize tools grid
+    initializeTools();
+
+    // Add scroll-based animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, {
+        threshold: 0.1
     });
 
-    // Handle mobile navigation
-    if (window.innerWidth <= 768) {
-        const menuButton = document.createElement('button');
-        menuButton.className = 'menu-toggle';
-        menuButton.setAttribute('aria-label', 'Toggle navigation menu');
-        menuButton.innerHTML = '<i class="fas fa-bars"></i>';
-
-        menuButton.addEventListener('click', () => {
-            navLinksContainer.classList.toggle('show');
-            const icon = menuButton.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
+    document.querySelectorAll('.feature-card, .tools-grid > *, .about-content, .contribute-content')
+        .forEach(el => {
+            el.classList.add('animate-on-scroll');
+            observer.observe(el);
         });
-
-        document.querySelector('.nav-container').insertBefore(menuButton, themeToggle);
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.nav-container') && navLinksContainer.classList.contains('show')) {
-                navLinksContainer.classList.remove('show');
-                const icon = menuButton.querySelector('i');
-                icon.classList.replace('fa-times', 'fa-bars');
-            }
-        });
-
-        // Close menu when window is resized above mobile breakpoint
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768 && navLinksContainer.classList.contains('show')) {
-                navLinksContainer.classList.remove('show');
-                const icon = menuButton.querySelector('i');
-                icon.classList.replace('fa-times', 'fa-bars');
-            }
-        });
-    }
 }
 
 // Initialize when DOM is ready

@@ -3,78 +3,59 @@
  */
 
 :root {
-    /* Colors */
-    --primary: #4facfe;
-    --primary-rgb: 79, 172, 254;
-    --secondary: #0061ff;
+    /* Light theme colors */
+    --primary-rgb: 0, 242, 254;
     --secondary-rgb: 0, 97, 255;
-    --accent: #b721ff;
     --accent-rgb: 183, 33, 255;
+    --surface-rgb: 20, 30, 48;
 
-    /* Light Theme */
-    --bg-primary: #ffffff;
     --bg-primary-rgb: 255, 255, 255;
-    --bg-secondary: #f8fafc;
-    --bg-secondary-rgb: 248, 250, 252;
-    --text-primary: #1a202c;
-    --text-primary-rgb: 26, 32, 44;
-    --text-secondary: #4a5568;
-    --text-secondary-rgb: 74, 85, 104;
-    --surface: #ffffff;
-    --surface-rgb: 255, 255, 255;
+    --bg-secondary-rgb: 245, 247, 250;
+    --text-primary-rgb: 17, 24, 39;
+    --text-secondary-rgb: 75, 85, 99;
 
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 4rem;
+    /* Common variables */
+    --primary: rgb(var(--primary-rgb));
+    --secondary: rgb(var(--secondary-rgb));
+    --accent: rgb(var(--accent-rgb));
+    --surface: rgb(var(--surface-rgb));
 
-    /* Container */
-    --container-width: 1200px;
-    --container-padding: 2rem;
+    --bg-primary: rgb(var(--bg-primary-rgb));
+    --bg-secondary: rgb(var(--bg-secondary-rgb));
+    --text-primary: rgb(var(--text-primary-rgb));
+    --text-secondary: rgb(var(--text-secondary-rgb));
 
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-full: 9999px;
-
-    /* Transitions */
-    --transition-fast: 0.2s ease;
-    --transition-normal: 0.3s ease;
-    --transition-slow: 0.5s ease;
+    /* Gradients */
+    --primary-gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    --accent-gradient: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+    --surface-gradient: linear-gradient(135deg, var(--surface) 0%, rgba(var(--surface-rgb), 0.8) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
-    /* Z-index */
-    --z-negative: -1;
-    --z-normal: 1;
-    --z-tooltip: 10;
-    --z-fixed: 100;
-    --z-modal: 1000;
+    /* Transitions */
+    --transition-all: all 0.3s ease;
+    --transition-colors: color 0.3s ease, background-color 0.3s ease;
+    --transition-transform: transform 0.3s ease;
+
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --radius-full: 9999px;
 }
 
 [data-theme="dark"] {
-    /* Dark Theme */
-    --bg-primary: #1a202c;
-    --bg-primary-rgb: 26, 32, 44;
-    --bg-secondary: #2d3748;
-    --bg-secondary-rgb: 45, 55, 72;
-    --text-primary: #f7fafc;
-    --text-primary-rgb: 247, 250, 252;
-    --text-secondary: #a0aec0;
-    --text-secondary-rgb: 160, 174, 192;
-    --surface: #2d3748;
-    --surface-rgb: 45, 55, 72;
+    /* Dark theme colors */
+    --bg-primary-rgb: 17, 24, 39;
+    --bg-secondary-rgb: 31, 41, 55;
+    --text-primary-rgb: 243, 244, 246;
+    --text-secondary-rgb: 156, 163, 175;
 
-    /* Shadows for dark theme */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.18);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.12);
+    /* Adjust shadows for dark mode */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
 }

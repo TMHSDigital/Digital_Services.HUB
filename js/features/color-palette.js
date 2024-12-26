@@ -13,25 +13,19 @@ export default class ColorPalette extends BaseTool {
 
     initializeElements() {
         return {
-            // Color input elements
             colorInput: document.getElementById('color-input'),
             colorPicker: document.getElementById('color-picker'),
-
-            // Palette elements
             paletteContainer: document.getElementById('palette-container'),
             paletteList: document.getElementById('palette-list'),
-
-            // Action buttons
             generateButton: document.getElementById('generate-button'),
             copyButton: document.getElementById('copy-button'),
             clearButton: document.getElementById('clear-button'),
-
-            // Scheme options
             schemeSelect: document.getElementById('scheme-select'),
             countSelect: document.getElementById('count-select'),
-
-            // Notification
-            notification: document.querySelector('.notification')
+            notification: document.querySelector('.notification'),
+            exportButtons: document.querySelectorAll('.export-menu button'),
+            savedPaletteGrid: document.getElementById('saved-palette-grid'),
+            clearSavedButton: document.getElementById('clear-saved')
         };
     }
 
@@ -39,60 +33,60 @@ export default class ColorPalette extends BaseTool {
         return {
             currentColor: '#000000',
             palette: [],
+            savedPalettes: [],
+            maxSavedPalettes: 20,
             schemes: {
-                monochromatic: { count: [3, 5] },
-                analogous: { count: [3, 5] },
-                complementary: { count: [2, 4] },
-                triadic: { count: [3] },
-                tetradic: { count: [4] },
-                splitComplementary: { count: [3] }
+                monochromatic: { count: [3, 5], label: 'Monochromatic' },
+                analogous: { count: [3, 5], label: 'Analogous' },
+                complementary: { count: [2, 4], label: 'Complementary' },
+                triadic: { count: [3], label: 'Triadic' },
+                tetradic: { count: [4], label: 'Tetradic' },
+                splitComplementary: { count: [3], label: 'Split Complementary' }
             }
         };
     }
 
     bindEvents() {
-        const { colorInput, colorPicker, generateButton, copyButton, clearButton, schemeSelect, countSelect } = this.elements;
+        const { colorInput, colorPicker, generateButton, copyButton, clearButton,
+                schemeSelect, exportButtons, clearSavedButton } = this.elements;
 
-        // Color input events
         colorInput.addEventListener('input', this.handleColorInput.bind(this));
         colorPicker.addEventListener('change', this.handleColorPicker.bind(this));
-
-        // Action button events
         generateButton.addEventListener('click', this.generatePalette.bind(this));
         copyButton.addEventListener('click', this.copyPalette.bind(this));
         clearButton.addEventListener('click', this.clearPalette.bind(this));
-
-        // Scheme events
         schemeSelect.addEventListener('change', this.handleSchemeChange.bind(this));
+        clearSavedButton?.addEventListener('click', this.clearSavedPalettes.bind(this));
 
-        // Keyboard shortcuts
+        exportButtons?.forEach(button => {
+            button.addEventListener('click', () => this.exportPalette(button.dataset.format));
+        });
+
         this.addKeyboardShortcut('g', this.generatePalette.bind(this), { ctrl: true });
         this.addKeyboardShortcut('c', this.copyPalette.bind(this), { ctrl: true });
     }
 
     initialize() {
-        // Set initial color
         this.elements.colorInput.value = this.state.currentColor;
         this.elements.colorPicker.value = this.state.currentColor;
-
-        // Populate scheme select
         this.populateSchemeSelect();
-
-        // Generate initial palette
+        this.loadSavedPalettes();
         this.generatePalette();
     }
 
     handleColorInput(event) {
         const color = event.target.value;
-        this.state.currentColor = color;
-        this.elements.colorPicker.value = color;
+        if (!this.isValidColor(color)) return;
+
+        this.updateCurrentColor(color);
         this.generatePalette();
     }
 
     handleColorPicker(event) {
         const color = event.target.value;
-        this.state.currentColor = color;
-        this.elements.colorInput.value = color;
+        if (!this.isValidColor(color)) return;
+
+        this.updateCurrentColor(color);
         this.generatePalette();
     }
 
@@ -100,7 +94,6 @@ export default class ColorPalette extends BaseTool {
         const scheme = this.elements.schemeSelect.value;
         const counts = this.state.schemes[scheme].count;
 
-        // Update count select options
         this.elements.countSelect.innerHTML = counts
             .map(count => `<option value="${count}">${count} colors</option>`)
             .join('');
@@ -108,16 +101,19 @@ export default class ColorPalette extends BaseTool {
         this.generatePalette();
     }
 
+    updateCurrentColor(color) {
+        this.state.currentColor = color;
+        this.elements.colorInput.value = color;
+        this.elements.colorPicker.value = color;
+    }
+
     populateSchemeSelect() {
-        this.elements.schemeSelect.innerHTML = Object.keys(this.state.schemes)
-            .map(scheme => {
-                const name = scheme.replace(/([A-Z])/g, ' $1').toLowerCase();
-                return `<option value="${scheme}">${name}</option>`;
-            })
+        this.elements.schemeSelect.innerHTML = Object.entries(this.state.schemes)
+            .map(([value, { label }]) => `<option value="${value}">${label}</option>`)
             .join('');
     }
 
-    generatePalette() {
+    async generatePalette() {
         const scheme = this.elements.schemeSelect.value;
         const count = parseInt(this.elements.countSelect.value);
         const color = this.state.currentColor;
@@ -125,6 +121,7 @@ export default class ColorPalette extends BaseTool {
         try {
             this.state.palette = this.generateColors(color, scheme, count);
             this.displayPalette();
+            this.showNotification('Palette generated successfully');
         } catch (error) {
             console.error('Error generating palette:', error);
             this.showNotification('Failed to generate palette', 'error');
@@ -133,40 +130,141 @@ export default class ColorPalette extends BaseTool {
 
     generateColors(baseColor, scheme, count) {
         const hsl = this.hexToHSL(baseColor);
-        let colors = [];
 
-        switch (scheme) {
-            case 'monochromatic':
-                colors = this.generateMonochromatic(hsl, count);
-                break;
-            case 'analogous':
-                colors = this.generateAnalogous(hsl, count);
-                break;
-            case 'complementary':
-                colors = this.generateComplementary(hsl, count);
-                break;
-            case 'triadic':
-                colors = this.generateTriadic(hsl);
-                break;
-            case 'tetradic':
-                colors = this.generateTetradic(hsl);
-                break;
-            case 'splitComplementary':
-                colors = this.generateSplitComplementary(hsl);
-                break;
+        const generators = {
+            monochromatic: () => this.generateMonochromatic(hsl, count),
+            analogous: () => this.generateAnalogous(hsl, count),
+            complementary: () => this.generateComplementary(hsl, count),
+            triadic: () => this.generateTriadic(hsl),
+            tetradic: () => this.generateTetradic(hsl),
+            splitComplementary: () => this.generateSplitComplementary(hsl)
+        };
+
+        const generator = generators[scheme];
+        if (!generator) {
+            throw new Error(`Invalid color scheme: ${scheme}`);
         }
 
-        return colors.map(this.HSLToHex);
+        return generator().map(this.HSLToHex.bind(this));
     }
 
     displayPalette() {
+        if (!this.elements.paletteList) return;
+
         this.elements.paletteList.innerHTML = this.state.palette
             .map(color => `
                 <div class="color-item" style="background-color: ${color}">
-                    <span class="color-value">${color}</span>
+                    <span class="color-value" role="button" tabindex="0" aria-label="Copy color value: ${color}">
+                        ${color}
+                    </span>
                 </div>
             `)
             .join('');
+
+        const colorItems = this.elements.paletteList.querySelectorAll('.color-value');
+        colorItems.forEach(item => {
+            item.addEventListener('click', () => this.copyToClipboard(item.textContent.trim()));
+            item.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.copyToClipboard(item.textContent.trim());
+                }
+            });
+        });
+    }
+
+    exportPalette(format) {
+        if (!this.state.palette.length) return;
+
+        const formatters = {
+            hex: () => this.state.palette.join(', '),
+            rgb: () => this.state.palette.map(this.hexToRGB).join(', '),
+            hsl: () => this.state.palette.map(hex => {
+                const { h, s, l } = this.hexToHSL(hex);
+                return `hsl(${Math.round(h)}, ${Math.round(s)}%, ${Math.round(l)}%)`;
+            }).join(', '),
+            css: () => this.state.palette
+                .map((hex, i) => `--color-${i + 1}: ${hex};`)
+                .join('\n'),
+            sass: () => this.state.palette
+                .map((hex, i) => `$color-${i + 1}: ${hex};`)
+                .join('\n')
+        };
+
+        const formatter = formatters[format];
+        if (!formatter) {
+            this.showNotification(`Invalid export format: ${format}`, 'error');
+            return;
+        }
+
+        this.copyToClipboard(formatter());
+        this.showNotification(`Palette exported as ${format.toUpperCase()}`);
+    }
+
+    savePalette() {
+        if (!this.state.palette.length) return;
+
+        const palette = {
+            colors: this.state.palette,
+            timestamp: Date.now()
+        };
+
+        this.state.savedPalettes.unshift(palette);
+        if (this.state.savedPalettes.length > this.state.maxSavedPalettes) {
+            this.state.savedPalettes.pop();
+        }
+
+        this.saveToStorage('savedPalettes', this.state.savedPalettes);
+        this.updateSavedPalettes();
+        this.showNotification('Palette saved successfully');
+    }
+
+    loadSavedPalettes() {
+        const savedPalettes = this.loadFromStorage('savedPalettes');
+        if (savedPalettes) {
+            this.state.savedPalettes = savedPalettes;
+            this.updateSavedPalettes();
+        }
+    }
+
+    updateSavedPalettes() {
+        if (!this.elements.savedPaletteGrid) return;
+
+        this.elements.savedPaletteGrid.innerHTML = this.state.savedPalettes
+            .map((palette, index) => this.createSavedPaletteElement(palette, index))
+            .join('');
+
+        this.elements.clearSavedButton.style.display =
+            this.state.savedPalettes.length ? 'block' : 'none';
+    }
+
+    createSavedPaletteElement(palette, index) {
+        return `
+            <div class="saved-palette" data-index="${index}">
+                <div class="saved-swatches">
+                    ${palette.colors.map(color => `
+                        <div class="saved-swatch"
+                             style="background-color: ${color}"
+                             title="${color}">
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="saved-palette-actions">
+                    <button class="load-palette" aria-label="Load this palette">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="delete-palette" aria-label="Delete this palette">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    clearSavedPalettes() {
+        this.state.savedPalettes = [];
+        this.saveToStorage('savedPalettes', []);
+        this.updateSavedPalettes();
+        this.showNotification('All saved palettes cleared');
     }
 
     copyPalette() {
@@ -177,9 +275,20 @@ export default class ColorPalette extends BaseTool {
     clearPalette() {
         this.state.palette = [];
         this.displayPalette();
+        this.showNotification('Palette cleared');
     }
 
-    // Color conversion utilities
+    isValidColor(color) {
+        return /^#[0-9A-F]{6}$/i.test(color);
+    }
+
+    hexToRGB(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
     hexToHSL(hex) {
         let r = parseInt(hex.slice(1, 3), 16) / 255;
         let g = parseInt(hex.slice(3, 5), 16) / 255;
@@ -210,19 +319,19 @@ export default class ColorPalette extends BaseTool {
         s /= 100;
         l /= 100;
 
+        const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        };
+
         let r, g, b;
         if (s === 0) {
             r = g = b = l;
         } else {
-            const hue2rgb = (p, q, t) => {
-                if (t < 0) t += 1;
-                if (t > 1) t -= 1;
-                if (t < 1/6) return p + (q - p) * 6 * t;
-                if (t < 1/2) return q;
-                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                return p;
-            };
-
             const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
             const p = 2 * l - q;
             r = hue2rgb(p, q, h + 1/3);
@@ -238,7 +347,6 @@ export default class ColorPalette extends BaseTool {
         return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
 
-    // Color scheme generators
     generateMonochromatic({ h, s, l }, count) {
         const step = 100 / (count + 1);
         return Array.from({ length: count }, (_, i) => ({
