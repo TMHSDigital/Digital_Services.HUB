@@ -116,13 +116,10 @@ function generateToolCards() {
 function navigateToTool(toolId) {
     const tool = getToolById(toolId);
     if (tool) {
-        // Get the repository name from the URL
-        const pathParts = window.location.pathname.split('/');
-        const repoIndex = pathParts.indexOf('Digital_Services.HUB');
-        const basePath = repoIndex !== -1 ? pathParts.slice(0, repoIndex + 1).join('/') : '';
-        
-        // Combine base path with tool path
-        const fullPath = `${basePath}/${tool.path}`;
+        // For GitHub Pages, we need to handle the full URL
+        const isGitHubPages = window.location.hostname.includes('github.io');
+        const baseUrl = isGitHubPages ? '/Digital_Services.HUB' : '';
+        const fullPath = `${baseUrl}/${tool.path}`;
         window.location.href = fullPath;
     }
 }
