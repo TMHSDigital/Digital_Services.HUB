@@ -11,8 +11,30 @@ export function generateToolPage(toolId) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${tool.name} - Digital Services Hub</title>
     <meta name="description" content="${tool.description}">
-    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- Base and Theme styles -->
+    <link rel="stylesheet" href="../css/base/reset.css">
+    <link rel="stylesheet" href="../css/base/layout.css">
+    <link rel="stylesheet" href="../css/themes/variables.css">
+
+    <!-- Common UI Components -->
+    <link rel="stylesheet" href="../css/components/ui.css">
+
+    <!-- Utility styles -->
+    <link rel="stylesheet" href="../css/utils/utilities.css">
+    <link rel="stylesheet" href="../css/utils/animations.css">
+
+    <!-- Component styles -->
+    <link rel="stylesheet" href="../css/components/alerts.css">
+    <link rel="stylesheet" href="../css/components/cards.css">
+
+    <!-- Tool-specific styles -->
     <link rel="stylesheet" href="../css/components/${tool.id}.css">
+
+    <!-- Main styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- External fonts and icons -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -52,7 +74,7 @@ export function generateToolPage(toolId) {
             <div class="footer-section">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="about.html">About</a></li>
+                    <li><a href="../index.html">Home</a></li>
                     <li><a href="https://github.com/TMHDigital/Digital_Services.HUB">GitHub</a></li>
                 </ul>
             </div>
@@ -69,6 +91,8 @@ export function generateToolPage(toolId) {
         </div>
     </footer>
 
+    <!-- Load scripts -->
+    <script src="../js/utils/app.js" type="module"></script>
     <script src="../js/features/${tool.id}.js" type="module"></script>
 </body>
 </html>`;
@@ -114,36 +138,36 @@ export function generateToolList() {
 export function generateSocialShare(url, title) {
     const encodedUrl = encodeURIComponent(url);
     const encodedTitle = encodeURIComponent(title);
-    
+
     return `
         <div class="social-share">
             <h3>Share</h3>
             <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}" 
-                   target="_blank" 
+                <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}"
+                   target="_blank"
                    rel="noopener noreferrer"
                    class="share-button twitter"
                    aria-label="Share on Twitter">
                     <i class="fab fa-twitter"></i>
                     Twitter
                 </a>
-                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" 
-                   target="_blank" 
+                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}"
+                   target="_blank"
                    rel="noopener noreferrer"
                    class="share-button facebook"
                    aria-label="Share on Facebook">
                     <i class="fab fa-facebook"></i>
                     Facebook
                 </a>
-                <a href="https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}" 
-                   target="_blank" 
+                <a href="https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}"
+                   target="_blank"
                    rel="noopener noreferrer"
                    class="share-button reddit"
                    aria-label="Share on Reddit">
                     <i class="fab fa-reddit"></i>
                     Reddit
                 </a>
-                <button class="share-button copy-link" 
+                <button class="share-button copy-link"
                         data-url="${url}"
                         aria-label="Copy link to clipboard">
                     <i class="fas fa-link"></i>
@@ -152,4 +176,4 @@ export function generateSocialShare(url, title) {
             </div>
         </div>
     `;
-} 
+}
