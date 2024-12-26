@@ -2,7 +2,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 
 export default {
-    input: 'js/common.js',
+    input: 'js/utils/app.js',
     output: {
         file: 'dist/bundle.js',
         format: 'es',
@@ -19,4 +19,4 @@ export default {
     watch: {
         include: 'js/**'
     }
-}; 
+};

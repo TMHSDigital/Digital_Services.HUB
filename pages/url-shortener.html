@@ -35,20 +35,20 @@
         <section class="url-shortener">
             <div class="input-section">
                 <div class="url-input-container">
-                    <input type="url" id="long-url" placeholder="Paste your long URL here" 
+                    <input type="url" id="long-url" placeholder="Paste your long URL here"
                            aria-label="Enter your long URL">
                     <button id="shorten-button" class="primary-button">
                         <i class="fas fa-link"></i> Shorten URL
                     </button>
                 </div>
-                
+
                 <div class="options-container">
                     <div class="custom-alias">
-                        <input type="text" id="custom-alias" placeholder="Custom alias (optional)" 
+                        <input type="text" id="custom-alias" placeholder="Custom alias (optional)"
                                aria-label="Custom alias">
                         <span class="hint">Create a memorable custom link (optional)</span>
                     </div>
-                    
+
                     <div class="expiry-options">
                         <select id="expiry-time" aria-label="Link expiry time">
                             <option value="never">Never expires</option>
@@ -57,7 +57,7 @@
                             <option value="30d">30 days</option>
                             <option value="custom">Custom date</option>
                         </select>
-                        <input type="date" id="custom-expiry" class="hidden" 
+                        <input type="date" id="custom-expiry" class="hidden"
                                aria-label="Custom expiry date">
                     </div>
                 </div>
@@ -65,18 +65,18 @@
 
             <div id="result-section" class="result-section hidden">
                 <div class="shortened-url-container">
-                    <input type="text" id="shortened-url" readonly 
+                    <input type="text" id="shortened-url" readonly
                            aria-label="Shortened URL">
-                    <button id="copy-button" class="secondary-button" 
+                    <button id="copy-button" class="secondary-button"
                             aria-label="Copy shortened URL">
                         <i class="fas fa-copy"></i>
                     </button>
-                    <button id="qr-button" class="secondary-button" 
+                    <button id="qr-button" class="secondary-button"
                             aria-label="Generate QR code">
                         <i class="fas fa-qrcode"></i>
                     </button>
                 </div>
-                
+
                 <div class="stats-container">
                     <div class="stat">
                         <span class="stat-label">Total Clicks</span>
@@ -167,8 +167,9 @@
         <div class="footer-bottom">
             <p>&copy; 2024 Digital Services Hub. All rights reserved.</p>
         </div>
+        <script src="../utils/app.js"></script>
     </footer>
 
     <script src="../js/features/url-shortener.js" type="module"></script>
 </body>
-</html> 
+</html>

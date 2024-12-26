@@ -35,9 +35,9 @@
         <div class="qr-controls">
             <div class="input-group">
                 <label for="text-input">Text or URL:</label>
-                <textarea 
-                    id="text-input" 
-                    rows="3" 
+                <textarea
+                    id="text-input"
+                    rows="3"
                     placeholder="Enter text or URL to generate QR code"
                     aria-label="Enter text or URL to generate QR code"
                 ></textarea>
@@ -46,12 +46,12 @@
             <div class="settings-grid">
                 <div class="input-group">
                     <label for="size-input">Size (px):</label>
-                    <input 
-                        type="number" 
-                        id="size-input" 
-                        value="256" 
-                        min="128" 
-                        max="1024" 
+                    <input
+                        type="number"
+                        id="size-input"
+                        value="256"
+                        min="128"
+                        max="1024"
                         step="32"
                         aria-label="QR code size in pixels"
                     >
@@ -59,7 +59,7 @@
 
                 <div class="input-group">
                     <label for="error-correction-select">Error Correction:</label>
-                    <select 
+                    <select
                         id="error-correction-select"
                         aria-label="Error correction level"
                     >
@@ -72,9 +72,9 @@
 
                 <div class="input-group">
                     <label for="dark-color-input">Dark Color:</label>
-                    <input 
-                        type="color" 
-                        id="dark-color-input" 
+                    <input
+                        type="color"
+                        id="dark-color-input"
                         value="#000000"
                         aria-label="QR code dark color"
                     >
@@ -82,9 +82,9 @@
 
                 <div class="input-group">
                     <label for="light-color-input">Light Color:</label>
-                    <input 
-                        type="color" 
-                        id="light-color-input" 
+                    <input
+                        type="color"
+                        id="light-color-input"
                         value="#ffffff"
                         aria-label="QR code light color"
                     >
@@ -98,7 +98,7 @@
 
             <div class="output-container">
                 <div id="qr-container" class="qr-output" role="img" aria-label="Generated QR code"></div>
-                
+
                 <div class="output-actions">
                     <button id="download-button" disabled>
                         <i class="fas fa-download"></i>
@@ -113,7 +113,9 @@
 
     <!-- Load QR Code library first -->
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-    <!-- Then load our scripts -->
+    <!-- Load common utilities -->
+    <script src="../js/utils/app.js"></script>
+    <!-- Then load our feature script -->
     <script src="../js/features/qr-code.js"></script>
 </body>
-</html> 
+</html>

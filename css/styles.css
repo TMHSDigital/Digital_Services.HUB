@@ -2,24 +2,23 @@
  * Digital Services Hub Main Stylesheet
  */
 
-/* Base imports */
+/* Base styles */
 @import 'base/reset.css';
 @import 'base/layout.css';
 
 /* Theme configuration */
 @import 'themes/variables.css';
 
+/* Common UI components */
+@import 'components/ui.css';
+
 /* Utility styles */
 @import 'utils/utilities.css';
 @import 'utils/animations.css';
 
 /* Component styles */
-@import 'components/buttons.css';
-@import 'components/inputs.css';
-@import 'components/progress.css';
-@import 'components/navigation.css';
-@import 'components/cards.css';
 @import 'components/alerts.css';
+@import 'components/cards.css';
 
 /* Tool-specific styles */
 @import 'components/text-to-speech.css';
@@ -30,9 +29,22 @@
 @import 'components/password-generator.css';
 @import 'components/url-shortener.css';
 @import 'components/social-share.css';
-@import 'components/about.css';
 
-/* Page-specific styles */
+/* Global styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+}
+
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+}
+
+/* Hero section */
 .hero {
     min-height: 60vh;
     background: linear-gradient(135deg, var(--bg-dark) 0%, var(--card-bg) 100%);
@@ -46,6 +58,7 @@
 }
 
 .hero-title {
+    font-family: 'Orbitron', sans-serif;
     font-size: 3rem;
     color: var(--primary-color);
     margin-bottom: var(--spacing-md);
@@ -57,7 +70,7 @@
     margin-bottom: var(--spacing-lg);
 }
 
-/* Footer styles */
+/* Footer */
 .footer {
     background-color: var(--card-bg);
     padding: var(--spacing-xl) 0;
