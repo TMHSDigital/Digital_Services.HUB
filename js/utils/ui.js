@@ -5,411 +5,381 @@
 import { UI_CONSTANTS, THEMES } from './constants.js';
 import utils from './helpers.js';
 
-/**
- * Create a notification container if it doesn't exist
- * @private
- * @returns {HTMLElement} Notification container
- */
-function getNotificationContainer() {
-    let container = document.getElementById('notification-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'notification-container';
-        container.className = 'notification-container';
-        container.setAttribute('role', 'status');
-        container.setAttribute('aria-live', 'polite');
-        document.body.appendChild(container);
-    }
-    return container;
+// Notification container
+let notificationContainer = null;
+
+// Create notification container
+function createNotificationContainer() {
+    if (notificationContainer) return;
+
+    notificationContainer = document.createElement('div');
+    notificationContainer.className = 'notification-container';
+    notificationContainer.setAttribute('role', 'alert');
+    notificationContainer.setAttribute('aria-live', 'polite');
+    document.body.appendChild(notificationContainer);
 }
 
-export const notifications = {
-    /**
-     * Show notification message
-     * @param {string} message - Message to display
-     * @param {string} type - Notification type ('success', 'error', 'info', 'warning')
-     * @param {number} [duration] - Duration in milliseconds
-     */
-    show(message, type = 'info', duration = UI_CONSTANTS.NOTIFICATION_DURATION) {
-        const container = getNotificationContainer();
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.setAttribute('role', type === 'error' ? 'alert' : 'status');
-        
-        const icon = document.createElement('i');
-        icon.className = `fas ${this._getIconForType(type)}`;
-        notification.appendChild(icon);
+// Show notification
+export function showNotification(message, type = 'info', duration = 3000) {
+    createNotificationContainer();
 
-        const messageElement = document.createElement('span');
-        messageElement.textContent = message;
-        notification.appendChild(messageElement);
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.setAttribute('role', 'alert');
+    notification.setAttribute('aria-atomic', 'true');
 
-        const closeButton = document.createElement('button');
-        closeButton.className = 'notification-close';
-        closeButton.innerHTML = '&times;';
-        closeButton.setAttribute('aria-label', 'Close notification');
-        closeButton.onclick = () => this._removeNotification(notification);
-        notification.appendChild(closeButton);
+    const icon = document.createElement('i');
+    icon.className = getNotificationIcon(type);
+    notification.appendChild(icon);
 
-        container.appendChild(notification);
-        
-        // Trigger animation
-        requestAnimationFrame(() => {
-            notification.classList.add('show');
-        });
+    const text = document.createElement('span');
+    text.textContent = message;
+    notification.appendChild(text);
 
-        // Remove notification after duration
-        if (duration !== Infinity) {
-            setTimeout(() => {
-                this._removeNotification(notification);
-            }, duration);
-        }
-    },
+    const closeButton = document.createElement('button');
+    closeButton.className = 'notification-close';
+    closeButton.setAttribute('aria-label', 'Close notification');
+    closeButton.innerHTML = '<i class="fas fa-times"></i>';
+    closeButton.addEventListener('click', () => removeNotification(notification));
+    notification.appendChild(closeButton);
 
-    /**
-     * Show success notification
-     * @param {string} message - Success message
-     * @param {number} [duration] - Duration in milliseconds
-     */
-    success(message, duration) {
-        this.show(message, 'success', duration);
-    },
+    notificationContainer.appendChild(notification);
 
-    /**
-     * Show error notification
-     * @param {string} message - Error message
-     * @param {number} [duration] - Duration in milliseconds
-     */
-    error(message, duration) {
-        this.show(message, 'error', duration);
-    },
+    // Trigger animation
+    requestAnimationFrame(() => {
+        notification.classList.add('notification-show');
+    });
 
-    /**
-     * Show warning notification
-     * @param {string} message - Warning message
-     * @param {number} [duration] - Duration in milliseconds
-     */
-    warning(message, duration) {
-        this.show(message, 'warning', duration);
-    },
-
-    /**
-     * Show info notification
-     * @param {string} message - Info message
-     * @param {number} [duration] - Duration in milliseconds
-     */
-    info(message, duration) {
-        this.show(message, 'info', duration);
-    },
-
-    /**
-     * Get icon class for notification type
-     * @private
-     * @param {string} type - Notification type
-     * @returns {string} Icon class
-     */
-    _getIconForType(type) {
-        switch (type) {
-            case 'success': return 'fa-check-circle';
-            case 'error': return 'fa-exclamation-circle';
-            case 'warning': return 'fa-exclamation-triangle';
-            default: return 'fa-info-circle';
-        }
-    },
-
-    /**
-     * Remove notification element
-     * @private
-     * @param {HTMLElement} notification - Notification element to remove
-     */
-    _removeNotification(notification) {
-        notification.classList.remove('show');
-        notification.addEventListener('transitionend', () => {
-            notification.remove();
-            const container = document.getElementById('notification-container');
-            if (container && !container.hasChildNodes()) {
-                container.remove();
-            }
-        });
+    // Auto remove after duration
+    if (duration > 0) {
+        setTimeout(() => removeNotification(notification), duration);
     }
-};
 
-export const themeManager = {
-    /**
-     * Initialize theme manager
-     */
-    init() {
-        const savedTheme = utils.getStorageItem('theme', 'local') || THEMES.SYSTEM;
-        this.setTheme(savedTheme);
-        this.setupThemeToggle();
-        this.setupSystemThemeListener();
-    },
+    return notification;
+}
 
-    /**
-     * Set theme
-     * @param {string} theme - Theme to set
-     */
-    setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        utils.setStorageItem('theme', theme, 'local');
-    },
-
-    /**
-     * Setup theme toggle button
-     */
-    setupThemeToggle() {
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                const newTheme = currentTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
-                this.setTheme(newTheme);
-            });
+// Remove notification
+function removeNotification(notification) {
+    notification.classList.remove('notification-show');
+    notification.addEventListener('transitionend', () => {
+        notification.remove();
+        if (notificationContainer && notificationContainer.children.length === 0) {
+            notificationContainer.remove();
+            notificationContainer = null;
         }
-    },
+    });
+}
 
-    /**
-     * Setup system theme listener
-     */
-    setupSystemThemeListener() {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        mediaQuery.addEventListener('change', (e) => {
-            if (document.documentElement.getAttribute('data-theme') === THEMES.SYSTEM) {
-                this.setTheme(e.matches ? THEMES.DARK : THEMES.LIGHT);
-            }
-        });
+// Get notification icon based on type
+function getNotificationIcon(type) {
+    switch (type) {
+        case 'success':
+            return 'fas fa-check-circle';
+        case 'error':
+            return 'fas fa-exclamation-circle';
+        case 'warning':
+            return 'fas fa-exclamation-triangle';
+        default:
+            return 'fas fa-info-circle';
     }
-};
+}
 
-export const modal = {
-    /**
-     * Show modal
-     * @param {Object} options - Modal options
-     * @param {string} options.title - Modal title
-     * @param {string|HTMLElement} options.content - Modal content
-     * @param {Object} [options.buttons] - Modal buttons configuration
-     * @param {boolean} [options.closeOnEscape=true] - Whether to close on Escape key
-     * @param {boolean} [options.closeOnOverlay=true] - Whether to close on overlay click
-     * @returns {Promise} Resolves when modal is closed
-     */
-    show({ title, content, buttons = {}, closeOnEscape = true, closeOnOverlay = true }) {
-        return new Promise((resolve) => {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.setAttribute('role', 'dialog');
-            modal.setAttribute('aria-modal', 'true');
-            modal.setAttribute('aria-labelledby', 'modal-title');
+// Create loading spinner
+export function createLoadingSpinner(container, size = 'medium', text = 'Loading...') {
+    const spinner = document.createElement('div');
+    spinner.className = `loading-spinner loading-spinner-${size}`;
+    spinner.setAttribute('role', 'status');
+    spinner.setAttribute('aria-label', text);
 
-            const modalContent = document.createElement('div');
-            modalContent.className = 'modal-content';
+    const spinnerInner = document.createElement('div');
+    spinnerInner.className = 'loading-spinner-inner';
+    spinner.appendChild(spinnerInner);
 
-            const modalHeader = document.createElement('div');
-            modalHeader.className = 'modal-header';
-            
-            const titleElement = document.createElement('h2');
-            titleElement.id = 'modal-title';
-            titleElement.textContent = title;
-            modalHeader.appendChild(titleElement);
+    if (text) {
+        const spinnerText = document.createElement('div');
+        spinnerText.className = 'loading-spinner-text';
+        spinnerText.textContent = text;
+        spinner.appendChild(spinnerText);
+    }
 
+    if (container) {
+        container.appendChild(spinner);
+    }
+
+    return spinner;
+}
+
+// Remove loading spinner
+export function removeLoadingSpinner(spinner) {
+    if (spinner && spinner.parentNode) {
+        spinner.remove();
+    }
+}
+
+// Create modal
+export function createModal(options = {}) {
+    const {
+        title = '',
+        content = '',
+        buttons = [],
+        size = 'medium',
+        closeOnOverlayClick = true,
+        showCloseButton = true
+    } = options;
+
+    const modal = document.createElement('div');
+    modal.className = `modal modal-${size}`;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'modal-title');
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    if (title) {
+        const modalHeader = document.createElement('div');
+        modalHeader.className = 'modal-header';
+
+        const modalTitle = document.createElement('h2');
+        modalTitle.id = 'modal-title';
+        modalTitle.className = 'modal-title';
+        modalTitle.textContent = title;
+        modalHeader.appendChild(modalTitle);
+
+        if (showCloseButton) {
             const closeButton = document.createElement('button');
             closeButton.className = 'modal-close';
-            closeButton.innerHTML = '&times;';
             closeButton.setAttribute('aria-label', 'Close modal');
+            closeButton.innerHTML = '<i class="fas fa-times"></i>';
+            closeButton.addEventListener('click', () => closeModal(modal));
             modalHeader.appendChild(closeButton);
-
-            const modalBody = document.createElement('div');
-            modalBody.className = 'modal-body';
-            if (typeof content === 'string') {
-                modalBody.innerHTML = content;
-            } else {
-                modalBody.appendChild(content);
-            }
-
-            const modalFooter = document.createElement('div');
-            modalFooter.className = 'modal-footer';
-
-            // Add default buttons if none provided
-            if (Object.keys(buttons).length === 0) {
-                buttons.Close = () => {};
-            }
-
-            Object.entries(buttons).forEach(([label, callback]) => {
-                const button = document.createElement('button');
-                button.textContent = label;
-                button.className = 'modal-button';
-                button.addEventListener('click', () => {
-                    callback();
-                    this.close(modal);
-                    resolve();
-                });
-                modalFooter.appendChild(button);
-            });
-
-            modalContent.appendChild(modalHeader);
-            modalContent.appendChild(modalBody);
-            modalContent.appendChild(modalFooter);
-            modal.appendChild(modalContent);
-
-            const closeModal = () => {
-                this.close(modal);
-                resolve();
-            };
-
-            closeButton.addEventListener('click', closeModal);
-            
-            if (closeOnOverlay) {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) closeModal();
-                });
-            }
-
-            if (closeOnEscape) {
-                const escapeHandler = (e) => {
-                    if (e.key === 'Escape') {
-                        closeModal();
-                        document.removeEventListener('keydown', escapeHandler);
-                    }
-                };
-                document.addEventListener('keydown', escapeHandler);
-            }
-
-            // Trap focus within modal
-            this._trapFocus(modal);
-
-            document.body.appendChild(modal);
-            requestAnimationFrame(() => {
-                modal.classList.add('show');
-                // Focus first focusable element
-                const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-                if (focusable) focusable.focus();
-            });
-        });
-    },
-
-    /**
-     * Close modal
-     * @param {HTMLElement} modal - Modal element to close
-     */
-    close(modal) {
-        modal.classList.remove('show');
-        modal.addEventListener('transitionend', () => {
-            modal.remove();
-        });
-    },
-
-    /**
-     * Trap focus within modal
-     * @private
-     * @param {HTMLElement} modal - Modal element
-     */
-    _trapFocus(modal) {
-        const focusableElements = modal.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const firstFocusable = focusableElements[0];
-        const lastFocusable = focusableElements[focusableElements.length - 1];
-
-        modal.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                if (e.shiftKey) {
-                    if (document.activeElement === firstFocusable) {
-                        e.preventDefault();
-                        lastFocusable.focus();
-                    }
-                } else {
-                    if (document.activeElement === lastFocusable) {
-                        e.preventDefault();
-                        firstFocusable.focus();
-                    }
-                }
-            }
-        });
-    }
-};
-
-export const loader = {
-    /**
-     * Show loader
-     * @param {string} [message] - Loading message
-     * @param {boolean} [overlay=true] - Whether to show overlay
-     * @returns {HTMLElement} Loader element
-     */
-    show(message = 'Loading...', overlay = true) {
-        const loader = document.createElement('div');
-        loader.className = `loader${overlay ? ' loader-overlay' : ''}`;
-        loader.setAttribute('role', 'alert');
-        loader.setAttribute('aria-busy', 'true');
-        loader.setAttribute('aria-label', message);
-
-        const spinner = document.createElement('div');
-        spinner.className = 'loader-spinner';
-        
-        const messageElement = document.createElement('div');
-        messageElement.className = 'loader-message';
-        messageElement.textContent = message;
-
-        loader.appendChild(spinner);
-        loader.appendChild(messageElement);
-        document.body.appendChild(loader);
-
-        // Prevent background scrolling if overlay
-        if (overlay) {
-            document.body.style.overflow = 'hidden';
         }
 
-        return loader;
-    },
+        modalContent.appendChild(modalHeader);
+    }
 
-    /**
-     * Hide loader
-     * @param {HTMLElement} loader - Loader element to hide
-     */
-    hide(loader) {
-        if (loader && loader.parentNode) {
-            const hasOverlay = loader.classList.contains('loader-overlay');
-            loader.remove();
-            if (hasOverlay) {
-                document.body.style.overflow = '';
+    const modalBody = document.createElement('div');
+    modalBody.className = 'modal-body';
+    if (typeof content === 'string') {
+        modalBody.innerHTML = content;
+    } else {
+        modalBody.appendChild(content);
+    }
+    modalContent.appendChild(modalBody);
+
+    if (buttons.length > 0) {
+        const modalFooter = document.createElement('div');
+        modalFooter.className = 'modal-footer';
+
+        buttons.forEach(button => {
+            const btn = document.createElement('button');
+            btn.className = `btn btn-${button.type || 'secondary'}`;
+            btn.textContent = button.text;
+            if (button.onClick) {
+                btn.addEventListener('click', () => button.onClick(modal));
             }
-        }
+            modalFooter.appendChild(btn);
+        });
+
+        modalContent.appendChild(modalFooter);
     }
-};
 
-export const responsiveHelper = {
-    /**
-     * Check if viewport is mobile
-     * @returns {boolean} Whether viewport is mobile
-     */
-    isMobile: utils.isMobile,
+    modal.appendChild(modalContent);
 
-    /**
-     * Add resize listener
-     * @param {Function} callback - Callback function
-     * @returns {Function} Function to remove listener
-     */
-    onResize(callback) {
-        const handler = utils.debounce(callback, UI_CONSTANTS.DEBOUNCE_DELAY);
-        window.addEventListener('resize', handler);
-        return () => window.removeEventListener('resize', handler);
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+    if (closeOnOverlayClick) {
+        modalOverlay.addEventListener('click', () => closeModal(modal));
     }
-};
 
-export function initializeSocialShare() {
-    document.querySelectorAll('.share-button.copy-link').forEach(button => {
-        button.addEventListener('click', async () => {
-            const url = button.dataset.url;
-            try {
-                await navigator.clipboard.writeText(url);
-                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                button.classList.add('success');
-                setTimeout(() => {
-                    button.innerHTML = '<i class="fas fa-link"></i> Copy Link';
-                    button.classList.remove('success');
-                }, 2000);
-            } catch (err) {
-                console.error('Failed to copy:', err);
-                showNotification('Failed to copy link', 'error');
+    const modalWrapper = document.createElement('div');
+    modalWrapper.className = 'modal-wrapper';
+    modalWrapper.appendChild(modalOverlay);
+    modalWrapper.appendChild(modal);
+
+    document.body.appendChild(modalWrapper);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+        modalWrapper.classList.add('modal-show');
+    });
+
+    return modal;
+}
+
+// Close modal
+export function closeModal(modal) {
+    const modalWrapper = modal.closest('.modal-wrapper');
+    modalWrapper.classList.remove('modal-show');
+    modalWrapper.addEventListener('transitionend', () => {
+        modalWrapper.remove();
+    });
+}
+
+// Create tooltip
+export function createTooltip(element, text, position = 'top') {
+    const tooltip = document.createElement('div');
+    tooltip.className = `tooltip tooltip-${position}`;
+    tooltip.setAttribute('role', 'tooltip');
+    tooltip.textContent = text;
+
+    element.addEventListener('mouseenter', () => {
+        document.body.appendChild(tooltip);
+        const rect = element.getBoundingClientRect();
+        positionTooltip(tooltip, rect, position);
+        requestAnimationFrame(() => {
+            tooltip.classList.add('tooltip-show');
+        });
+    });
+
+    element.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('tooltip-show');
+        tooltip.addEventListener('transitionend', () => {
+            if (tooltip.parentNode) {
+                tooltip.remove();
             }
         });
     });
-} 
+
+    return tooltip;
+}
+
+// Position tooltip
+function positionTooltip(tooltip, targetRect, position) {
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const spacing = 8;
+
+    let top, left;
+
+    switch (position) {
+        case 'top':
+            top = targetRect.top - tooltipRect.height - spacing;
+            left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
+            break;
+        case 'bottom':
+            top = targetRect.bottom + spacing;
+            left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
+            break;
+        case 'left':
+            top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
+            left = targetRect.left - tooltipRect.width - spacing;
+            break;
+        case 'right':
+            top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
+            left = targetRect.right + spacing;
+            break;
+    }
+
+    tooltip.style.top = `${top}px`;
+    tooltip.style.left = `${left}px`;
+}
+
+// Create confirmation dialog
+export function createConfirmDialog(options = {}) {
+    const {
+        title = 'Confirm',
+        message = 'Are you sure?',
+        confirmText = 'Confirm',
+        cancelText = 'Cancel',
+        confirmType = 'primary',
+        onConfirm,
+        onCancel
+    } = options;
+
+    return createModal({
+        title,
+        content: message,
+        buttons: [
+            {
+                text: cancelText,
+                type: 'secondary',
+                onClick: (modal) => {
+                    closeModal(modal);
+                    if (onCancel) onCancel();
+                }
+            },
+            {
+                text: confirmText,
+                type: confirmType,
+                onClick: (modal) => {
+                    closeModal(modal);
+                    if (onConfirm) onConfirm();
+                }
+            }
+        ]
+    });
+}
+
+// Toggle element visibility
+export function toggleVisibility(element, show) {
+    if (show) {
+        element.classList.remove('hidden');
+        element.setAttribute('aria-hidden', 'false');
+    } else {
+        element.classList.add('hidden');
+        element.setAttribute('aria-hidden', 'true');
+    }
+}
+
+// Format file size
+export function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+}
+
+// Format date
+export function formatDate(date, options = {}) {
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+}
+
+// Format number
+export function formatNumber(number, options = {}) {
+    return new Intl.NumberFormat('en-US', options).format(number);
+}
+
+// Validate email
+export function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// Validate URL
+export function validateURL(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// Sanitize HTML
+export function sanitizeHTML(html) {
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
+}
+
+// Debounce function
+export function debounce(func, wait) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Throttle function
+export function throttle(func, limit) {
+    let inThrottle;
+    return (...args) => {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => (inThrottle = false), limit);
+        }
+    };
+}

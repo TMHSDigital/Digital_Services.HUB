@@ -3,59 +3,195 @@
  */
 
 :root {
-    /* Light theme colors */
-    --primary-rgb: 0, 242, 254;
-    --secondary-rgb: 0, 97, 255;
-    --accent-rgb: 183, 33, 255;
-    --surface-rgb: 20, 30, 48;
+    /* Base Colors */
+    --primary-rgb: 59, 130, 246;
+    --success-rgb: 34, 197, 94;
+    --warning-rgb: 234, 179, 8;
+    --error-rgb: 239, 68, 68;
+    --info-rgb: 59, 130, 246;
 
-    --bg-primary-rgb: 255, 255, 255;
-    --bg-secondary-rgb: 245, 247, 250;
-    --text-primary-rgb: 17, 24, 39;
-    --text-secondary-rgb: 75, 85, 99;
+    /* Light Theme Colors */
+    --light-bg-primary: 255, 255, 255;
+    --light-bg-secondary: 249, 250, 251;
+    --light-bg-tertiary: 243, 244, 246;
+    --light-text-primary: 17, 24, 39;
+    --light-text-secondary: 107, 114, 128;
+    --light-border: 229, 231, 235;
+    --light-shadow: 0, 0, 0;
 
-    /* Common variables */
-    --primary: rgb(var(--primary-rgb));
-    --secondary: rgb(var(--secondary-rgb));
-    --accent: rgb(var(--accent-rgb));
-    --surface: rgb(var(--surface-rgb));
-
-    --bg-primary: rgb(var(--bg-primary-rgb));
-    --bg-secondary: rgb(var(--bg-secondary-rgb));
-    --text-primary: rgb(var(--text-primary-rgb));
-    --text-secondary: rgb(var(--text-secondary-rgb));
-
-    /* Gradients */
-    --primary-gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    --accent-gradient: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
-    --surface-gradient: linear-gradient(135deg, var(--surface) 0%, rgba(var(--surface-rgb), 0.8) 100%);
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-
-    /* Transitions */
-    --transition-all: all 0.3s ease;
-    --transition-colors: color 0.3s ease, background-color 0.3s ease;
-    --transition-transform: transform 0.3s ease;
-
-    /* Border Radius */
-    --radius-sm: 0.375rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 1rem;
-    --radius-full: 9999px;
+    /* Dark Theme Colors */
+    --dark-bg-primary: 17, 24, 39;
+    --dark-bg-secondary: 31, 41, 55;
+    --dark-bg-tertiary: 55, 65, 81;
+    --dark-text-primary: 243, 244, 246;
+    --dark-text-secondary: 156, 163, 175;
+    --dark-border: 75, 85, 99;
+    --dark-shadow: 0, 0, 0;
 }
 
-[data-theme="dark"] {
-    /* Dark theme colors */
-    --bg-primary-rgb: 17, 24, 39;
-    --bg-secondary-rgb: 31, 41, 55;
-    --text-primary-rgb: 243, 244, 246;
-    --text-secondary-rgb: 156, 163, 175;
+/* Light Theme */
+[data-theme="light"] {
+    /* Colors */
+    --bg-primary: rgb(var(--light-bg-primary));
+    --bg-secondary: rgb(var(--light-bg-secondary));
+    --bg-tertiary: rgb(var(--light-bg-tertiary));
+    --text-primary: rgb(var(--light-text-primary));
+    --text-secondary: rgb(var(--light-text-secondary));
+    --text-light: rgb(var(--light-bg-primary));
+    --border-color: rgb(var(--light-border));
 
-    /* Adjust shadows for dark mode */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    /* Theme Colors */
+    --primary-color: rgb(var(--primary-rgb));
+    --primary-color-light: rgba(var(--primary-rgb), 0.1);
+    --primary-color-dark: rgba(var(--primary-rgb), 0.8);
+
+    --success-color: rgb(var(--success-rgb));
+    --success-color-light: rgba(var(--success-rgb), 0.1);
+    --success-color-dark: rgba(var(--success-rgb), 0.8);
+
+    --warning-color: rgb(var(--warning-rgb));
+    --warning-color-light: rgba(var(--warning-rgb), 0.1);
+    --warning-color-dark: rgba(var(--warning-rgb), 0.8);
+
+    --error-color: rgb(var(--error-rgb));
+    --error-color-light: rgba(var(--error-rgb), 0.1);
+    --error-color-dark: rgba(var(--error-rgb), 0.8);
+
+    --info-color: rgb(var(--info-rgb));
+    --info-color-light: rgba(var(--info-rgb), 0.1);
+    --info-color-dark: rgba(var(--info-rgb), 0.8);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, rgb(var(--primary-rgb)), rgba(var(--primary-rgb), 0.8));
+    --gradient-success: linear-gradient(135deg, rgb(var(--success-rgb)), rgba(var(--success-rgb), 0.8));
+    --gradient-warning: linear-gradient(135deg, rgb(var(--warning-rgb)), rgba(var(--warning-rgb), 0.8));
+    --gradient-error: linear-gradient(135deg, rgb(var(--error-rgb)), rgba(var(--error-rgb), 0.8));
+    --gradient-info: linear-gradient(135deg, rgb(var(--info-rgb)), rgba(var(--info-rgb), 0.8));
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(var(--light-shadow), 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(var(--light-shadow), 0.1), 0 2px 4px -1px rgba(var(--light-shadow), 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(var(--light-shadow), 0.1), 0 4px 6px -2px rgba(var(--light-shadow), 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(var(--light-shadow), 0.1), 0 10px 10px -5px rgba(var(--light-shadow), 0.04);
+
+    /* Filters */
+    --backdrop-blur: blur(8px);
+    --backdrop-brightness: brightness(1.1);
+    --backdrop-saturate: saturate(1.2);
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    /* Colors */
+    --bg-primary: rgb(var(--dark-bg-primary));
+    --bg-secondary: rgb(var(--dark-bg-secondary));
+    --bg-tertiary: rgb(var(--dark-bg-tertiary));
+    --text-primary: rgb(var(--dark-text-primary));
+    --text-secondary: rgb(var(--dark-text-secondary));
+    --text-light: rgb(var(--dark-text-primary));
+    --border-color: rgb(var(--dark-border));
+
+    /* Theme Colors */
+    --primary-color: rgb(var(--primary-rgb));
+    --primary-color-light: rgba(var(--primary-rgb), 0.2);
+    --primary-color-dark: rgba(var(--primary-rgb), 0.9);
+
+    --success-color: rgb(var(--success-rgb));
+    --success-color-light: rgba(var(--success-rgb), 0.2);
+    --success-color-dark: rgba(var(--success-rgb), 0.9);
+
+    --warning-color: rgb(var(--warning-rgb));
+    --warning-color-light: rgba(var(--warning-rgb), 0.2);
+    --warning-color-dark: rgba(var(--warning-rgb), 0.9);
+
+    --error-color: rgb(var(--error-rgb));
+    --error-color-light: rgba(var(--error-rgb), 0.2);
+    --error-color-dark: rgba(var(--error-rgb), 0.9);
+
+    --info-color: rgb(var(--info-rgb));
+    --info-color-light: rgba(var(--info-rgb), 0.2);
+    --info-color-dark: rgba(var(--info-rgb), 0.9);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, rgba(var(--primary-rgb), 0.9), rgba(var(--primary-rgb), 0.7));
+    --gradient-success: linear-gradient(135deg, rgba(var(--success-rgb), 0.9), rgba(var(--success-rgb), 0.7));
+    --gradient-warning: linear-gradient(135deg, rgba(var(--warning-rgb), 0.9), rgba(var(--warning-rgb), 0.7));
+    --gradient-error: linear-gradient(135deg, rgba(var(--error-rgb), 0.9), rgba(var(--error-rgb), 0.7));
+    --gradient-info: linear-gradient(135deg, rgba(var(--info-rgb), 0.9), rgba(var(--info-rgb), 0.7));
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(var(--dark-shadow), 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(var(--dark-shadow), 0.15), 0 2px 4px -1px rgba(var(--dark-shadow), 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(var(--dark-shadow), 0.15), 0 4px 6px -2px rgba(var(--dark-shadow), 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(var(--dark-shadow), 0.15), 0 10px 10px -5px rgba(var(--dark-shadow), 0.1);
+
+    /* Filters */
+    --backdrop-blur: blur(8px);
+    --backdrop-brightness: brightness(0.9);
+    --backdrop-saturate: saturate(1.1);
+}
+
+/* Common Variables */
+:root {
+    /* Typography */
+    --font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* Spacing */
+    --spacing-0: 0;
+    --spacing-1: 0.25rem;
+    --spacing-2: 0.5rem;
+    --spacing-3: 0.75rem;
+    --spacing-4: 1rem;
+    --spacing-5: 1.25rem;
+    --spacing-6: 1.5rem;
+    --spacing-8: 2rem;
+    --spacing-10: 2.5rem;
+    --spacing-12: 3rem;
+    --spacing-16: 4rem;
+    --spacing-20: 5rem;
+    --spacing-24: 6rem;
+    --spacing-32: 8rem;
+
+    /* Border Radius */
+    --radius-none: 0;
+    --radius-sm: 0.125rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+    --radius-3xl: 1.5rem;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --transition-all: all 0.2s ease-in-out;
+    --transition-colors: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    --transition-opacity: opacity 0.2s ease-in-out;
+    --transition-shadow: box-shadow 0.2s ease-in-out;
+    --transition-transform: transform 0.2s ease-in-out;
+
+    /* Z-Index */
+    --z-0: 0;
+    --z-10: 10;
+    --z-20: 20;
+    --z-30: 30;
+    --z-40: 40;
+    --z-50: 50;
+    --z-auto: auto;
+
+    /* Focus Ring */
+    --focus-ring-width: 2px;
+    --focus-ring-color: rgba(var(--primary-rgb), 0.6);
+    --focus-ring-offset: 2px;
 }

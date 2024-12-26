@@ -1,0 +1,62 @@
+/* Tooltip */
+.tooltip {
+    position: fixed;
+    z-index: var(--z-50);
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--bg-tertiary);
+    color: var(--text-light);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    pointer-events: none;
+    opacity: 0;
+    transform-origin: center;
+    transform: scale(0.9);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.tooltip-show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Tooltip Positions */
+.tooltip::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: inherit;
+    transform: rotate(45deg);
+}
+
+.tooltip-top::before {
+    bottom: -4px;
+    left: 50%;
+    margin-left: -4px;
+}
+
+.tooltip-bottom::before {
+    top: -4px;
+    left: 50%;
+    margin-left: -4px;
+}
+
+.tooltip-left::before {
+    right: -4px;
+    top: 50%;
+    margin-top: -4px;
+}
+
+.tooltip-right::before {
+    left: -4px;
+    top: 50%;
+    margin-top: -4px;
+}
+
+/* Dark Theme Adjustments */
+[data-theme="dark"] .tooltip {
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-xl);
+}

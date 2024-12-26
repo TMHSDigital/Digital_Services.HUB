@@ -1,0 +1,108 @@
+<div class="tool-page">
+    <header class="tool-header">
+        <h1 class="tool-title">Text to Speech</h1>
+        <p class="tool-description">Convert text to natural-sounding speech with customizable voices and settings.</p>
+        <div class="tool-features">
+            <span class="tool-feature">Multiple Languages</span>
+            <span class="tool-feature">Adjustable Speed</span>
+            <span class="tool-feature">Voice Selection</span>
+            <span class="tool-feature">Real-time Preview</span>
+        </div>
+    </header>
+
+    <main class="tool-content">
+        <section class="text-to-speech">
+            <div class="text-input-section">
+                <div class="text-input-header">
+                    <h2 class="text-input-title">Enter Text</h2>
+                    <div class="text-input-controls">
+                        <button class="btn btn-secondary" id="clear-button">
+                            <i class="fas fa-times"></i>
+                            Clear
+                        </button>
+                        <button class="btn btn-secondary" id="paste-button">
+                            <i class="fas fa-paste"></i>
+                            Paste
+                        </button>
+                    </div>
+                </div>
+                <textarea
+                    id="text-input"
+                    class="text-input-textarea"
+                    placeholder="Type or paste your text here..."
+                    rows="6"
+                    disabled
+                ></textarea>
+
+                <div class="voice-options">
+                    <div class="voice-option">
+                        <label for="voice-select">Voice</label>
+                        <select id="voice-select" class="voice-select" disabled>
+                            <option value="">Loading voices...</option>
+                        </select>
+                    </div>
+                    <div class="voice-option">
+                        <label for="rate-input">Speed</label>
+                        <input
+                            type="range"
+                            id="rate-input"
+                            min="0.5"
+                            max="2"
+                            step="0.1"
+                            value="1"
+                            disabled
+                        >
+                    </div>
+                    <div class="voice-option">
+                        <label for="pitch-input">Pitch</label>
+                        <input
+                            type="range"
+                            id="pitch-input"
+                            min="0.5"
+                            max="2"
+                            step="0.1"
+                            value="1"
+                            disabled
+                        >
+                    </div>
+                    <div class="voice-option">
+                        <label for="volume-input">Volume</label>
+                        <input
+                            type="range"
+                            id="volume-input"
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value="1"
+                            disabled
+                        >
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="play-button" class="action-button play" disabled>
+                        <i class="fas fa-play"></i>
+                        Play
+                    </button>
+                    <button id="pause-button" class="action-button pause" disabled>
+                        <i class="fas fa-pause"></i>
+                        Pause
+                    </button>
+                    <button id="stop-button" class="action-button stop" disabled>
+                        <i class="fas fa-stop"></i>
+                        Stop
+                    </button>
+                </div>
+
+                <div class="speech-progress">
+                    <div class="progress">
+                        <div id="progress-bar" class="progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-text">0%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>

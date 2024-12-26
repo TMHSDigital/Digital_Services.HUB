@@ -1,322 +1,236 @@
-import { BaseTool } from './base-tool.js';
-import { notifications } from '../utils/ui.js';
-import { STORAGE_KEYS } from '../utils/constants.js';
-import utils from '../utils/helpers.js';
+import { BaseTool } from '../utils/base-tool.js';
+import { showNotification } from '../utils/ui.js';
 
-/**
- * Text-to-Speech API wrapper
- */
-class TextToSpeechAPI {
+export class TextToSpeech extends BaseTool {
     constructor() {
+        super('text-to-speech');
         this.synth = window.speechSynthesis;
+        this.utterance = null;
         this.voices = [];
-        this.currentVoice = null;
-        this.currentUtterance = null;
-        this.loadVoices();
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.progress = 0;
+
+        // Initialize UI elements
+        this.textInput = document.querySelector('#text-input');
+        this.voiceSelect = document.querySelector('#voice-select');
+        this.rateInput = document.querySelector('#rate-input');
+        this.pitchInput = document.querySelector('#pitch-input');
+        this.volumeInput = document.querySelector('#volume-input');
+        this.playButton = document.querySelector('#play-button');
+        this.pauseButton = document.querySelector('#pause-button');
+        this.stopButton = document.querySelector('#stop-button');
+        this.progressBar = document.querySelector('#progress-bar');
+        this.progressText = document.querySelector('#progress-text');
+
+        // Bind event handlers
+        this.handleVoicesChanged = this.handleVoicesChanged.bind(this);
+        this.handlePlay = this.handlePlay.bind(this);
+        this.handlePause = this.handlePause.bind(this);
+        this.handleStop = this.handleStop.bind(this);
+        this.handleBoundaryEvent = this.handleBoundaryEvent.bind(this);
+        this.handleEndEvent = this.handleEndEvent.bind(this);
+        this.handleErrorEvent = this.handleErrorEvent.bind(this);
+
+        // Initialize voices
+        this.initVoices();
     }
 
-    loadVoices() {
-        this.voices = this.synth.getVoices();
-        if (this.synth.onvoiceschanged !== undefined) {
-            this.synth.onvoiceschanged = () => {
-                this.voices = this.synth.getVoices();
-            };
+    async init() {
+        try {
+            // Add event listeners
+            this.playButton.addEventListener('click', this.handlePlay);
+            this.pauseButton.addEventListener('click', this.handlePause);
+            this.stopButton.addEventListener('click', this.handleStop);
+            this.synth.addEventListener('voiceschanged', this.handleVoicesChanged);
+
+            // Initialize voices
+            await this.loadVoices();
+
+            // Enable controls
+            this.enableControls();
+        } catch (error) {
+            console.error('Failed to initialize Text-to-Speech:', error);
+            showNotification('Failed to initialize Text-to-Speech. Please try again.', 'error');
         }
     }
 
-    setVoice(voiceId) {
-        const voice = this.voices.find(v => v.voiceURI === voiceId);
-        if (voice) {
-            this.currentVoice = voice;
-            return true;
-        }
-        return false;
-    }
-
-    speak(text, options = {}) {
-        return new Promise((resolve, reject) => {
-            if (!text) {
-                reject(new Error('No text provided'));
-                return;
+    async loadVoices() {
+        return new Promise((resolve) => {
+            const voices = this.synth.getVoices();
+            if (voices.length > 0) {
+                this.voices = voices;
+                this.populateVoiceList();
+                resolve();
+            } else {
+                this.synth.addEventListener('voiceschanged', () => {
+                    this.voices = this.synth.getVoices();
+                    this.populateVoiceList();
+                    resolve();
+                }, { once: true });
             }
-
-            this.stop();
-
-            this.currentUtterance = new SpeechSynthesisUtterance(text);
-
-            if (this.currentVoice) {
-                this.currentUtterance.voice = this.currentVoice;
-            }
-
-            this.currentUtterance.rate = options.rate || 1;
-            this.currentUtterance.pitch = options.pitch || 1;
-            this.currentUtterance.volume = options.volume || 1;
-
-            this.currentUtterance.onend = () => resolve();
-            this.currentUtterance.onerror = (event) => reject(new Error(event.error));
-
-            this.synth.speak(this.currentUtterance);
         });
     }
 
-    stop() {
-        this.synth.cancel();
-        this.currentUtterance = null;
-    }
+    populateVoiceList() {
+        // Clear existing options
+        this.voiceSelect.innerHTML = '';
 
-    pause() {
-        this.synth.pause();
-    }
+        // Add voices to select element
+        this.voices.forEach((voice, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `${voice.name} (${voice.lang})`;
+            this.voiceSelect.appendChild(option);
+        });
 
-    resume() {
-        this.synth.resume();
-    }
-
-    isSpeaking() {
-        return this.synth.speaking;
-    }
-
-    isPaused() {
-        return this.synth.paused;
-    }
-}
-
-/**
- * Text-to-Speech UI implementation
- */
-export default class TextToSpeech extends BaseTool {
-    constructor() {
-        super();
-        this.api = new TextToSpeechAPI();
-        this.elements = this.initializeElements();
-        this.state = this.initializeState();
-        this.initialize();
-        this.bindEvents();
-    }
-
-    initializeElements() {
-        return {
-            // Text input elements
-            textInput: document.getElementById('text-input'),
-            charCount: document.getElementById('char-count'),
-
-            // Voice options
-            voiceSelect: document.getElementById('voice-select'),
-            rateInput: document.getElementById('rate'),
-            pitchInput: document.getElementById('pitch'),
-            volumeInput: document.getElementById('volume'),
-
-            // Action buttons
-            speakButton: document.getElementById('speak-button'),
-            pauseButton: document.getElementById('pause-button'),
-            stopButton: document.getElementById('stop-button'),
-            downloadButton: document.getElementById('download-button'),
-
-            // Settings elements
-            settingsToggle: document.getElementById('settings-toggle'),
-            settingsPanel: document.getElementById('settings-panel'),
-
-            // Notification
-            notification: document.querySelector('.notification')
-        };
-    }
-
-    initializeState() {
-        return {
-            maxLength: 5000,
-            isPlaying: false,
-            isPaused: false,
-            settings: {
-                rate: 1,
-                pitch: 1,
-                volume: 1,
-                voice: null
-            }
-        };
-    }
-
-    bindEvents() {
-        const { textInput, voiceSelect, rateInput, pitchInput, volumeInput, speakButton, pauseButton, stopButton, settingsToggle } = this.elements;
-
-        // Text input events
-        textInput.addEventListener('input', this.debounce(this.handleTextInput.bind(this), 300));
-
-        // Voice options events
-        voiceSelect.addEventListener('change', this.handleVoiceSelect.bind(this));
-        rateInput.addEventListener('input', this.debounce(this.handleRateChange.bind(this), 100));
-        pitchInput.addEventListener('input', this.debounce(this.handlePitchChange.bind(this), 100));
-        volumeInput.addEventListener('input', this.debounce(this.handleVolumeChange.bind(this), 100));
-
-        // Action button events
-        speakButton.addEventListener('click', this.toggleSpeech.bind(this));
-        pauseButton.addEventListener('click', this.togglePause.bind(this));
-        stopButton.addEventListener('click', this.stop.bind(this));
-
-        // Settings toggle
-        settingsToggle.addEventListener('click', this.toggleSettings.bind(this));
-
-        // Voice list update
-        this.api.synth.addEventListener('voiceschanged', this.loadVoices.bind(this));
-
-        // Keyboard shortcuts
-        this.addKeyboardShortcut('space', this.toggleSpeech.bind(this));
-        this.addKeyboardShortcut('p', this.togglePause.bind(this), { ctrl: true });
-        this.addKeyboardShortcut('s', this.stop.bind(this), { ctrl: true });
-    }
-
-    initialize() {
-        // Set initial values
-        this.elements.rateInput.value = this.state.settings.rate;
-        this.elements.pitchInput.value = this.state.settings.pitch;
-        this.elements.volumeInput.value = this.state.settings.volume;
-
-        // Hide settings panel initially
-        this.elements.settingsPanel.style.display = 'none';
-
-        // Load voices
-        this.loadVoices();
-
-        // Load saved settings
-        this.loadSettings();
-    }
-
-    handleTextInput() {
-        const text = this.elements.textInput.value;
-        const length = text.length;
-
-        this.elements.charCount.textContent = `${length}/${this.state.maxLength}`;
-
-        if (length > this.state.maxLength) {
-            this.elements.textInput.value = text.slice(0, this.state.maxLength);
-            this.showNotification('Text exceeds maximum length', 'error');
+        // Select default voice
+        const defaultVoice = this.voices.findIndex(voice => voice.default);
+        if (defaultVoice !== -1) {
+            this.voiceSelect.value = defaultVoice;
         }
     }
 
-    handleVoiceSelect() {
-        const voiceId = this.elements.voiceSelect.value;
-        if (this.api.setVoice(voiceId)) {
-            this.state.settings.voice = voiceId;
-            this.saveSettings();
-        }
+    handleVoicesChanged() {
+        this.voices = this.synth.getVoices();
+        this.populateVoiceList();
     }
 
-    handleRateChange() {
-        this.state.settings.rate = parseFloat(this.elements.rateInput.value);
-        this.saveSettings();
-    }
+    handlePlay() {
+        if (this.isPlaying) return;
 
-    handlePitchChange() {
-        this.state.settings.pitch = parseFloat(this.elements.pitchInput.value);
-        this.saveSettings();
-    }
-
-    handleVolumeChange() {
-        this.state.settings.volume = parseFloat(this.elements.volumeInput.value);
-        this.saveSettings();
-    }
-
-    loadVoices() {
-        const voices = this.api.voices;
-        if (voices.length === 0) return;
-
-        this.elements.voiceSelect.innerHTML = voices
-            .map(voice => `<option value="${voice.voiceURI}">${voice.name} (${voice.lang})</option>`)
-            .join('');
-
-        if (this.state.settings.voice) {
-            this.elements.voiceSelect.value = this.state.settings.voice;
-            this.api.setVoice(this.state.settings.voice);
-        }
-    }
-
-    async toggleSpeech() {
-        if (this.state.isPlaying) {
-            this.stop();
-            return;
-        }
-
-        const text = this.elements.textInput.value.trim();
+        const text = this.textInput.value.trim();
         if (!text) {
-            this.showNotification('Please enter text to speak', 'error');
+            showNotification('Please enter some text to speak.', 'warning');
             return;
         }
 
         try {
-            this.state.isPlaying = true;
-            this.updatePlayButton();
+            // Create new utterance
+            this.utterance = new SpeechSynthesisUtterance(text);
 
-            await this.api.speak(text, this.state.settings);
-
-            this.state.isPlaying = false;
-            this.updatePlayButton();
-        } catch (error) {
-            console.error('Speech error:', error);
-            this.showNotification('Failed to speak text', 'error');
-            this.state.isPlaying = false;
-            this.updatePlayButton();
-        }
-    }
-
-    togglePause() {
-        if (!this.state.isPlaying) return;
-
-        if (this.state.isPaused) {
-            this.api.resume();
-            this.state.isPaused = false;
-        } else {
-            this.api.pause();
-            this.state.isPaused = true;
-        }
-
-        this.updatePauseButton();
-    }
-
-    stop() {
-        this.api.stop();
-        this.state.isPlaying = false;
-        this.state.isPaused = false;
-        this.updatePlayButton();
-        this.updatePauseButton();
-    }
-
-    toggleSettings() {
-        const isVisible = this.elements.settingsPanel.style.display === 'block';
-        this.elements.settingsPanel.style.display = isVisible ? 'none' : 'block';
-        this.elements.settingsToggle.setAttribute('aria-expanded', !isVisible);
-    }
-
-    updatePlayButton() {
-        const icon = this.state.isPlaying ? 'stop' : 'play';
-        this.elements.speakButton.innerHTML = `<i class="fas fa-${icon}"></i>`;
-        this.elements.speakButton.setAttribute('aria-label', this.state.isPlaying ? 'Stop' : 'Play');
-    }
-
-    updatePauseButton() {
-        const icon = this.state.isPaused ? 'play' : 'pause';
-        this.elements.pauseButton.innerHTML = `<i class="fas fa-${icon}"></i>`;
-        this.elements.pauseButton.setAttribute('aria-label', this.state.isPaused ? 'Resume' : 'Pause');
-    }
-
-    loadSettings() {
-        const saved = this.loadFromStorage(STORAGE_KEYS.TTS_SETTINGS);
-        if (saved) {
-            this.state.settings = { ...this.state.settings, ...saved };
-            this.elements.rateInput.value = this.state.settings.rate;
-            this.elements.pitchInput.value = this.state.settings.pitch;
-            this.elements.volumeInput.value = this.state.settings.volume;
-            if (this.state.settings.voice) {
-                this.elements.voiceSelect.value = this.state.settings.voice;
-                this.api.setVoice(this.state.settings.voice);
+            // Set voice
+            const selectedVoice = this.voices[this.voiceSelect.value];
+            if (selectedVoice) {
+                this.utterance.voice = selectedVoice;
             }
+
+            // Set speech properties
+            this.utterance.rate = parseFloat(this.rateInput.value);
+            this.utterance.pitch = parseFloat(this.pitchInput.value);
+            this.utterance.volume = parseFloat(this.volumeInput.value);
+
+            // Add event listeners
+            this.utterance.onboundary = this.handleBoundaryEvent;
+            this.utterance.onend = this.handleEndEvent;
+            this.utterance.onerror = this.handleErrorEvent;
+
+            // Start speaking
+            this.synth.speak(this.utterance);
+            this.isPlaying = true;
+            this.isPaused = false;
+
+            // Update UI
+            this.updatePlaybackState();
+        } catch (error) {
+            console.error('Failed to start speech:', error);
+            showNotification('Failed to start speech. Please try again.', 'error');
         }
     }
 
-    saveSettings() {
-        this.saveToStorage(STORAGE_KEYS.TTS_SETTINGS, this.state.settings);
-    }
-}
+    handlePause() {
+        if (!this.isPlaying) return;
 
-// Initialize the tool if we're on the text-to-speech page
-if (document.querySelector('.tts-container')) {
-    new TextToSpeech();
+        if (this.isPaused) {
+            this.synth.resume();
+            this.isPaused = false;
+        } else {
+            this.synth.pause();
+            this.isPaused = true;
+        }
+
+        this.updatePlaybackState();
+    }
+
+    handleStop() {
+        if (!this.isPlaying) return;
+
+        this.synth.cancel();
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.progress = 0;
+
+        this.updatePlaybackState();
+        this.updateProgress();
+    }
+
+    handleBoundaryEvent(event) {
+        if (event.name === 'word') {
+            const text = this.textInput.value;
+            const wordCount = text.trim().split(/\s+/).length;
+            const currentWord = Math.ceil(event.charIndex / (text.length / wordCount));
+            this.progress = (currentWord / wordCount) * 100;
+            this.updateProgress();
+        }
+    }
+
+    handleEndEvent() {
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.progress = 100;
+
+        this.updatePlaybackState();
+        this.updateProgress();
+
+        showNotification('Speech completed successfully.', 'success');
+    }
+
+    handleErrorEvent(error) {
+        console.error('Speech synthesis error:', error);
+        showNotification('An error occurred during speech synthesis.', 'error');
+
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.progress = 0;
+
+        this.updatePlaybackState();
+        this.updateProgress();
+    }
+
+    updatePlaybackState() {
+        this.playButton.disabled = this.isPlaying;
+        this.pauseButton.disabled = !this.isPlaying;
+        this.stopButton.disabled = !this.isPlaying;
+
+        // Update pause button text
+        this.pauseButton.textContent = this.isPaused ? 'Resume' : 'Pause';
+        this.pauseButton.className = this.isPaused ? 'action-button resume' : 'action-button pause';
+    }
+
+    updateProgress() {
+        this.progressBar.style.width = `${this.progress}%`;
+        this.progressText.textContent = `${Math.round(this.progress)}%`;
+    }
+
+    enableControls() {
+        this.textInput.disabled = false;
+        this.voiceSelect.disabled = false;
+        this.rateInput.disabled = false;
+        this.pitchInput.disabled = false;
+        this.volumeInput.disabled = false;
+        this.playButton.disabled = false;
+    }
+
+    destroy() {
+        // Remove event listeners
+        this.playButton.removeEventListener('click', this.handlePlay);
+        this.pauseButton.removeEventListener('click', this.handlePause);
+        this.stopButton.removeEventListener('click', this.handleStop);
+        this.synth.removeEventListener('voiceschanged', this.handleVoicesChanged);
+
+        // Stop any ongoing speech
+        if (this.isPlaying) {
+            this.synth.cancel();
+        }
+    }
 }

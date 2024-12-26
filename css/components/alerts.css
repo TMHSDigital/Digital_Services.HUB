@@ -14,15 +14,14 @@
 }
 
 .alert {
-    padding: 15px 20px;
-    border-radius: var(--border-radius);
-    background: var(--bg-dark);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-lg);
+    position: relative;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    animation: slideIn 0.3s ease-out;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid transparent;
 }
 
 .alert.alert-closing {
@@ -30,53 +29,158 @@
 }
 
 .alert-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    flex: 1;
 }
 
 .alert-icon {
-    font-size: 1.2em;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.alert-title {
+    margin: 0 0 var(--spacing-1);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-tight);
 }
 
 .alert-message {
-    margin-right: 20px;
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
 }
 
-.alert-dismiss {
-    background: none;
+.alert-close {
+    position: absolute;
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    padding: var(--spacing-1);
+    color: currentColor;
+    background: transparent;
     border: none;
-    color: inherit;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    padding: 0;
-    font-size: 1.2em;
+    opacity: 0.6;
+    transition: var(--transition-opacity);
 }
 
-.alert-dismiss:hover {
+.alert-close:hover {
     opacity: 1;
 }
 
-/* Alert Types */
+.alert-close:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-alpha);
+}
+
+/* Alert Variants */
 .alert-info {
-    background: var(--info-color);
-    color: var(--text-light);
+    color: var(--info-color);
+    background: var(--info-bg);
+    border-left-color: var(--info-color);
 }
 
 .alert-success {
-    background: var(--success-color);
-    color: var(--text-light);
+    color: var(--success-color);
+    background: var(--success-bg);
+    border-left-color: var(--success-color);
 }
 
 .alert-warning {
-    background: var(--warning-color);
-    color: var(--text-dark);
+    color: var(--warning-color);
+    background: var(--warning-bg);
+    border-left-color: var(--warning-color);
 }
 
 .alert-error {
-    background: var(--error-color);
-    color: var(--text-light);
+    color: var(--error-color);
+    background: var(--error-bg);
+    border-left-color: var(--error-color);
+}
+
+/* Alert Sizes */
+.alert-sm {
+    padding: var(--spacing-2);
+    font-size: var(--font-size-sm);
+}
+
+.alert-lg {
+    padding: var(--spacing-4);
+    font-size: var(--font-size-lg);
+}
+
+/* Alert with Actions */
+.alert-actions {
+    display: flex;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-2);
+}
+
+.alert-action {
+    padding: var(--spacing-1) var(--spacing-2);
+    color: currentColor;
+    font-size: var(--font-size-sm);
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-colors);
+}
+
+.alert-action:hover {
+    background: rgba(currentColor, 0.1);
+}
+
+.alert-action:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-alpha);
+}
+
+/* Alert Animation */
+.alert-enter {
+    opacity: 0;
+    transform: translateY(-1rem);
+}
+
+.alert-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.alert-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.alert-exit-active {
+    opacity: 0;
+    transform: translateY(-1rem);
+    transition: opacity 150ms ease-in, transform 150ms ease-in;
+}
+
+/* Dark Theme Adjustments */
+[data-theme="dark"] .alert-info {
+    background: var(--info-bg-dark);
+}
+
+[data-theme="dark"] .alert-success {
+    background: var(--success-bg-dark);
+}
+
+[data-theme="dark"] .alert-warning {
+    background: var(--warning-bg-dark);
+}
+
+[data-theme="dark"] .alert-error {
+    background: var(--error-bg-dark);
+}
+
+/* Accessibility */
+.alert {
+    role: "alert";
+    aria-live: "polite";
 }
 
 /* Animations */
