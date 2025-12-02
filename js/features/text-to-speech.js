@@ -42,14 +42,22 @@ export class TextToSpeech extends BaseTool {
 
         // Initialize voices
         this.initVoices();
+        
+        // Initialize listeners
+        this.init();
     }
 
     async init() {
         try {
             // Add event listeners
-            this.playButton.addEventListener('click', this.handlePlay);
-            this.pauseButton.addEventListener('click', this.handlePause);
-            this.stopButton.addEventListener('click', this.handleStop);
+            if (this.playButton) this.playButton.addEventListener('click', this.handlePlay);
+            // We don't have a dedicated pause button in the new UI, map preview to pause/resume or speak?
+            // The UI has "Speak" and "Preview Voice". 
+            // Let's assume Speak is Play.
+            
+            // this.pauseButton.addEventListener('click', this.handlePause);
+            // this.stopButton.addEventListener('click', this.handleStop);
+            
             this.synth.addEventListener('voiceschanged', this.handleVoicesChanged);
 
             // Initialize voices
@@ -206,34 +214,36 @@ export class TextToSpeech extends BaseTool {
     }
 
     updatePlaybackState() {
-        this.playButton.disabled = this.isPlaying;
-        this.pauseButton.disabled = !this.isPlaying;
-        this.stopButton.disabled = !this.isPlaying;
+        if (this.playButton) this.playButton.disabled = this.isPlaying;
+        if (this.pauseButton) this.pauseButton.disabled = !this.isPlaying;
+        if (this.stopButton) this.stopButton.disabled = !this.isPlaying;
 
         // Update pause button text
-        this.pauseButton.textContent = this.isPaused ? 'Resume' : 'Pause';
-        this.pauseButton.className = this.isPaused ? 'action-button resume' : 'action-button pause';
+        if (this.pauseButton) {
+            this.pauseButton.textContent = this.isPaused ? 'Resume' : 'Pause';
+            this.pauseButton.className = this.isPaused ? 'action-button resume' : 'action-button pause';
+        }
     }
 
     updateProgress() {
-        this.progressBar.style.width = `${this.progress}%`;
-        this.progressText.textContent = `${Math.round(this.progress)}%`;
+        if (this.progressBar) this.progressBar.style.width = `${this.progress}%`;
+        if (this.progressText) this.progressText.textContent = `${Math.round(this.progress)}%`;
     }
 
     enableControls() {
-        this.textInput.disabled = false;
-        this.voiceSelect.disabled = false;
-        this.rateInput.disabled = false;
-        this.pitchInput.disabled = false;
-        this.volumeInput.disabled = false;
-        this.playButton.disabled = false;
+        if (this.textInput) this.textInput.disabled = false;
+        if (this.voiceSelect) this.voiceSelect.disabled = false;
+        if (this.rateInput) this.rateInput.disabled = false;
+        if (this.pitchInput) this.pitchInput.disabled = false;
+        if (this.volumeInput) this.volumeInput.disabled = false;
+        if (this.playButton) this.playButton.disabled = false;
     }
 
     destroy() {
         // Remove event listeners
-        this.playButton.removeEventListener('click', this.handlePlay);
-        this.pauseButton.removeEventListener('click', this.handlePause);
-        this.stopButton.removeEventListener('click', this.handleStop);
+        if (this.playButton) this.playButton.removeEventListener('click', this.handlePlay);
+        if (this.pauseButton) this.pauseButton.removeEventListener('click', this.handlePause);
+        if (this.stopButton) this.stopButton.removeEventListener('click', this.handleStop);
         this.synth.removeEventListener('voiceschanged', this.handleVoicesChanged);
 
         // Stop any ongoing speech
@@ -241,4 +251,9 @@ export class TextToSpeech extends BaseTool {
             this.synth.cancel();
         }
     }
+}
+
+// Initialize the tool if we're on the text-to-speech page
+if (document.querySelector('.tts-container')) {
+    new TextToSpeech();
 }

@@ -11,42 +11,8 @@ export class BaseTool {
     }
 
     async initialize() {
-        try {
-            // Load tool template
-            await this.loadTemplate();
-
-            // Initialize tool-specific functionality
-            await this.init();
-
-            this.isInitialized = true;
-        } catch (error) {
-            console.error(`Failed to initialize ${this.toolId}:`, error);
-            showNotification(`Failed to initialize ${this.toolId}. Please try again.`, 'error');
-        }
-    }
-
-    async loadTemplate() {
-        try {
-            const response = await fetch(`js/templates/${this.toolId}.html`);
-            if (!response.ok) {
-                throw new Error(`Failed to load template: ${response.statusText}`);
-            }
-
-            const template = await response.text();
-            document.getElementById('app').innerHTML = template;
-        } catch (error) {
-            console.error('Template loading error:', error);
-            throw new Error('Failed to load tool template.');
-        }
-    }
-
-    async init() {
-        throw new Error('init() must be implemented by subclass');
-    }
-
-    destroy() {
-        // Cleanup resources and event listeners
-        this.isInitialized = false;
+        // Override in child class
+        // Should perform any necessary initialization
     }
 
     handleError(error, context = '') {
