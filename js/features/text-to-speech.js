@@ -14,14 +14,22 @@ export class TextToSpeech extends BaseTool {
         // Initialize UI elements
         this.textInput = document.querySelector('#text-input');
         this.voiceSelect = document.querySelector('#voice-select');
-        this.rateInput = document.querySelector('#rate-input');
-        this.pitchInput = document.querySelector('#pitch-input');
-        this.volumeInput = document.querySelector('#volume-input');
-        this.playButton = document.querySelector('#play-button');
-        this.pauseButton = document.querySelector('#pause-button');
-        this.stopButton = document.querySelector('#stop-button');
-        this.progressBar = document.querySelector('#progress-bar');
-        this.progressText = document.querySelector('#progress-text');
+        this.rateInput = document.querySelector('#speed-slider');
+        this.pitchInput = document.querySelector('#pitch-slider');
+        this.volumeInput = document.querySelector('#volume-slider');
+        this.playButton = document.querySelector('#speak-btn');
+        // Preview is our "pause" equivalent for now based on available buttons, or we hide pause
+        // The UI has: Preview, Speak, Download. 
+        // BaseTool expects standard controls but we need to map to existing UI
+        this.previewButton = document.querySelector('#preview-btn');
+        this.downloadButton = document.querySelector('#download-btn');
+        
+        // Elements not present in current HTML but required by logic:
+        // We will create dummy elements or update logic. Updating logic is better.
+        this.pauseButton = null; 
+        this.stopButton = null;
+        this.progressBar = null;
+        this.progressText = null;
 
         // Bind event handlers
         this.handleVoicesChanged = this.handleVoicesChanged.bind(this);

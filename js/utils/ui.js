@@ -3,7 +3,6 @@
  */
 
 import { UI_CONSTANTS, THEMES } from './constants.js';
-import utils from './helpers.js';
 
 // Notification container
 let notificationContainer = null;
@@ -354,13 +353,6 @@ export function validateURL(url) {
     } catch {
         return false;
     }
-}
-
-// Sanitize HTML
-export function sanitizeHTML(html) {
-    const div = document.createElement('div');
-    div.textContent = html;
-    return div.innerHTML;
 }
 
 // Debounce function
