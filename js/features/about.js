@@ -1,5 +1,5 @@
-import { generateToolList } from '/js/utils/template-generator.js';
-import { initializeTheme } from '/js/utils/theme.js';
+import { generateToolList } from '../utils/template-generator.js';
+import { initializeTheme } from '../utils/theme.js';
 
 // Initialize theme
 initializeTheme();
