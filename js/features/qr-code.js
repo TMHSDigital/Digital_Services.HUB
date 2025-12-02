@@ -1,5 +1,5 @@
-import { BaseTool } from './base-tool.js';
-import { notifications } from '../utils/ui.js';
+import { BaseTool } from '../utils/base-tool.js';
+import { showNotification } from '../utils/ui.js';
 
 export default class QRCode extends BaseTool {
     constructor() {

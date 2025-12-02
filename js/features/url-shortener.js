@@ -1,6 +1,5 @@
-import { BaseTool } from './base-tool.js';
-import { notifications } from '../utils/ui.js';
-import utils from '../utils/helpers.js';
+import { BaseTool } from '../utils/base-tool.js';
+import { showNotification, validateURL } from '../utils/ui.js';
 
 export default class URLShortener extends BaseTool {
     constructor() {
@@ -66,7 +65,7 @@ export default class URLShortener extends BaseTool {
 
     validateInput() {
         const url = this.elements.urlInput.value.trim();
-        const isValid = utils.isValidURL(url);
+        const isValid = validateURL(url);
         this.elements.shortenButton.disabled = !isValid || this.state.isProcessing;
         return isValid;
     }

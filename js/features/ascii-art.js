@@ -1,8 +1,7 @@
-import { BaseTool } from './base-tool.js';
+import { BaseTool } from '../utils/base-tool.js';
 import { notifications } from '../utils/ui.js';
 import { STORAGE_KEYS, FILE_LIMITS, UI_CONSTANTS } from '../utils/constants.js';
 import { fileValidation } from '../utils/validation.js';
-import utils from '../utils/helpers.js';
 
 class AsciiArt extends BaseTool {
     constructor() {

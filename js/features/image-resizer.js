@@ -1,7 +1,6 @@
-import { BaseTool } from './base-tool.js';
-import { notifications } from '../utils/ui.js';
+import { BaseTool } from '../utils/base-tool.js';
+import { showNotification, formatFileSize } from '../utils/ui.js';
 import { FILE_LIMITS } from '../utils/constants.js';
-import utils from '../utils/helpers.js';
 
 export default class ImageResizer extends BaseTool {
     constructor() {
@@ -86,7 +85,7 @@ export default class ImageResizer extends BaseTool {
         }
 
         if (file.size > this.state.maxFileSize) {
-            this.showNotification(`File size must be less than ${utils.formatFileSize(this.state.maxFileSize)}`, 'error');
+            this.showNotification(`File size must be less than ${formatFileSize(this.state.maxFileSize)}`, 'error');
             return false;
         }
 
@@ -136,7 +135,7 @@ export default class ImageResizer extends BaseTool {
         };
         reader.readAsDataURL(file);
 
-        this.elements.fileInfo.textContent = `${file.name} (${utils.formatFileSize(file.size)})`;
+        this.elements.fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
     }
 
     updatePreview() {
