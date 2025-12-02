@@ -7,6 +7,11 @@
 
 /* Components */
 @import url('components/ui.css');
+@import url('components/navigation.css');
+@import url('components/buttons.css');
+@import url('components/forms.css');
+@import url('components/modal.css');
+@import url('components/landing.css');
 @import url('components/cards.css');
 @import url('components/tool-page.css');
 @import url('components/text-to-speech.css');
@@ -29,6 +34,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-top: 4rem;
 }
 
 /* Typography */
