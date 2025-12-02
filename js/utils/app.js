@@ -4,6 +4,7 @@
 
 import { initializeTheme } from './theme.js';
 import { initializeTools } from '../features/tools-manager.js';
+import { injectLayout } from '../components/layout.js';
 
 /**
  * Initialize mobile menu functionality
@@ -55,6 +56,9 @@ function initializeSmoothScroll() {
  * Initialize the application
  */
 function initializeApp() {
+    // Inject Layout (Header/Footer) first
+    injectLayout();
+
     // Initialize theme system
     initializeTheme();
 
