@@ -116,10 +116,16 @@ function generateToolCards() {
 function navigateToTool(toolId) {
     const tool = getToolById(toolId);
     if (tool) {
-        // For GitHub Pages, we need to handle the full URL
-        const isGitHubPages = window.location.hostname.includes('github.io');
-        const baseUrl = isGitHubPages ? '/Digital_Services.HUB' : '';
-        const fullPath = `${baseUrl}/${tool.path}`;
+        // Use strict relative path. 
+        // From index.html (root), it is 'pages/tool.html'.
+        // From a subpage (e.g. pages/other.html), this logic is not usually called 
+        // because tools grid is only on index.html. 
+        // If we ever render grid on subpages, we need basePath.
+        
+        const isSubPage = window.location.pathname.includes('/pages/');
+        const basePath = isSubPage ? '../' : '';
+        const fullPath = `${basePath}${tool.path}`;
+        
         window.location.href = fullPath;
     }
 }
