@@ -5,26 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Palette Generator - Digital Services Hub</title>
     <meta name="description" content="Generate beautiful color harmonies for your designs with advanced color theory algorithms.">
-    <link rel="stylesheet" href="/Digital_Services.HUB/css/styles.css">
-    <link rel="stylesheet" href="/Digital_Services.HUB/css/components/color-palette.css">
-    <link rel="stylesheet" href="/Digital_Services.HUB/css/components/social-share.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/color-palette.css">
+    <link rel="stylesheet" href="../css/components/social-share.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Navigation injected by js/components/layout.js -->
+
     <header class="hero">
-        <nav id="main-nav" class="nav-container">
-            <div class="logo">
-                <a href="/Digital_Services.HUB/">
-                    <h1>Digital Services Hub</h1>
-                </a>
-            </div>
-            <div class="theme-toggle">
-                <button id="theme-button" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </nav>
         <div class="hero-content">
             <h2 class="hero-title">Color Palette Generator</h2>
             <p class="hero-subtitle">Create harmonious color schemes for your designs</p>
@@ -154,12 +144,14 @@
         </div>
     </div>
 
+    <!-- Footer injected by js/components/layout.js -->
+
     <div class="notification" role="alert" aria-live="polite"></div>
 
     <!-- Load color wheel library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/iro.js/5.5.2/iro.min.js"></script>
     <!-- Load our scripts -->
-    <script src="/Digital_Services.HUB/js/utils/app.js"></script>
-    <script src="/Digital_Services.HUB/js/features/color-palette.js"></script>
+    <script src="../js/utils/app.js" type="module"></script>
+    <script src="../js/features/color-palette.js" type="module"></script>
 </body>
 </html>

@@ -5,26 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Resizer - Digital Services Hub</title>
     <meta name="description" content="Resize and optimize your images while maintaining quality. Support for multiple formats and aspect ratio preservation.">
-    <link rel="stylesheet" href="/Digital_Services.HUB/css/styles.css">
-    <link rel="stylesheet" href="/Digital_Services.HUB/css/components/image-resizer.css">
-    <link rel="stylesheet" href="/Digital_Services.HUB/css/components/social-share.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components/image-resizer.css">
+    <link rel="stylesheet" href="../css/components/social-share.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Navigation injected by js/components/layout.js -->
+
     <header class="hero">
-        <nav id="main-nav" class="nav-container">
-            <div class="logo">
-                <a href="/Digital_Services.HUB/index.html">
-                    <h1>Digital Services Hub</h1>
-                </a>
-            </div>
-            <div class="theme-toggle">
-                <button id="theme-button" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </nav>
         <div class="hero-content">
             <h2 class="hero-title">Image Resizer</h2>
             <p class="hero-subtitle">Resize and optimize your images with precision</p>
@@ -108,9 +98,11 @@
         </div>
     </main>
 
+    <!-- Footer injected by js/components/layout.js -->
+
     <div class="notification" role="alert" aria-live="polite"></div>
 
-    <script src="/Digital_Services.HUB/js/utils/app.js"></script>
-    <script src="/Digital_Services.HUB/js/features/image-resizer.js"></script>
+    <script src="../js/utils/app.js" type="module"></script>
+    <script src="../js/features/image-resizer.js" type="module"></script>
 </body>
 </html>
